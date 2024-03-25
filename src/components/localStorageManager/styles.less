@@ -1,0 +1,37 @@
+.cpnLocalStorageManager {
+
+	&.cpnContainer.modal {
+		max-width: 90vw;
+		max-height: 90vh;
+	}
+
+	.innerContainer {
+		flex: 1;
+		display: flex;
+		min-height: 0;
+
+		.localStorageKeys {
+			display: flex;
+			margin-right: var(--global-padding);
+		}
+
+		.localStorageCode {
+			display: flex;
+			flex: 1 1;
+			overflow: auto;
+
+		}
+
+	}
+
+	& .localStorageToolbar {
+		& .localStorageActions {
+			display: flex;
+
+			>div {
+				margin-right: var(--global-smallPadding)
+			}
+		}
+	}
+
+}

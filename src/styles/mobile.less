@@ -1,0 +1,198 @@
+.demo {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background: linear-gradient(45deg, #bdbdbd 0%, #fafafa 100%);
+
+	&#root > div {
+		width: 468px;
+		height: 1012px;
+		transition-property: width, height, transform, border-radius, border-width;
+		transition-duration: 0.5s;
+		transition-timing-function: ease-in-out;
+		flex: none;
+		border-radius: 32px;
+		box-shadow: 0 1px 4px 4px rgba(0, 0, 0, 0.314);
+		position: relative;
+		overflow: hidden;
+		border: 12px solid #212121;
+		border-width: 12px;
+	}
+
+	&.rotate {
+		&#root > div {
+			transform: rotate3d(0.5, 0.25, -0.45, 60deg);
+			transition-property: width, height, transform, border-radius, border-width;
+			transition-duration: 0.6s;
+			transition-timing-function: ease-in-out;
+		}
+
+	}
+
+}
+
+.mobile {
+	&#root > div {
+	}
+
+	#STATERECORDER.cpnMenu {
+		position: absolute;
+	}
+
+	#MENU.cpnBladeManager {
+		position: absolute;
+		height: auto;
+		left: 0%;
+		top: 0%;
+		width: 100%;
+		z-index: 100;
+		transform-origin: 0 0;
+		transition: transform 0.25s 0s, width 0s 0.25s;
+		transform: scaleY(0);
+		flex-direction: column;
+
+		> * {
+			opacity: 0;
+			transition-property: opacity, transform;
+			transition-duration: 0.15s;
+			transition-delay: 0.1s, 0s;
+			transform: scaleY(0.75);
+			transform-origin: 0 0;
+			width: 100%;
+			box-shadow: none;
+			display: flex;
+			flex-direction: row;
+			padding: var(--global-smallPadding) 0px;
+
+			.headingText {
+				display: none;
+			}
+
+			.divider.secondary {
+				width: 1px;
+				height: auto;
+				margin-right: 12px;
+				background-color: black;
+			}
+
+			.cpnTreeview {
+				flex: 1;
+			}
+
+			.children {
+				display: flex;
+				flex-direction: row;
+				flex: 1;
+				justify-content: flex-end;
+
+				.node {
+					margin-bottom: 0px;
+
+					.val {
+						display: none;
+					}
+
+					.cpnIcon {
+						margin-right: 0px;
+					}
+
+					&.selected .text {
+						background-color: transparent;
+					}
+
+				}
+
+			}
+
+		}
+
+		&.active {
+			transition-property: transform;
+			transition-duration: 0.4s;
+			transition-delay: 0s;
+			transform: scaleY(1);
+			width: 100%;
+
+			> * {
+				opacity: 1;
+				transition-property: opacity, transform;
+				transition-duration: 0.3s;
+				transition-delay: 0.1s, 0s;
+				transform: scaleY(1);
+				height: 74px;
+			}
+
+		}
+
+	}
+
+	.cpnContainer.toolbar.vertical > .content > * + * {
+		margin-top: var(--global-smallPadding);
+		margin-left: 0px;
+	}
+
+	#MODAL1 {
+		z-index: 101;
+	}
+
+	#NOTIFICATIONS {
+		position: absolute;
+
+		.notification {
+			width: 200px;
+			margin-right: 12px;
+		}
+
+	}
+
+	.cpnLogo {
+		width: 80%;
+
+		.letter {
+			font-size: 32px;
+			padding: 12px 12px;
+			transition-property: font-size, padding;
+			transition-duration: 0.5s;
+		}
+
+	}
+
+	#VIEWPORT.cpnViewport {
+		padding: 0px;
+
+		.cpnContainer {
+			border-radius: 0px;
+
+			&.hasChildren {
+				flex-direction: column;
+
+				> .content {
+					> * + * {
+						margin-left: 0px;
+						margin-top: 24px;
+					}
+
+				}
+
+			}
+
+		}
+
+	}
+
+	.tabButton {
+		text-align: center;
+	}
+
+}
+
+#root:not(.mobile) {
+	.cpnLogo {
+		.letter {
+			transition-property: font-size, padding;
+			transition-duration: 0.5s;
+		}
+
+	}
+
+}

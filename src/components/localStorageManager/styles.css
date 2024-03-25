@@ -1,0 +1,24 @@
+.cpnLocalStorageManager.cpnContainer.modal {
+  max-width: 90vw;
+  max-height: 90vh;
+}
+.cpnLocalStorageManager .innerContainer {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+}
+.cpnLocalStorageManager .innerContainer .localStorageKeys {
+  display: flex;
+  margin-right: var(--global-padding);
+}
+.cpnLocalStorageManager .innerContainer .localStorageCode {
+  display: flex;
+  flex: 1 1;
+  overflow: auto;
+}
+.cpnLocalStorageManager .localStorageToolbar .localStorageActions {
+  display: flex;
+}
+.cpnLocalStorageManager .localStorageToolbar .localStorageActions > div {
+  margin-right: var(--global-smallPadding);
+}

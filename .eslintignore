@@ -1,0 +1,7 @@
+**/node_modules/**
+**/serviceWorker.js
+public/**
+build/**
+styles.js
+*.json
+dist/**

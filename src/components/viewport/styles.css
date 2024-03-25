@@ -1,0 +1,5 @@
+.cpnViewport {
+  position: relative;
+  overflow: auto;
+  height: 100%;
+}

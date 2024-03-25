@@ -1,0 +1,97 @@
+.cpnContainerSimple {
+	position: relative;
+	display: flex;
+	flex-shrink: 0;
+	overflow: auto;
+
+	> * {
+		flex-basis: auto !important;
+	}
+
+	&.horizontal {
+		flex-direction: row;
+	}
+
+	&.vertical {
+		flex-direction: column;
+	}
+
+	&.collapsed {
+		flex: unset;
+		min-height: unset;
+		min-width: unset;
+
+		> * {
+			display: none;
+		}
+
+	}
+
+	//Property mapped classes
+
+	&.minSize,
+	&.minWidth {
+		min-width: 290px;
+	}
+
+	&.minSize,
+	&.minHeight {
+		min-height: 290px;
+	}
+
+	&.singlePage {
+		height: 100%;
+		width: 100%;
+	}
+
+	&.flex {
+		flex: 1;
+	}
+
+	&.canShrink {
+		flex-shrink: 1;
+	}
+
+	&.autoChildMargins {
+		&.horizontal {
+			> *:not(.hidden):not(.popoverRef) + *:not(.noAutoMargin) {
+				margin-left: var(--containerSimple-auto-child-margins-size);
+			}
+
+			> *:not(.hidden):not(.popoverRef) ~ .hidden + *:not(.noAutoMargin) {
+				margin-left: var(--containerSimple-auto-child-margins-size);
+			}
+
+		}
+
+		&.vertical {
+			> *:not(.hidden):not(.popoverRef) + *:not(.noAutoMargin) {
+				margin-top: var(--containerSimple-auto-child-margins-size);
+			}
+
+			> *:not(.hidden):not(.popoverRef) ~ .hidden + *:not(.noAutoMargin) {
+				margin-top: var(--containerSimple-auto-child-margins-size);
+			}
+
+		}
+
+	}
+
+	&.faded {
+		&:before {
+			content: '';
+			position: absolute;
+			left: 0;
+			top: 0;
+			width: 100%;
+			height: 100%;
+			z-index: 1;
+			background-color: rgba(0, 0, 0, 0.70);
+			transition-property: opacity;
+			animation-name: fadein;
+			animation-duration: 0.3s;
+		}
+
+	}
+
+}

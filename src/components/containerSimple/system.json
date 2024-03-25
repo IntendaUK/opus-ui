@@ -1,0 +1,22 @@
+{
+	"propSpecConfig": {
+		"path": "src/components/containerSimple/props.js",
+		"functions": [],
+		"dependents": [
+			{
+				"path": "src/components/container/propsShared.js",
+				"functions": [
+					{
+						"key": "mapToColor",
+						"path": "src/props/cssMaps/mapToColor.js"
+					},
+					{
+						"key": "mapToSize",
+						"path": "src/props/cssMaps/mapToSize.js"
+					}
+				],
+				"dependents": []
+			}
+		]
+	}
+}

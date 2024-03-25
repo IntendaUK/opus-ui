@@ -1,0 +1,37 @@
+{
+	"propSpecConfig": {
+		"path": "src/components/baseProps/index.js",
+		"functions": [
+			{
+				"key": "mapToColor",
+				"path": "src/props/cssMaps/mapToColor.js"
+			},
+			{
+				"key": "mapToSize",
+				"path": "src/props/cssMaps/mapToSize.js"
+			}
+		],
+		"dependents": [
+			{
+				"path": "src/components/baseProps/positioningProps.js",
+				"functions": [
+					{
+						"key": "mapToSize",
+						"path": "src/props/cssMaps/mapToSize.js"
+					}
+				],
+				"dependents": []
+			},
+			{
+				"path": "src/components/baseProps/overlayProps.js",
+				"functions": [],
+				"dependents": []
+			},
+			{
+				"path": "src/components/baseProps/animationProps.js",
+				"functions": [],
+				"dependents": []
+			}
+		]
+	}
+}
