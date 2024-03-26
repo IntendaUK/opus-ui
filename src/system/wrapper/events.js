@@ -3,7 +3,6 @@ import { register, destroyScope, emitEvent, queueChanges } from '../managers/flo
 import { addNodeToDom, removeNodeFromDom } from '../managers/scopeManager';
 import { stateManager } from '../managers/stateManager';
 import { removePersistedStatesForScope, persistState } from '../managers/propertyManager';
-import { getThemes } from '../managers/themeManager';
 import opusConfig from '../../config';
 
 //Helpers
@@ -94,7 +93,7 @@ export const onStyleChanged = (id, state) => {
 		clone(mergedStyles, styleOverrides);
 
 	const prefix = isNaN(id[0]) ? `#${id}` : `[id^='${id}']`;
-	buildStyleTag(id, prefix, mergedStyles, getThemes());
+	buildStyleTag(id, prefix, mergedStyles);
 };
 
 /* eslint-disable max-lines-per-function */

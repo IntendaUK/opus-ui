@@ -6,80 +6,41 @@ export const removeStyleTag = id => {
 	el.parentNode.removeChild(el);
 };
 
-const iterateTag = (result, selector, styles, themes) => {
-	let innerResult = result[selector] = {};
+const buildCss = (id, styles, isOuter = false) => {
+	let res = '';
 
-	Object.entries(styles).forEach(([prop, val]) => {
-		if (typeof(val) === 'object') {
-			let morphedSelector = '';
-			if (prop[0] === '&')
-				morphedSelector = prop.substr(1);
-			else
-				morphedSelector = ' ' + prop;
+	if (isOuter) {
+		res = `[id="${id}"]${Object.keys(styles)[0]} {`;
 
-			let innerSelector = selector + morphedSelector;
-			iterateTag(result, innerSelector, val, themes);
-		} else
-			innerResult[prop] = val;
+		styles = Object.values(styles)[0];
+	}
+
+	const entries = Object.entries(styles);
+	entries.forEach(([k, v]) => {
+		const typeV = typeof(v);
+
+		if (v === null || v === undefined)
+			return;
+
+		if (typeV === 'object')
+			res += `${k} { ${buildCss(id, v)}`;
+		else
+			res += `${k}: ${v};`;
 	});
+
+	res = res + '}';
+
+	return res;
 };
 
-const fixAnimations = styles => {
-	Object.entries(styles)
-		.filter(([prop]) => {
-			return ['@', '%'].every(p => prop.indexOf(p) > -1);
-		})
-		.forEach(([prop, val]) => {
-			delete styles[prop];
-
-			const [prefix, animName, percentage] = prop.split(' ');
-			styles[prefix + ' ' + animName][percentage] = val;
-		});
-};
-
-const stringifyStyles = (prefix, styles) => {
-	return Object.entries(styles).reduce((prev, [key, val]) => {
-		return (
-			prev +
-			prefix +
-			key +
-			'{' +
-			Object.entries(val).reduce((innerPrev, [prop, propValue]) => {
-				let append = ': ' + propValue + ';';
-
-				if (typeof(propValue) === 'object') {
-					let mappedValue = JSON.stringify(propValue)
-						.split('"')
-						.join('')
-						.split(',')
-						.join(';');
-
-					append = ' ' + mappedValue;
-				}
-
-				return innerPrev + prop + append;
-			}, '') +
-			'}'
-		);
-	}, '');
-};
-
-export const buildStyleTag = (id, prefix, styles, themes) => {
+export const buildStyleTag = (id, prefix, styles) => {
 	if (!styles || !Object.keys(styles).length) {
 		removeStyleTag(id);
 
 		return;
 	}
 
-	let result = {};
-
-	Object.entries(styles).forEach(([selector, innerStyles]) => {
-		iterateTag(result, selector, innerStyles, themes);
-	});
-
-	fixAnimations(result);
-
-	let resultString = stringifyStyles(prefix, result);
+	const resultString = buildCss(id, styles, true);
 
 	const elId = `style-${id}`;
 	let el = document.getElementById(elId);
