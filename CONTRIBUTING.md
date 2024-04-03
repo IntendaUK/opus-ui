@@ -93,7 +93,7 @@ When adding a new breaking change, follow this template in your pull request:
 
 ## License
 
-By contributing to Opus UI, you agree that your contributions will be licensed under its [AGPLv3 license](https://github.com/IntendaUK/opus-ui/blob/main/LICENSE).
+By contributing to Opus UI, you agree that your contributions will be licensed under its [MIT license](https://github.com/IntendaUK/opus-ui/blob/main/LICENSE).
 
 ## Questions
 
