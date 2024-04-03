@@ -1,0 +1,52 @@
+{
+	"components": [
+		{
+			"name": "baseProps",
+			"path": "src/components/baseProps"
+		},
+		{
+			"name": "container",
+			"path": "src/components/container"
+		},
+		{
+			"name": "containerSimple",
+			"path": "src/components/containerSimple"
+		},
+		{
+			"name": "contextMenuManager",
+			"path": "src/components/contextMenuManager"
+		},
+		{
+			"name": "dataLoader",
+			"path": "src/components/dataLoader"
+		},
+		{
+			"name": "localStorageManager",
+			"path": "src/components/localStorageManager"
+		},
+		{
+			"name": "modal",
+			"path": "src/components/modal"
+		},
+		{
+			"name": "popup",
+			"path": "src/components/popup"
+		},
+		{
+			"name": "scriptRunner",
+			"path": "src/components/scriptRunner"
+		},
+		{
+			"name": "shared",
+			"path": "src/components/shared"
+		},
+		{
+			"name": "systemModal",
+			"path": "src/components/systemModal"
+		},
+		{
+			"name": "viewport",
+			"path": "src/components/viewport"
+		}
+	]
+}
