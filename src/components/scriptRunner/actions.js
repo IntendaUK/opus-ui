@@ -52,7 +52,6 @@ export { default as invokeFunctionModule } from './actions/invokeFunctionModule'
 export { default as loadExternalJs } from './actions/loadExternalJs';
 export { default as loadPersistedStates } from './actions/loadPersistedStates';
 export { default as mapArray } from './actions/mapArray';
-export { default as massUpdate } from './actions/massUpdate';
 export { default as morphIterateArray } from './actions/morphIterateArray';
 export { default as openUrl } from './actions/openUrl';
 export { default as persistStates } from './actions/persistStates';

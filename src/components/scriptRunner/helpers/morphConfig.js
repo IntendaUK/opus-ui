@@ -89,7 +89,7 @@ const getVariableOrState = (token, script, props, key, parentObj) => {
 					error: e,
 					args: {
 						scp,
-						evalParameters: JSON.parse(JSON.stringify(_evalParameters ?? '{}'))
+						evalParameters: JSON.parse(JSON.stringify(_evalParameters ?? {}))
 					}
 				});
 			} else {

@@ -12,6 +12,15 @@ const getElementById = async (config, script) => {
 	let el;
 
 	let selector = source ?? sourceSelector;
+	if (!selector) {
+		el = document.getElementById(ownerId);
+
+		return {
+			el,
+			selector: ownerId
+		};
+	}
+
 	if (selector.includes('||'))
 		selector = getScopedId(selector, ownerId);
 
@@ -39,7 +48,6 @@ const getElementById = async (config, script) => {
 /* eslint-disable-next-line max-lines-per-function */
 const onScrollComponent = async (config, props, script, context) => {
 	const { debounceDelay = 80 } = config;
-
 	const { el, mappedId } = await getElementById(config, script);
 
 	let { sourceTop: previousY, sourceLeft: previousX } = el;

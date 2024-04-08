@@ -112,12 +112,21 @@ const InnerItems = ({ prpsPosition }) => {
 };
 
 const Body = () => {
-	const { state: { mda, x, y } } = useContext(ContextMenuManagerContext);
+	const { state: { mda, x, y, itemHeight } } = useContext(ContextMenuManagerContext);
+	const screenHeight = window.innerHeight;
+
+	let menuHeight = 0;
+	if (mda)
+		menuHeight = mda.wgts.length * itemHeight;
+
+	let top = y;
+	if (y + menuHeight > screenHeight)
+		top = screenHeight - menuHeight - 24;
 
 	const prpsPosition = {
 		position: 'absolute',
 		left: x,
-		top: y
+		top
 	};
 
 	const Inner = mda ? InnerMda : InnerItems;

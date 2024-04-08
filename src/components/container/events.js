@@ -15,7 +15,7 @@ export const onContext = ({ id, setWgtState, state: { contextMenu } }, e) => {
 
 	const { clientX: x, clientY: y } = e;
 
-	const { items, mda } = contextMenu;
+	const { items, mda, itemHeight } = contextMenu;
 
 	setWgtState('CONTEXT1', {
 		display: true,
@@ -23,7 +23,8 @@ export const onContext = ({ id, setWgtState, state: { contextMenu } }, e) => {
 		y,
 		source: id,
 		items,
-		mda
+		mda,
+		itemHeight
 	});
 
 	e.preventDefault();

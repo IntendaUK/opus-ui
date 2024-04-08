@@ -1,4 +1,4 @@
-//The formatters here forllow the moment.js format
+//The formatters here follow the moment.js format
 // Read more here: https://devhints.io/datetime
 
 //Helpers
@@ -107,7 +107,7 @@ export const m = date => {
 };
 
 export const mm = date => {
-	return format(date, 'minute', '2-digit');
+	return format(date, 'minute', '2-digit').padStart(2, '0');
 };
 
 //  Second
@@ -117,7 +117,7 @@ export const s = date => {
 };
 
 export const ss = date => {
-	return format(date, 'second', '2-digit');
+	return format(date, 'second', '2-digit').padStart(2, '0');
 };
 
 // AM / PM

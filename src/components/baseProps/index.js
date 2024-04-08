@@ -446,6 +446,11 @@ const props = {
 		type: 'string',
 		desc: 'When set, overrides the class name that is applied to components when they are loading (which is defaulted to "loading"). This can be used to force components not to show a loading mask when they are loading'
 	},
+	style: {
+		type: 'object',
+		desc: 'Custom styles to apply to the component',
+		spec: { '.cpnContainer': { p: { 'text-align': 'justify' } } }
+	},
 
 	//Below are classMapped properties
 	loading: {

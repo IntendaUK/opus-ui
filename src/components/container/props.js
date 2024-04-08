@@ -19,6 +19,24 @@ const props = {
 		desc: 'When true, hover styles will be applied to the container',
 		classMap: true
 	},
+	hoverPrps: {
+		type: 'object',
+		desc: 'A configuration object specifying which props should be set when hovering on and off the component',
+		spec: {
+			on: {
+				prpsIcon: {
+					value: 'content_copy',
+					color: 'primary'
+				}
+			},
+			off: {
+				prpsIcon: {
+					value: 'content_copy',
+					color: 'secondaryText'
+				}
+			}
+		}
+	},
 	canClick: {
 		type: 'boolean',
 		desc: 'When true, the container will be clickable',

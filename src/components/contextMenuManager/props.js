@@ -10,6 +10,10 @@ const props = {
 		type: 'array',
 		desc: 'Contains a list of items to be rendered inside the context menu. By default, when a record is selected, the action defined in the "script" field will be executed'
 	},
+	itemHeight: {
+		type: 'integer',
+		desc: 'The height of each item in the context in pixels'
+	},
 	mda: {
 		type: 'object',
 		desc: 'Custom metadata that should be rendered inside the context menu'

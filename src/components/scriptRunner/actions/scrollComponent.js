@@ -23,6 +23,9 @@ const scrollComponent = ({
 		? document.querySelector(targetSelector)
 		: document.getElementById(target);
 
+	if (!targetElement)
+		return;
+
 	targetElement.scrollTo({
 		behavior: smooth ? 'smooth' : 'auto',
 		top: scrollPositionY,

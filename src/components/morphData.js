@@ -6,6 +6,8 @@ const applyFilter = (filter, data) => {
 	const useOperator = operator.toLowerCase();
 
 	if (useOperator === 'contains')
+		return value.toLowerCase().includes(testValue.toLowerCase());
+	else if (operator === 'containsCase')
 		return value.includes(testValue);
 	else if (useOperator === 'equals')
 		return value === testValue;
