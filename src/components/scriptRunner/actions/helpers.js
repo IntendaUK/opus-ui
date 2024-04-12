@@ -1,4 +1,4 @@
-import { showNotification } from '../actions';
+import showNotification from './showNotification';
 
 export const buildWhereClause = filters => {
 	const whereClause = filters

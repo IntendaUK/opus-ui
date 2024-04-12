@@ -2,7 +2,7 @@
 import { clone } from '../../../system/helpers';
 
 //Actions
-import { setVariables } from '../actions';
+import { setVariables } from '../actions/variableActions';
 
 //Export
 const createVariableSnapshots = (props, script, snapshotKeys, triggerMsg) => {

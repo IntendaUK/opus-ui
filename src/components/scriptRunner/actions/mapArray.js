@@ -2,7 +2,7 @@
 import { clone } from '../../../system/helpers';
 
 //Helpers
-import { setVariables } from '../actions';
+import { setVariables } from './variableActions';
 import morphConfig, { getMorphedValue } from '../helpers/morphConfig';
 
 const mapArray = (config, script, props) => {

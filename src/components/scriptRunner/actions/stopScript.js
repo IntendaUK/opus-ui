@@ -1,5 +1,5 @@
 //Helpers
-import { applyComparison } from '../actions';
+import applyComparison from './applyComparison';
 
 //Actions
 const stopScript = ({ condition }, script, props) => {

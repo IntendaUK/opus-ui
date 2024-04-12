@@ -2,7 +2,7 @@
 import morphConfig from './morphConfig';
 
 //Actions
-import { applyComparison } from '../actions';
+import applyComparison from '../actions/applyComparison';
 
 //Internal
 const arrayFns = {

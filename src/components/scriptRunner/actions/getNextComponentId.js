@@ -2,7 +2,7 @@
 import { isIdInDom } from '../../../system/managers/scopeManager';
 
 //Helpers
-import { applyComparison } from '../actions';
+import applyComparison from './applyComparison';
 
 const getAllComponentIds = parentId => {
 	let parent = document;

@@ -2,7 +2,8 @@
 import { clone } from '../../../system/helpers';
 
 //Helpers
-import { setVariables, applyComparison } from '../actions';
+import applyComparison from './applyComparison';
+import { setVariables } from './variableActions';
 import morphConfig from '../helpers/morphConfig';
 
 const filterArray = (config, script, props) => {

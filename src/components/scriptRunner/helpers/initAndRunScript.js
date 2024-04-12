@@ -6,7 +6,7 @@ import { getPropertyContainer } from '../../../system/managers/propertyManager';
 import { clone } from '../../../system/helpers';
 
 //Actions
-import { setVariables as setVariablesBase } from '../actions';
+import { setVariables as setVariablesBase } from '../actions/variableActions';
 
 //Helpers
 import { runScript } from './runScript';

@@ -3,7 +3,7 @@ import performRequest from './performRequest';
 import { getDeepProperty } from '../../../system/helpers';
 
 //Config
-import { setVariable } from '../actions';
+import { setVariable } from './variableActions';
 
 //Cache
 import { getCache, setCache } from './actionCacheActions';
