@@ -80,6 +80,8 @@ export { default as DataLoaderHelper } from './components/dataLoaderHelper';
 
 export { registerComponentTypes } from './library/externalComponentTypes';
 
+export { registerExternalDataLocations } from './library/externalDataLocations';
+
 export const ThemedComponent = ({ mda }) => {
 	applyThemesToMdaPackage(mda);
 
