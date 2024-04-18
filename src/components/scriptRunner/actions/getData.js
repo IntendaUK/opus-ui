@@ -1,5 +1,5 @@
 //Config
-import { dataLocations } from '../../../config';
+import config from '../../../config';
 
 //Helpers
 import { getExternalDataLocations } from '../../../library/externalDataLocations';
@@ -14,7 +14,7 @@ export const getDataHelper = async (action, token) => {
 		...getExternalDataLocations()
 	};
 
-	const handlers = dataLocations.map(l => {
+	const handlers = config.dataLocations.map(l => {
 		const mapping = dataLocationsMap[l];
 
 		return mapping;
