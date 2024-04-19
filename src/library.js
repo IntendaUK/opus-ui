@@ -19,7 +19,9 @@ export { default as queryUrl } from './components/scriptRunner/actions/queryUrl'
 export { buildWhereClause } from './components/scriptRunner/actions/helpers';
 export { doesCollide } from './components/scriptRunner/actions/pathFinding/buildPathFindingMap';
 export { runScript } from './components/scriptRunner/interface';
-export { registerExternalAction } from './components/scriptRunner/actions';
+export {
+	registerExternalAction, setVariables
+} from './components/scriptRunner/actions';
 export { applyComparison } from './components/scriptRunner/actions';
 export { default as initAndRunScript } from './components/scriptRunner/helpers/initAndRunScript';
 export { default as showNotification } from './components/scriptRunner/actions/showNotification';
