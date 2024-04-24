@@ -37,10 +37,6 @@
 			"path": "src/components/scriptRunner"
 		},
 		{
-			"name": "shared",
-			"path": "src/components/shared"
-		},
-		{
 			"name": "systemModal",
 			"path": "src/components/systemModal"
 		},
