@@ -1,17 +1,17 @@
 {
 	"name": "@intenda/opus-ui",
-	"version": "1.1.4",
+	"version": "1.1.5",
 	"private": false,
 	"main": "dist/library.js",
 	"homepage": "https://opus-ui.com",
 	"keywords": [
-	    "opus-ui",
-	    "low-code",
-	    "dsl",
-	    "library",
-	    "engine",
-	    "opus"
-	  ],
+		"opus-ui",
+		"low-code",
+		"dsl",
+		"library",
+		"engine",
+		"opus"
+	],
 	"dependencies": {
 		"@babel/core": "^7.22.1",
 		"@babel/preset-env": "^7.22.2",
