@@ -58,7 +58,7 @@ const loadAndSetTheme = (name, path) => {
 	});
 
 	if (name === 'system')
-		theme.opusVersion = `${theme.deploymentVersion }.${packageConfig.version}`;
+		theme.opusVersion = `${packageConfig.version}`;
 
 	setThemeOverrides(name, theme);
 
