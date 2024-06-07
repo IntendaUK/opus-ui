@@ -6,29 +6,103 @@ export const removeStyleTag = id => {
 	el.parentNode.removeChild(el);
 };
 
-const buildCss = (id, styles, isOuter = false) => {
-	let res = '';
+const recurseCss = (parentSelector, resultObj, cssObj) => {
+	const findEntry = selector => {
+		let entry = resultObj[selector];
+		if (!entry) {
+			entry = {};
 
-	if (isOuter) {
-		res = `[id="${id}"]${Object.keys(styles)[0]} {`;
+			resultObj[selector] = entry;
+		}
 
-		styles = Object.values(styles)[0];
-	}
+		return entry;
+	};
 
-	const entries = Object.entries(styles);
-	entries.forEach(([k, v]) => {
-		const typeV = typeof(v);
+	Object.entries(cssObj).forEach(([k, v]) => {
+		const type = typeof(v);
 
-		if (v === null || v === undefined)
+		if (v === undefined || v === null)
 			return;
+		else if (type === 'object') {
+			let childSelector = parentSelector;
 
-		if (typeV === 'object')
-			res += `${k} { ${buildCss(id, v)}`;
-		else
-			res += `${k}: ${v};`;
+			if (k.indexOf('@keyframes') === 0 || k.indexOf('@media') === 0) {
+				recurseCss(parentSelector, findEntry(k), v);
+
+				return;
+			} else if (k[0] === '&')
+				childSelector += k.substr(1);
+			else if (parentSelector === '')
+				childSelector += k;
+			else
+				childSelector += ` ${k}`;
+
+			recurseCss(childSelector, resultObj, v);
+
+			return;
+		}
+
+		findEntry(parentSelector)[k] = v;
 	});
+};
 
-	res = res + '}';
+const buildCssKeyframes = (selector, cssObj) => {
+	const inner = Object.entries(cssObj)
+		.map(([k, v]) => {
+			const attributes = Object.entries(v)
+				.map(([ik, iv]) => {
+					return `\t\t${ik}: ${iv};`;
+				})
+				.join('\r\n');
+
+			return `\t${k} {\r\n${attributes}\r\n\t}`;
+		})
+		.join('\r\n');
+
+	const res = `${selector} {\r\n${inner}\r\n}`;
+
+	return res;
+};
+
+const buildCssMediaQuery = (selectorPrefix, selector, cssObj) => {
+	const selectorInner = Object.keys(cssObj)[0];
+
+	const attributes = Object.entries(Object.values(cssObj)[0])
+		.map(([ik, iv]) => {
+			return `\t\t${ik}: ${iv};`;
+		})
+		.join('\r\n');
+
+	/* eslint-disable-next-line max-len */
+	return `${selector} {\r\n\t${selectorPrefix}${selectorInner} {\r\n${attributes}\r\n\t}\r\n}`;
+};
+
+const buildCss = (parentId, cssObj) => {
+	const resultObj = {};
+
+	const selectorPrefix = `[id="${parentId}"]`;
+
+	recurseCss('', resultObj, cssObj);
+
+	const res = Object.entries(resultObj)
+		.map(([k, v]) => {
+			if (k.indexOf('@keyframes') === 0)
+				return buildCssKeyframes(k, v);
+			else if (k.indexOf('@media') === 0)
+				return buildCssMediaQuery(selectorPrefix, k, v);
+
+			const attr = Object.entries(v)
+				.map(([ik, iv]) => {
+					return `\t${ik}: ${iv};`;
+				})
+				.join('\r\n');
+
+			if (k.indexOf('@keyframes') === 0)
+				return `${k} {\r\n${attr}\r\n}`;
+
+			return `${selectorPrefix}${k} {\r\n${attr}\r\n}`;
+		})
+		.join('\r\n\r\n');
 
 	return res;
 };
