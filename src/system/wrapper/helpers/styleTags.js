@@ -67,6 +67,9 @@ const buildCssKeyframes = (selector, cssObj) => {
 const buildCssMediaQuery = (selectorPrefix, selector, cssObj) => {
 	const selectorInner = Object.keys(cssObj)[0];
 
+	if (!selectorInner)
+		return;
+
 	const attributes = Object.entries(Object.values(cssObj)[0])
 		.map(([ik, iv]) => {
 			return `\t\t${ik}: ${iv};`;
@@ -102,6 +105,7 @@ const buildCss = (parentId, cssObj) => {
 
 			return `${selectorPrefix}${k} {\r\n${attr}\r\n}`;
 		})
+		.filter(f => f !== undefined)
 		.join('\r\n\r\n');
 
 	return res;
