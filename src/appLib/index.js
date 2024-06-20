@@ -1,9 +1,6 @@
 //React
 import React, { useEffect, useState, useContext } from 'react';
 
-//Fonts
-import 'typeface-roboto';
-
 //Styles
 import '../styles/main.css';
 import '../styles/mobile.css';
