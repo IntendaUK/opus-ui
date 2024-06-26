@@ -2,22 +2,14 @@
 import React from 'react';
 
 //External Helpers
-import { PopoverOwnEvents } from '@intenda/opus-ui';
-
-//Events
-import { onClick } from './events';
+import { Popover } from '@intenda/opus-ui';
 
 //Styles
 import './styles.css';
 
 //Exports
 export const Label = props => {
-	const { id, classNames, style, attributes, state } = props;
-	const { hyperlink, cpt } = state;
-
-	const popoverEvents = {};
-	if (hyperlink)
-		popoverEvents.onClick = onClick.bind(this, hyperlink);
+	const { id, classNames, style, attributes, state: { caption } } = props;
 
 	return (
 		<div
@@ -26,8 +18,8 @@ export const Label = props => {
 			style={style}
 			{...attributes}
 		>
-			<PopoverOwnEvents props={props} ownerOwnEvents={popoverEvents} />
-			{cpt}
+			<Popover props={props} />
+			{caption}
 		</div>
 	);
 };

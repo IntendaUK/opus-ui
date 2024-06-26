@@ -21,6 +21,10 @@
 			"path": "src/components/dataLoader"
 		},
 		{
+			"name": "label",
+			"path": "src/components/label"
+		},
+		{
 			"name": "localStorageManager",
 			"path": "src/components/localStorageManager"
 		},
