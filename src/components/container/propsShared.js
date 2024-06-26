@@ -207,6 +207,11 @@ const props = {
 			if (state.padding)
 				return mapToSize(v, state, spec, themes);
 		}
+	},
+	cloneChildrenBeforeMount: {
+		type: 'boolean',
+		desc: 'When set to true, Wrapper will be sent cloned metadata. Set this to true when children will have extraWgts (or other non-primitive props) that should not persist between mounts',
+		dft: false
 	}
 };
 

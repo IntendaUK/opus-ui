@@ -3,18 +3,30 @@ import React from 'react';
 
 //External Helpers
 import wrapWidgets from '../wrapWidgets';
+import { clone } from '../../system/helpers';
 
 //Styles
 import './styles.css';
 
 //Helpers
 const getWgts = props => {
-	const { children, state: { vis, renderChildren, renderChildrenWhenInvis } } = props;
+	const { ChildWgt, wgts, children, state: { vis, renderChildren, renderChildrenWhenInvis, cloneChildrenBeforeMount } } = props;
 
 	if (!renderChildren || (!vis && !renderChildrenWhenInvis))
 		return null;
 
-	const result = wrapWidgets(props);
+	let useWgts = [];
+	if (wgts?.length) {
+		if (!cloneChildrenBeforeMount)
+			useWgts.push(...wgts);
+		else
+			useWgts.push(...clone([], wgts));
+	}
+
+	const result = wrapWidgets({
+		ChildWgt,
+		wgts: useWgts
+	});
 
 	if (children) {
 		if (children.length)

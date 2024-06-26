@@ -10,6 +10,7 @@ import { Container } from '../../components/container';
 import { ContainerSimple } from '../../components/containerSimple';
 import { ContextMenuManager } from '../../components/contextMenuManager';
 import { DataLoader } from '../../components/dataLoader';
+import { Label } from '../../components/label';
 import { LocalStorageManager } from '../../components/localStorageManager';
 import { Modal } from '../../components/modal';
 import { Popup } from '../../components/popup';
@@ -22,6 +23,7 @@ import propsContainer from '../../components/container/props';
 import propsContainerSimple from '../../components/containerSimple/props';
 import propsContextMenuManager from '../../components/contextMenuManager/props';
 import propsDataLoader from '../../components/dataLoader/props';
+import propsLabel from '../../components/label/props';
 import propsLocalStorageManager from '../../components/localStorageManager/props';
 import propsModal from '../../components/modal/props';
 import propsPopup from '../../components/popup/props';
@@ -35,6 +37,7 @@ const components = {
 	containerSimple: ContainerSimple,
 	contextMenuManager: ContextMenuManager,
 	dataLoader: DataLoader,
+	label: Label,
 	localStorageManager: LocalStorageManager,
 	modal: Modal,
 	popup: Popup,
@@ -48,6 +51,7 @@ const propSpecs = {
 	containerSimple: propsContainerSimple,
 	contextMenuManager: propsContextMenuManager,
 	dataLoader: propsDataLoader,
+	label: propsLabel,
 	localStorageManager: propsLocalStorageManager,
 	modal: propsModal,
 	popup: propsPopup,
@@ -58,13 +62,6 @@ const propSpecs = {
 
 //Exports
 export const registerExternalTypes = externalTypes => {
-	if (!window.lll)
-		window.lll = [];
-
-	let found = window.lll.find(l => l === components);
-	if (!found)
-		window.lll.push(components);
-
 	externalTypes.forEach(({ type, component, propSpec }) => {
 		components[type] = component;
 		propSpecs[type] = propSpec;

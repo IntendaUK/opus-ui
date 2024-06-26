@@ -7,6 +7,7 @@ import { PopoverOwnEvents } from '../shared/popover';
 
 //External Helpers
 import wrapWidgets from '../wrapWidgets';
+import { clone } from '../../system/helpers';
 
 //Styles
 import './styles.css';
@@ -22,14 +23,27 @@ const ContainerContext = createContext('container');
 
 //Helpers
 const getWgts = ({ ChildWgt, children, wgts = [], state }) => {
-	const { vis, renderChildren, renderChildrenWhenInvis, extraWgts } = state;
+	const { vis, renderChildren, renderChildrenWhenInvis, extraWgts, cloneChildrenBeforeMount } = state;
 
 	if (!renderChildren || (!vis && !renderChildrenWhenInvis))
 		return null;
 
+	let useWgts = [];
+	if (!cloneChildrenBeforeMount) {
+		if (wgts?.length)
+			useWgts.push(...wgts);
+		if (extraWgts?.length)
+			useWgts.push(...extraWgts);
+	} else {
+		if (wgts?.length)
+			useWgts.push(...clone([], wgts));
+		if (extraWgts?.length)
+			useWgts.push(...clone([], extraWgts));
+	}
+
 	const result = wrapWidgets({
 		ChildWgt,
-		wgts: [...wgts, ...extraWgts]
+		wgts: useWgts
 	});
 
 	if (children) {

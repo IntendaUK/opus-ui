@@ -22,7 +22,7 @@ import overlayProps from './overlayProps';
 import animationProps from './animationProps';
 
 const props = {
-	//Below are standard component properties that perform various functions
+	//Below are system component properties that perform various functions
 	enabled: {
 		type: 'boolean',
 		desc: 'If true, the component will be enabled',
@@ -247,6 +247,12 @@ const props = {
 		desc: 'Sets the size of the background in px or relative to its parent container. See more at https://www.w3schools.com/cssref/css3_pr_background-size.php',
 		cssAttr: true,
 		cssAttrVal: mapToSize
+	},
+	color: {
+		type: 'string',
+		desc: 'The color of the component',
+		cssAttr: true,
+		cssAttrVal: mapToColor
 	},
 	overflow: {
 		type: 'string',
