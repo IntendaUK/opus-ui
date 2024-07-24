@@ -2,7 +2,7 @@
 import React from 'react';
 
 //External Helpers
-import { Popover } from "../shared/popover/index";
+import { Popover } from '../shared/popover/index';
 
 //Styles
 import './styles.css';
