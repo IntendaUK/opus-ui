@@ -24,7 +24,6 @@ export {
 } from './components/scriptRunner/actions';
 export { applyComparison } from './components/scriptRunner/actions';
 export { default as initAndRunScript } from './components/scriptRunner/helpers/initAndRunScript';
-export { default as showNotification } from './components/scriptRunner/actions/showNotification';
 export { addMdaPackage as loadMdaPackage } from './components/scriptRunner/actions/getMda/getMda';
 export {
 	default as morphConfig, fixScopeIds

@@ -69,7 +69,6 @@ export { default as setPageFavicon } from './actions/setPageFavicon';
 export { default as setPageTitle } from './actions/setPageTitle';
 export { default as setTagState } from './actions/setTagState';
 export { default as showDialog } from './actions/showDialog';
-export { default as showNotification } from './actions/showNotification';
 export { default as spliceArray } from './actions/spliceArray';
 export { default as splitString } from './actions/splitString';
 export { default as stringify } from './actions/stringify';
