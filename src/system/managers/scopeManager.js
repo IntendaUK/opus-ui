@@ -261,7 +261,19 @@ export const addNodeToDom = mda => {
 };
 
 export const getScopedId = (scopeIdToken, selfId) => {
-	const [scope, relId] = scopeIdToken.split('||').join('').split('.');
+	let mustBeLocal = false;
+	let scope;
+	let relId;
+
+	const split = scopeIdToken.replaceAll('||', '').split('.');
+	if (split[0] === 'local' && split.length > 1) {
+		mustBeLocal = true;
+		scope = split[1];
+		relId = split[2];
+	} else {
+		scope = split[0];
+		relId = split[1];
+	}
 
 	let scopeOwner;
 
@@ -273,6 +285,9 @@ export const getScopedId = (scopeIdToken, selfId) => {
 			scopeOwner = selfNode;
 		else
 			scopeOwner = selfNode.parentScopeOwners.find(o => o.ownScopes.includes(scope));
+
+		if (!scopeOwner && mustBeLocal)
+			return scopeIdToken;
 	}
 
 	if (!scopeOwner) {
