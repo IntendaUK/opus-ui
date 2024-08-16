@@ -1,6 +1,6 @@
 {
 	"name": "@intenda/opus-ui",
-	"version": "1.4.2",
+	"version": "1.0.0-test-load-ensemble-2",
 	"type": "module",
 	"homepage": "https://opus-ui.com",
 	"files": [

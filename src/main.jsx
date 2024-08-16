@@ -23,16 +23,24 @@ const root = createRoot(document.getElementById('root'));
 
 root.render(
 	<Opus
-		startupComponent={<OpusUI />}
-		registerComponentTypes={[{
-			type: 'label',
-			component: Label,
-			propSpec: {
-				caption: {
-					type: 'string',
-					dft: ''
+		startupMda={{
+			type: 'container',
+			prps: {
+				canClick: true,
+				includeClickedArgs: ['mousePos'],
+				fireScript: {
+					actions: [{
+						type: 'log',
+						msg: '{{variable.clickedArgs}}'
+					}]
 				}
-			}
-		}]}
+			},
+			wgts: [{
+				type: 'label',
+				prps: {
+					cpt: 'click me'
+				}
+			}]
+		}}
 	/>
 );

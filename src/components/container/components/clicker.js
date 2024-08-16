@@ -5,27 +5,37 @@ import { useContext, useEffect } from 'react';
 import { createContext } from '../../../system/managers/appManager';
 
 //External Helpers
-import { runScript } from '../../scriptRunner/interface';
+import initAndRunScript from '../../scriptRunner/helpers/initAndRunScript';
 
 //Context
 const ContainerContext = createContext('container');
 
 //Events
 const onClickChanged = ({ id, setState, state }) => {
-	const { clicked, handlerOnClick, fireScript } = state;
+	const { clicked, clickedArgs, handlerOnClick, fireScript } = state;
 
 	if (!clicked)
 		return;
 
 	if (fireScript) {
 		fireScript.ownerId = id;
-		runScript(fireScript);
+
+		initAndRunScript({
+			script: fireScript,
+			setVariables: { clickedArgs },
+			isRootScript: true
+		});
 	}
 
 	if (handlerOnClick)
 		handlerOnClick();
 
-	setTimeout(() => setState({ clicked: false }));
+	setTimeout(() => {
+		setState({
+			clicked: false,
+			deleteKeys: [ 'clickedArgs' ]
+		})
+	});
 };
 
 //Components

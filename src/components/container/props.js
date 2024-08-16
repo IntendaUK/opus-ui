@@ -131,6 +131,11 @@ const props = {
 		desc: 'When true, the container is being hovered on',
 		internal: true,
 		dft: ({ canHover }) => canHover ? false : undefined
+	},
+	includeClickedArgs: {
+		type: 'array',
+		desc: 'When set, defines extra properties to set as the "clickedArgs" variable when running the fireScript for a clickable container',
+		spec: ['mousePos']
 	}
 };
 
