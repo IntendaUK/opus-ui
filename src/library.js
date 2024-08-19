@@ -75,6 +75,7 @@ export { default as dateFormatter } from './helpers/dateFormatter';
 export { format } from './components/helpers';
 
 export { getPropSpecs } from './system/managers/componentManager';
+export { default as componentBaseProps } from './components/baseProps';
 
 export { default as validate } from './validation/validate';
 
