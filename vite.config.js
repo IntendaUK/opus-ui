@@ -22,7 +22,7 @@ const customCopyPlugin = () => {
 
 					await fs.mkdir(path.dirname(destPath), { recursive: true });
 
-					await fs.copyFile(file, destPath.replace('/', '\\'));
+					await fs.copyFile(file, destPath);
 				}));
 			};
 
