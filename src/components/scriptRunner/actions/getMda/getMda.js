@@ -123,13 +123,26 @@ export const getMdaHelper = action => {
 };
 
 export const setMdaPackage = packageContents => {
-	mdaPackage.contents = packageContents;
+	if (!mdaPackage.contents) {
+		mdaPackage.contents = { dashboard: {}, theme: {} };
+	}
+	Object.entries(packageContents).forEach(([k, v]) => {
+		Object.assign(mdaPackage.contents[k], v);
+	});
+
 	mdaPackage.loaded = true;
+};
+
+export const loadEnsemble = ({ name, ensemble }) => {
+	if (!mdaPackage.contents)
+		mdaPackage.contents = { dashboard: {}, theme: {} };
+
+	mdaPackage.contents.dashboard[name] = ensemble;
 };
 
 export const addMdaPackage = ({ path, contents }) => {
 	if (!mdaPackage.contents)
-		mdaPackage.contents = { dashboard: {} };
+		mdaPackage.contents = { dashboard: {}, theme: {} };
 
 	contents = JSON.parse(
 		JSON.stringify(contents)
@@ -151,3 +164,21 @@ export const addMdaPackage = ({ path, contents }) => {
 };
 
 export const getMdaPackage = () => mdaPackage.contents;
+
+export const setMdaAtPath = ({ type, key, mda }) => {
+	const accessor = `${type}/${key}.json`.split('/');
+
+	let res = mdaPackage.contents;
+
+	const lastEntry = accessor[accessor.length - 1];
+	accessor.splice(accessor.length - 1, 1);
+
+	accessor.forEach(a => {
+		if (!res)
+			return;
+
+		res = res[a];
+	});
+
+	res[lastEntry] = mda;
+};
