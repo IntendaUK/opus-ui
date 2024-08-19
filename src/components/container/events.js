@@ -1,12 +1,23 @@
 import * as ReactDOM from 'react-dom';
 
-export const onClick = ({ setState, state: { canClick, clicked } }, e) => {
+export const onClick = ({ setState, state: { canClick, clicked, includeClickedArgs } }, e) => {
 	if (!canClick || clicked)
 		return;
 
 	e.stopPropagation();
 
-	setState({ clicked: true });
+	const newState = { clicked: true };
+
+	if (includeClickedArgs?.includes('mousePos')) {
+		newState.clickedArgs = {
+			mousePos: {
+				x: e.clientX,
+				y: e.clientY
+			}
+		};
+	}
+
+	setState(newState);
 };
 
 export const onContext = ({ id, setWgtState, state: { contextMenu } }, e) => {
