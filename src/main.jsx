@@ -1,13 +1,55 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
-import Opus, { Component } from './library';
+import Opus, { ThemedComponent, loadEnsemble, buildThemes, applyThemesToMdaPackage, getMdaPackage } from './library';
+
+const onMount = () => {
+	loadEnsemble({
+		name: 'a',
+		ensemble: {
+			dashboard: {},
+			themes: {
+				'a.json': {
+					b: '#FF0000'
+				}
+			}
+		}
+	});
+
+	buildThemes({ themes: ['a'], themeSets: [] })
+
+	const mdaPackage = getMdaPackage();
+	applyThemesToMdaPackage(mdaPackage);
+};
 
 const OpusUI = () => {
+	useEffect(onMount, []);
+
 	return (
 		<div>
-			<Component mda={{
-				type: 'label',
-				prps: { caption: 'Opus UI: Hit the perfect pitch between traditional development and low-code' }
+			<ThemedComponent mda={{
+				type: 'container',
+				prps: {
+					canClick: true,
+					fireScript: {
+						actions: [{
+							type: 'setState',
+							key: 'extraWgts',
+							value: [{
+								type: 'label',
+								prps: {
+									caption: 'yo',
+									backgroundColor: '{theme.a.b}'
+								}
+							}]
+						}]
+					}
+				},
+				wgts: [{
+					type: 'label',
+					prps: {
+						caption: 'click me'
+					}
+				}]
 			}} />
 		</div>
 	);

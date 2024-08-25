@@ -137,7 +137,16 @@ export const loadEnsemble = ({ name, ensemble }) => {
 	if (!mdaPackage.contents)
 		mdaPackage.contents = { dashboard: {}, theme: {} };
 
-	mdaPackage.contents.dashboard[name] = ensemble;
+	mdaPackage.contents.dashboard[name] = ensemble.dashboard;
+
+	if (ensemble.themes) {
+		Object.entries(ensemble.themes).forEach(([k, v]) => {
+			if (mdaPackage.contents.theme[k])
+				Object.assign(mdaPackage.contents.theme[k], v);
+			else
+				mdaPackage.contents.theme[k] = v;
+		});
+	}
 };
 
 export const addMdaPackage = ({ path, contents }) => {

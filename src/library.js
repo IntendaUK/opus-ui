@@ -3,6 +3,7 @@ import React from 'react';
 
 //Helpers
 import applyThemesToMdaPackage from './app/components/helpers/applyThemesToMdaPackage';
+export { default as applyThemesToMdaPackage } from './app/components/helpers/applyThemesToMdaPackage';
 
 //System
 import { Wrapper } from './system/wrapper/wrapper';
@@ -29,6 +30,7 @@ export { loadEnsemble, getMdaHelper as getMda, setMdaAtPath } from './components
 export {
 	default as morphConfig, fixScopeIds
 } from './components/scriptRunner/helpers/morphConfig';
+export { buildThemes } from './app/components/themeLoader';
 
 export {
 	getThemeValue, getThemes
