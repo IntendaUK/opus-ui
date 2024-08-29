@@ -5,6 +5,7 @@ import { mergeMap, retry } from 'rxjs/operators';
 
 //System Helpers
 import { getItem, addItem } from '../../../../system/managers/localStorageManager';
+import { clone } from '../../../../system/helpers';
 import buildFileUrl from './buildFileUrl';
 
 //Config
@@ -124,18 +125,17 @@ export const getMdaHelper = action => {
 
 export const setMdaPackage = packageContents => {
 	if (!mdaPackage.contents) {
-		mdaPackage.contents = { dashboard: {}, theme: {} };
+		mdaPackage.contents = { dashboard: {}, data: {}, theme: {} };
 	}
-	Object.entries(packageContents).forEach(([k, v]) => {
-		Object.assign(mdaPackage.contents[k], v);
-	});
+
+	clone(mdaPackage.contents, packageContents);
 
 	mdaPackage.loaded = true;
 };
 
 export const loadEnsemble = ({ name, ensemble }) => {
 	if (!mdaPackage.contents)
-		mdaPackage.contents = { dashboard: {}, theme: {} };
+		mdaPackage.contents = { dashboard: {}, data: {}, theme: {} };
 
 	mdaPackage.contents.dashboard[name] = ensemble.dashboard;
 
@@ -151,7 +151,7 @@ export const loadEnsemble = ({ name, ensemble }) => {
 
 export const addMdaPackage = ({ path, contents }) => {
 	if (!mdaPackage.contents)
-		mdaPackage.contents = { dashboard: {}, theme: {} };
+		mdaPackage.contents = { dashboard: {}, data: {}, theme: {} };
 
 	contents = JSON.parse(
 		JSON.stringify(contents)

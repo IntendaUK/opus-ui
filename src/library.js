@@ -25,7 +25,7 @@ export {
 } from './components/scriptRunner/actions';
 export { applyComparison } from './components/scriptRunner/actions';
 export { default as initAndRunScript } from './components/scriptRunner/helpers/initAndRunScript';
-export { addMdaPackage as loadMdaPackage, getMdaPackage } from './components/scriptRunner/actions/getMda/getMda';
+export { addMdaPackage as loadMdaPackage, getMdaPackage, setMdaPackage } from './components/scriptRunner/actions/getMda/getMda';
 export { loadEnsemble, getMdaHelper as getMda, setMdaAtPath } from './components/scriptRunner/actions/getMda/getMda';
 export {
 	default as morphConfig, fixScopeIds
@@ -62,7 +62,7 @@ export { resolveThemeAccessor } from './system/managers/themeManager';
 
 export { default as useEffectSkipFirst } from './system/customHooks/useEffectSkipFirst';
 
-export { getScopedId } from './system/managers/scopeManager';
+export { getScopedId, getDom } from './system/managers/scopeManager';
 
 export { default as propsSharedContainer } from './components/container/propsShared';
 
@@ -76,7 +76,7 @@ export { default as dateFormatter } from './helpers/dateFormatter';
 
 export { format } from './components/helpers';
 
-export { getPropSpecs } from './system/managers/componentManager';
+export { getPropSpecs, applyPropSpecDefaults, getComponentTypes } from './system/managers/componentManager';
 export { default as componentBaseProps } from './components/baseProps';
 
 export { default as validate } from './validation/validate';
