@@ -10,10 +10,11 @@ const getComponentAtPosition = ({ x, y }) => {
 	document
 		.elementsFromPoint(x, y)
 		.forEach(e => {
-			const useId = e.classList.contains('popoverRef') ? e.parentNode.id : e.id;
+			if (e.classList.contains('popoverRef'))
+				return;
 
-			if (dom.some(d => d.id === useId))
-				res.push(useId);
+			if (dom.some(d => d.id === e.id))
+				res.push(e.id);
 		});
 
 	return res;

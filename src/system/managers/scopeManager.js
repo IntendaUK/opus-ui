@@ -193,7 +193,7 @@ const addNodeToDomTree = node => {
 };
 
 export const addNodeToDom = mda => {
-	const { id, relId, parentId, scope } = mda;
+	const { id, relId, parentId, scope, namespace } = mda;
 
 	const exists = findNodeInDomTree(id);
 	if (exists)
@@ -231,7 +231,8 @@ export const addNodeToDom = mda => {
 		ownScopes,
 		parentScopeOwners,
 		childNodesWithRelIds,
-		cachedInParents
+		cachedInParents,
+		namespace
 	};
 
 	dom.push(node);
@@ -427,3 +428,12 @@ export const isIdInDom = id => {
 };
 
 export const getDom = () => dom;
+
+export const getNodeNamespace = id => {
+	let node = dom.find(d => d.id === id);
+
+	while (node !== undefined && !node.namespace)
+		node = node.parentNode;
+
+	return node?.namespace;
+};

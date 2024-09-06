@@ -1,7 +1,10 @@
-import React from 'react';
+//React
 import { createRoot } from 'react-dom/client';
+
+//System
 import Opus, { Component } from './library';
 
+//Custom Component
 const OpusUI = () => {
 	return (
 		<div>
@@ -13,26 +16,11 @@ const OpusUI = () => {
 	);
 };
 
-const Label = ({ state: { caption } }) => {
-	return (
-		<span>{caption}</span>
-	);
-};
-
+//Setup
 const root = createRoot(document.getElementById('root'));
 
 root.render(
 	<Opus
 		startupComponent={<OpusUI />}
-		registerComponentTypes={[{
-			type: 'label',
-			component: Label,
-			propSpec: {
-				caption: {
-					type: 'string',
-					dft: ''
-				}
-			}
-		}]}
 	/>
 );

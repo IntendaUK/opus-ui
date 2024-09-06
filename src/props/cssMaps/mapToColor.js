@@ -1,5 +1,13 @@
+import { getNodeNamespace, getNamespace } from '../../library';
+
 const mapToColor = (propVal, fullState, propConfig, themes) => {
-	const { mapToTheme = 'colors' } = propConfig;
+	let { mapToTheme = 'colors' } = propConfig;
+
+	const namespaceName = getNodeNamespace(fullState.id);
+	if (namespaceName) {
+		const namespace = getNamespace(namespaceName);
+		mapToTheme = namespace.themeOverrides[mapToTheme] ?? mapToTheme;
+	}
 
 	const keyExists = themes?.[mapToTheme]?.[propVal] !== undefined;
 

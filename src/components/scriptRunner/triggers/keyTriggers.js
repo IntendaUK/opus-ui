@@ -117,3 +117,27 @@ export const onGlobalKeyDown = (config, props, script, context) => {
 
 	return unsubs;
 };
+
+export const onGlobalKeyUp = (config, props, script, context) => {
+	const consumeEventOnUse = config.consumeEventOnUse ?? false;
+
+	const unsubs = subscribeToGlobalEvent('onGlobalKeyUp', script.ownerId, e => {
+		if (!shouldFire(config, props, script, e))
+			return false;
+
+		initAndRunScript({
+			script,
+			props,
+			context,
+			setVariables: {
+				triggeredKey: e.key,
+				triggeredKeyCode: e.keyCode
+			},
+			isRootScript: true
+		});
+
+		return consumeEventOnUse;
+	});
+
+	return unsubs;
+};

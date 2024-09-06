@@ -266,6 +266,33 @@ const triggers = [
 		]
 	},
 	{
+		key: 'onGlobalKeyUp',
+		desc: 'A trigger which will fire when any key is de-pressed on the keyboard, which is outside the context of this component',
+		type: 'string',
+		keys: [
+			{
+				key: 'source',
+				desc: 'The id (static or scoped) of the component that the trigger will listen on',
+				type: 'string'
+			},
+			{
+				key: 'match',
+				desc: 'A list of comparisons that are matched against, when determining if the trigger should run',
+				type: 'array'
+			},
+			{
+				key: 'matchEvaluation',
+				desc: 'A type of evaluation that should be performed for the match e.g. "some", "none" etc',
+				type: 'string'
+			},
+			{
+				key: 'consumeEventOnUse',
+				desc: 'When set to true, the event will consume. For example, when consuming F5, the browser will not refresh',
+				type: 'boolean'
+			}
+		]
+	},
+	{
 		key: 'onFocus',
 		desc: 'A trigger which will fire when a component is focused',
 		type: 'string',

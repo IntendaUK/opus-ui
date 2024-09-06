@@ -5,6 +5,7 @@ import { mergeMap, retry } from 'rxjs/operators';
 
 //System Helpers
 import { getItem, addItem } from '../../../../system/managers/localStorageManager';
+import { clone } from '../../../../system/helpers';
 import buildFileUrl from './buildFileUrl';
 
 //Config
@@ -13,6 +14,10 @@ import { useCachedMda, getMdaTimeoutMs, getMdaRetries } from '../../../../config
 const mdaPackage = {
 	loaded: false,
 	package: null
+};
+
+const namespaces = {
+	contents: null
 };
 
 //Helpers
@@ -122,27 +127,84 @@ export const getMdaHelper = action => {
 	return mda;
 };
 
+const setNamespaces = () => {
+	namespaces.contents = {};
+
+	const recurse = (obj, path = [], currentNamespace) => {
+		if (obj.namespace !== undefined)
+			currentNamespace = obj.namespace;
+
+		const nodeNamespaces = obj['namespaces.json'];
+		if (nodeNamespaces !== undefined) {
+			Object.assign(namespaces.contents, nodeNamespaces);
+
+			const foundEntry = Object.entries(nodeNamespaces).find(([, v]) => {
+				return v.applyToAllChildren === true;
+			});
+			if (foundEntry)
+				currentNamespace = foundEntry[0];
+		}
+
+		Object.entries(obj).forEach(([k, v]) => {
+			const type = typeof(v);
+
+			if (type !== 'object' || v === null || k === 'namespaces.json')
+				return;
+
+			if (v.prps !== undefined || v.traitPrps !== undefined || v.type !== undefined) {
+				if (v.namespace === undefined)
+					v.namespace = currentNamespace;
+
+				return;
+			}
+
+			recurse(v, [...path, k], currentNamespace);
+		});
+	};
+
+	recurse(mdaPackage.contents.dashboard);
+};
+
+const setMdaPackageDefault = () => {
+	if (mdaPackage.contents !== undefined)
+		return;
+
+	mdaPackage.contents = {
+		dashboard: {},
+		data: {},
+		theme: {}
+	};
+};
+
 export const setMdaPackage = packageContents => {
-	if (!mdaPackage.contents) {
-		mdaPackage.contents = { dashboard: {}, theme: {} };
-	}
-	Object.entries(packageContents).forEach(([k, v]) => {
-		Object.assign(mdaPackage.contents[k], v);
-	});
+	setMdaPackageDefault();
+
+	clone(mdaPackage.contents, packageContents);
 
 	mdaPackage.loaded = true;
+
+	setNamespaces();
 };
 
 export const loadEnsemble = ({ name, ensemble }) => {
-	if (!mdaPackage.contents)
-		mdaPackage.contents = { dashboard: {}, theme: {} };
+	setMdaPackageDefault();
 
-	mdaPackage.contents.dashboard[name] = ensemble;
+	mdaPackage.contents.dashboard[name] = ensemble.dashboard;
+
+	if (ensemble.themes) {
+		Object.entries(ensemble.themes).forEach(([k, v]) => {
+			if (mdaPackage.contents.theme[k])
+				Object.assign(mdaPackage.contents.theme[k], v);
+			else
+				mdaPackage.contents.theme[k] = v;
+		});
+	}
+
+	setNamespaces();
 };
 
 export const addMdaPackage = ({ path, contents }) => {
-	if (!mdaPackage.contents)
-		mdaPackage.contents = { dashboard: {}, theme: {} };
+	setMdaPackageDefault();
 
 	contents = JSON.parse(
 		JSON.stringify(contents)
@@ -161,6 +223,8 @@ export const addMdaPackage = ({ path, contents }) => {
 	Object.entries(contents).forEach(([k, v]) => {
 		accessor[`${k}.json`] = v;
 	});
+
+	setNamespaces();
 };
 
 export const getMdaPackage = () => mdaPackage.contents;
@@ -181,4 +245,8 @@ export const setMdaAtPath = ({ type, key, mda }) => {
 	});
 
 	res[lastEntry] = mda;
+};
+
+export const getNamespace = name => {
+	return namespaces.contents[name];
 };

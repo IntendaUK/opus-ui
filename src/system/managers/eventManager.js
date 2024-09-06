@@ -30,6 +30,17 @@ const onKeyDown = e => {
 		e.preventDefault();
 };
 
+const onKeyUp = e => {
+	if (e.target.localName !== 'body')
+		return;
+
+	//Source is undefined so event will be global
+	const consumed = emitEvent(undefined, 'onGlobalKeyUp', e);
+	if (consumed)
+		e.preventDefault();
+};
+
 export const init = () => {
 	document.addEventListener('keydown', onKeyDown);
+	document.addEventListener('keyup', onKeyUp);
 };
