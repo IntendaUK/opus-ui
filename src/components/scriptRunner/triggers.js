@@ -21,7 +21,7 @@ export { default as onUnmount } from './triggers/onUnmount';
 export { default as onWindowResized } from './triggers/onWindowResized';
 
 export {
-	onKeyDown, onGlobalKeyDown
+	onKeyDown, onGlobalKeyDown, onGlobalKeyUp
 } from './triggers/keyTriggers';
 
 const subToTag = (morphedConfig, props, script, context) => {

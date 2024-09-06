@@ -26,7 +26,7 @@ export {
 export { applyComparison } from './components/scriptRunner/actions';
 export { default as initAndRunScript } from './components/scriptRunner/helpers/initAndRunScript';
 export { addMdaPackage as loadMdaPackage, getMdaPackage, setMdaPackage } from './components/scriptRunner/actions/getMda/getMda';
-export { loadEnsemble, getMdaHelper as getMda, setMdaAtPath } from './components/scriptRunner/actions/getMda/getMda';
+export { loadEnsemble, getMdaHelper as getMda, setMdaAtPath, getNamespace } from './components/scriptRunner/actions/getMda/getMda';
 export {
 	default as morphConfig, fixScopeIds
 } from './components/scriptRunner/helpers/morphConfig';
@@ -62,7 +62,7 @@ export { resolveThemeAccessor } from './system/managers/themeManager';
 
 export { default as useEffectSkipFirst } from './system/customHooks/useEffectSkipFirst';
 
-export { getScopedId, getDom } from './system/managers/scopeManager';
+export { getScopedId, getDom, getNodeNamespace } from './system/managers/scopeManager';
 
 export { default as propsSharedContainer } from './components/container/propsShared';
 

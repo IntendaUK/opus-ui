@@ -11,7 +11,7 @@ import { init as initComponentManager,
 	registerExternalTypes,
 	applyPropSpecDefaults } from '../system/managers/componentManager';
 import { init as initEventManager } from '../system/managers/eventManager';
-import { setMdaPackage, getMdaHelper } from '../components/scriptRunner/actions/getMda/getMda';
+import { setMdaPackage, getMdaHelper, getMdaPackage } from '../components/scriptRunner/actions/getMda/getMda';
 import createFlow from '../components/scriptRunner/actions/createFlow';
 import { init as initThemeManager } from '../system/managers/themeManager';
 import applyThemesToMdaPackage from '../app/components/helpers/applyThemesToMdaPackage';
@@ -120,7 +120,10 @@ const onMount = (
 		theme
 	});
 
-	applyThemesToMdaPackage(mdaPackage);
+	//We need to load it again because the setMdaPackage function clones the contents of the package into an existing object
+	const finalMdaPackage = getMdaPackage();
+
+	applyThemesToMdaPackage(finalMdaPackage);
 	applyPropSpecDefaults();
 
 	const startupDashboard = getMdaHelper({

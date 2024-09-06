@@ -1,8 +1,16 @@
+import { getNodeNamespace, getNamespace } from '../../library';
+
 const mapToSize = (propVal, fullState, propConfig, themes) => {
-	const { mapToTheme = 'global' } = propConfig;
+	let { mapToTheme = 'global' } = propConfig;
 
 	if (!propVal.split)
 		return propVal;
+
+	const namespaceName = getNodeNamespace(fullState.id);
+	if (namespaceName) {
+		const namespace = getNamespace(namespaceName);
+		mapToTheme = namespace.themeOverrides[mapToTheme] ?? mapToTheme;
+	}
 
 	const result = propVal
 		.split(' ')
