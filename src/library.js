@@ -74,6 +74,8 @@ export { default as loadApp } from './library/loadApp';
 
 export { default as dateFormatter } from './helpers/dateFormatter';
 
+export { clearTraitCache } from './system/managers/traitManager/getTrait';
+
 export { format } from './components/helpers';
 
 export { getPropSpecs, applyPropSpecDefaults, getComponentTypes } from './system/managers/componentManager';

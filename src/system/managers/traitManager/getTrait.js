@@ -27,4 +27,8 @@ const getTrait = async key => {
 	return clone({}, trait);
 };
 
+export const clearTraitCache = () => {
+	traits.clear();
+};
+
 export default getTrait;
