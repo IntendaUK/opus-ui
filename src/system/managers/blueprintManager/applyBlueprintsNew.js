@@ -51,12 +51,19 @@ const isWildcard = key => {
 	return result;
 };
 
-const deletePrpIfMissing = (key, value, blueprint, blueprintPrps) => {
+const deletePrpIfMissing = (key, value, blueprint, blueprintPrps, recurseConfig) => {
 	//We never delete composite wildcards like %prefix%-%suffix%
 	// Which is why we have the second check in this 'if'
 	if (isWildcard(value) && value.split(value[0]).length === 3) {
 		const prp = value.substring(1, value.length - 1);
 		let prpValue = blueprintPrps[prp];
+
+		const prpName = prp.includes('.') ? prp.split('.')[0] : prp;
+		if (
+			recurseConfig?.ignoreUndefinedPrps === true &&
+			recurseConfig.traitPrpSpec[prpName] === undefined
+		)
+			return false;
 
 		if (prp.includes('.'))
 			prpValue = getDeepProperty(blueprintPrps, prp);
@@ -71,19 +78,20 @@ const deletePrpIfMissing = (key, value, blueprint, blueprintPrps) => {
 	return false;
 };
 
-export const recursivelyApplyValuePrps = (blueprint, blueprintPrps) => {
+export const recursivelyApplyValuePrps = (blueprint, blueprintPrps, recurseConfig) => {
 	const entries = Object.entries(blueprint);
 
 	for (const [key, value] of entries) {
 		const type = typeof (value);
 
 		if (type === 'object' && value !== null) {
-			recursivelyApplyValuePrps(value, blueprintPrps);
+			recursivelyApplyValuePrps(value, blueprintPrps, recurseConfig);
+
 			continue;
 		} else if (type !== 'string')
 			continue;
 
-		const valuePrpDeleted = deletePrpIfMissing(key, value, blueprint, blueprintPrps);
+		const valuePrpDeleted = deletePrpIfMissing(key, value, blueprint, blueprintPrps, recurseConfig);
 
 		if (valuePrpDeleted)
 			continue;
@@ -109,9 +117,9 @@ export const recursivelyApplyValuePrps = (blueprint, blueprintPrps) => {
 	}
 };
 
-export const recursivelyApplyKeyPrps = (blueprint, blueprintPrps) => {
+export const recursivelyApplyKeyPrps = (blueprint, blueprintPrps, recurseConfig) => {
 	Object.keys(blueprint).forEach(key => {
-		const keyPrpDeleted = deletePrpIfMissing(key, key, blueprint, blueprintPrps);
+		const keyPrpDeleted = deletePrpIfMissing(key, key, blueprint, blueprintPrps, recurseConfig);
 		if (!keyPrpDeleted && isWildcard(key)) {
 			const val = blueprint[key];
 			let newKey = key[0] === '$'

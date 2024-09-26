@@ -18,6 +18,21 @@ const applyTraitProps = (trait, traitPrps, traitPath, mda, context) => {
 		delete trait.acceptPrps;
 		applyPrpDefaults(traitPrps, traitPrpSpec);
 
+		const ignoreUndefinedPrps = trait.traitConfig?.ignoreUndefinedPrps ?? false;
+		delete trait.traitConfig;
+
+		/*
+			Traits that contain the following:
+				traitConfig: {
+					ignoreUndefinedPrps: true
+				}
+			Won't have accessors like %x% replaced if 'x' isn't part of the trait's acceptPrps
+		*/
+		const recurseConfig = {
+			traitPrpSpec,
+			ignoreUndefinedPrps
+		};
+
 		let allowedToMorph = [];
 		Object.entries(traitPrpSpec).forEach(([k, v]) => {
 			if (!v.morph)
@@ -26,8 +41,8 @@ const applyTraitProps = (trait, traitPrps, traitPath, mda, context) => {
 			allowedToMorph.push(k);
 			traitPrps[k] = v;
 		});
-		recursivelyApplyValuePrps(traitPrps, traitPrps);
-		recursivelyApplyKeyPrps(traitPrps, traitPrps);
+		recursivelyApplyValuePrps(traitPrps, traitPrps, recurseConfig);
+		recursivelyApplyKeyPrps(traitPrps, traitPrps, recurseConfig);
 
 		if (allowedToMorph.length > 0)
 			recurseProps(mda.id, traitPrps, context, allowedToMorph);
@@ -43,8 +58,8 @@ const applyTraitProps = (trait, traitPrps, traitPath, mda, context) => {
 
 		//Here we recurse over values first and then keys in a separate call otherwise we
 		//could reach situations where key variables cannot be found
-		recursivelyApplyValuePrps(trait, traitPrps);
-		recursivelyApplyKeyPrps(trait, traitPrps);
+		recursivelyApplyValuePrps(trait, traitPrps, recurseConfig);
+		recursivelyApplyKeyPrps(trait, traitPrps, recurseConfig);
 	}
 };
 
