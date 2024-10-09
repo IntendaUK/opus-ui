@@ -365,6 +365,35 @@ const props = {
 		cssAttr: true,
 		cssAttrVal: true
 	},
+	display: {
+		type: 'string',
+		desc: 'Specifies the display behavior (the type of rendering box) of an element. Common values include block, inline, flex, grid, and none. This property determines how an element is visually laid out on the page. See examples here: https://www.w3schools.com/cssref/pr_class_display.asp',
+		options: [
+			'block',
+			'flex',
+			'grid',
+			'inherit',
+			'initial',
+			'inline',
+			'inline-block',
+			'inline-flex',
+			'inline-grid',
+			'inline-table',
+			'list-item',
+			'none',
+			'table',
+			'table-caption',
+			'table-cell',
+			'table-column',
+			'table-column-group',
+			'table-footer-group',
+			'table-header-group',
+			'table-row',
+			'table-row-group'
+		],
+		cssAttr: true,
+		cssAttrVal: true
+	},
 	order: {
 		type: 'number',
 		desc: 'A number representing the order to layout an item in flex or grid container. See examples here: https://www.w3schools.com/cssref/css3_pr_order.asp',
@@ -438,6 +467,12 @@ const props = {
 	gridTemplate: {
 		type: 'string',
 		desc: 'Used to define the grid areas using templates. See examples here: https://www.w3schools.com/cssref/pr_grid-template.php',
+		cssAttr: true,
+		cssAttrVal: true
+	},
+	gridTemplateColumns: {
+		type: 'string',
+		desc: 'Defines the column structure of the grid layout. You can specify column sizes and the number of columns using values such as pixels, percentages, or fractional units (fr). See examples here: https://www.w3schools.com/cssref/pr_grid-template-columns.asp',
 		cssAttr: true,
 		cssAttrVal: true
 	},
