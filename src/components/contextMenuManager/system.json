@@ -1,6 +1,6 @@
 {
     "propSpecConfig": {
-        "path": "src/components/contextMenuManager/props.js",
+        "path": "dist/components/contextMenuManager/props.js",
         "functions": [],
         "dependents": []
     }

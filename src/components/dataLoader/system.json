@@ -1,18 +1,18 @@
 {
 	"propSpecConfig": {
-		"path": "src/components/dataLoader/props.js",
+		"path": "dist/components/dataLoader/props.js",
 		"functions": [],
 		"dependents": [
 			{
-				"path": "src/components/dataLoader/propsShared.js",
+				"path": "dist/components/dataLoader/propsShared.js",
 				"functions": [
 					{
 						"key": "filtersSet",
-						"path": "src/props/actions/filtersSet.js"
+						"path": "dist/props/actions/filtersSet.js"
 					},
 					{
 						"key": "filtersDelete",
-						"path": "src/props/actions/filtersDelete.js"
+						"path": "dist/props/actions/filtersDelete.js"
 					}
 				],
 				"dependents": []

@@ -1,6 +1,6 @@
 {
     "propSpecConfig": {
-        "path": "src/components/systemModal/props.js",
+        "path": "dist/components/systemModal/props.js",
         "functions": [],
         "dependents": []
     }

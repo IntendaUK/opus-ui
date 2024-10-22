@@ -1,6 +1,6 @@
 {
     "propSpecConfig": {
-        "path": "src/components/viewport/props.js",
+        "path": "dist/components/viewport/props.js",
         "functions": [],
         "dependents": []
     }

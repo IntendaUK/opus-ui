@@ -1,6 +1,6 @@
 {
     "propSpecConfig": {
-        "path": "src/components/scriptRunner/props.js",
+        "path": "dist/components/scriptRunner/props.js",
         "functions": [],
         "dependents": []
     }

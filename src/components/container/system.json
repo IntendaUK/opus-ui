@@ -1,27 +1,27 @@
 {
 	"propSpecConfig": {
-		"path": "src/components/container/props.js",
+		"path": "dist/components/container/props.js",
 		"functions": [
 			{
 				"key": "clone",
-				"path": "src/system/helpers.js"
+				"path": "dist/system/helpers.js"
 			},
 			{
 				"key": "generateGuid",
-				"path": "src/system/helpers.js"
+				"path": "dist/system/helpers.js"
 			}
 		],
 		"dependents": [
 			{
-				"path": "src/components/container/propsShared.js",
+				"path": "dist/components/container/propsShared.js",
 				"functions": [
 					{
 						"key": "mapToColor",
-						"path": "src/props/cssMaps/mapToColor.js"
+						"path": "dist/props/cssMaps/mapToColor.js"
 					},
 					{
 						"key": "mapToSize",
-						"path": "src/props/cssMaps/mapToSize.js"
+						"path": "dist/props/cssMaps/mapToSize.js"
 					}
 				],
 				"dependents": []

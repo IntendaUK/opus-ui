@@ -16,17 +16,22 @@ const customCopyPlugin = () => {
 			const copyFiles = async (srcDir, distDir, globPattern) => {
 				const filesToCopy = glob.sync(globPattern);
 
-				await Promise.all(filesToCopy.map(async file => {
-					const relativePath = path.relative(srcDir, file);
+				await Promise.all(filesToCopy.map(async dirent => {
+					const relativePath = path.relative(srcDir, dirent);
 					const destPath = path.join(distDir, relativePath);
 
-					await fs.mkdir(path.dirname(destPath), { recursive: true });
+					if ((await fs.lstat(dirent)).isDirectory()) {
+						await fs.mkdir(destPath, { recursive: true });
+					} else {
+						await fs.mkdir(path.dirname(destPath), { recursive: true });
 
-					await fs.copyFile(file, destPath);
+						await fs.copyFile(dirent, destPath);
+					}
 				}));
 			};
 
-			await copyFiles('src/components', 'dist/components', 'src/components/**/system.json');
+
+			await copyFiles('src/components', 'dist/components', 'src/components/**/*');
 			await copyFiles('', 'dist', 'lspconfig.json');
 		}
 	};

@@ -2,51 +2,51 @@
 	"components": [
 		{
 			"name": "baseProps",
-			"path": "src/components/baseProps"
+			"path": "dist/components/baseProps"
 		},
 		{
 			"name": "container",
-			"path": "src/components/container"
+			"path": "dist/components/container"
 		},
 		{
 			"name": "containerSimple",
-			"path": "src/components/containerSimple"
+			"path": "dist/components/containerSimple"
 		},
 		{
 			"name": "contextMenuManager",
-			"path": "src/components/contextMenuManager"
+			"path": "dist/components/contextMenuManager"
 		},
 		{
 			"name": "dataLoader",
-			"path": "src/components/dataLoader"
+			"path": "dist/components/dataLoader"
 		},
 		{
 			"name": "label",
-			"path": "src/components/label"
+			"path": "dist/components/label"
 		},
 		{
 			"name": "localStorageManager",
-			"path": "src/components/localStorageManager"
+			"path": "dist/components/localStorageManager"
 		},
 		{
 			"name": "modal",
-			"path": "src/components/modal"
+			"path": "dist/components/modal"
 		},
 		{
 			"name": "popup",
-			"path": "src/components/popup"
+			"path": "dist/components/popup"
 		},
 		{
 			"name": "scriptRunner",
-			"path": "src/components/scriptRunner"
+			"path": "dist/components/scriptRunner"
 		},
 		{
 			"name": "systemModal",
-			"path": "src/components/systemModal"
+			"path": "dist/components/systemModal"
 		},
 		{
 			"name": "viewport",
-			"path": "src/components/viewport"
+			"path": "dist/components/viewport"
 		}
 	]
 }

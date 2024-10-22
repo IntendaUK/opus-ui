@@ -1,10 +1,10 @@
 {
     "propSpecConfig": {
-        "path": "src/components/label/props.js",
+        "path": "dist/components/label/props.js",
         "functions": [
             {
                 "key": "mapToColor",
-                "path": "src/props/cssMaps/mapToColor.js"
+                "path": "dist/props/cssMaps/mapToColor.js"
             }
         ],
         "dependents": []

@@ -1,6 +1,6 @@
 {
     "propSpecConfig": {
-        "path": "src/components/localStorageManager/props.js",
+        "path": "dist/components/localStorageManager/props.js",
         "functions": [],
         "dependents": []
     }

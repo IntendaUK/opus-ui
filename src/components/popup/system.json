@@ -1,10 +1,10 @@
 {
     "propSpecConfig": {
-        "path": "src/components/popup/props.js",
+        "path": "dist/components/popup/props.js",
         "functions": [],
         "dependents": [
             {
-                "path": "src/components/popup/internalProps.js",
+                "path": "dist/components/popup/internalProps.js",
                 "functions": [],
                 "dependents": []
             }
