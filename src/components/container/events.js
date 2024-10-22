@@ -24,19 +24,22 @@ export const onContext = ({ id, setWgtState, state: { contextMenu } }, e) => {
 	if (!contextMenu)
 		return;
 
-	const { clientX: x, clientY: y } = e;
-
 	const { items, mda, itemHeight, stopPropagation } = contextMenu;
 
-	setWgtState('CONTEXT1', {
-		display: true,
-		x,
-		y,
-		source: id,
-		items,
-		mda,
-		itemHeight
-	});
+	if (mda !== undefined) {
+		const { clientX: x, clientY: y } = e;
+
+
+		setWgtState('CONTEXT1', {
+			display: true,
+			x,
+			y,
+			source: id,
+			items,
+			mda,
+			itemHeight
+		});
+	}
 
 	e.preventDefault();
 
