@@ -26,7 +26,7 @@ export const onContext = ({ id, setWgtState, state: { contextMenu } }, e) => {
 
 	const { clientX: x, clientY: y } = e;
 
-	const { items, mda, itemHeight } = contextMenu;
+	const { items, mda, itemHeight, stopPropagation } = contextMenu;
 
 	setWgtState('CONTEXT1', {
 		display: true,
@@ -39,6 +39,9 @@ export const onContext = ({ id, setWgtState, state: { contextMenu } }, e) => {
 	});
 
 	e.preventDefault();
+
+	if (stopPropagation)
+		e.stopPropagation();
 };
 
 export const onMouseOver = ({ setState, state: { canHover, hovered } }) => {
