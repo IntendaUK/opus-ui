@@ -15,7 +15,7 @@ const mockProps = {
 };
 
 //Helper
-const isConditionMet = async (condition, scopeAnchorId) => {
+const isConditionMet = (condition, scopeAnchorId) => {
 	const morphedCondition = morphConfig(condition, { ownerId: scopeAnchorId }, mockProps);
 
 	const { operator, source, key, value, compareValue, comparisons } = morphedCondition;

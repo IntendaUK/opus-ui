@@ -86,9 +86,7 @@ export const onStyleChanged = (id, state) => {
 	if (!style && !styleOverrides)
 		return;
 
-	const mergedStyles = {};
-	if (style)
-		clone(mergedStyles, style);
+	const mergedStyles = style;
 	if (styleOverrides)
 		clone(mergedStyles, styleOverrides);
 

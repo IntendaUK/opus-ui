@@ -1,13 +1,14 @@
 //React
-import React, { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import ReactDOM from 'react-dom';
 
 //System
 import { getInitialState, emitEvent, processQueue } from '../managers/flowManager/index';
+import { getFullPropSpec } from '../managers/componentManager';
 
 //Events
 import { onGetComponent, onMount, onNewProps, onStyleChanged } from './events';
-import { loadPropSpec, registerScripts } from './helpers';
+import { registerScripts } from './helpers';
 
 //Helpers
 import generateClassNames from './helpers/generateClassNames';
@@ -55,7 +56,7 @@ const WrapperInner = ({ mda, children, ctx, mdaString }) => {
 	const { id, type, container, wgts } = mda;
 	const { style, styleOverrides, updates } = cpnState;
 
-	const propSpec = useMemo(() => loadPropSpec(type), [type]);
+	const propSpec = useMemo(() => getFullPropSpec(type), [type]);
 
 	//Mount hook in charge of loading the component
 	const cbGetComponent = onGetComponent.bind(null, mda, ctx, setComponent);

@@ -134,7 +134,7 @@ export const recursivelyApplyKeyPrps = (blueprint, blueprintPrps, recurseConfig)
 	});
 };
 
-const applyBlueprints = async mda => {
+const applyBlueprints = mda => {
 	if (mda.applyBlueprint === false) {
 		delete mda.applyBlueprint;
 
@@ -147,7 +147,7 @@ const applyBlueprints = async mda => {
 		delete mda.blueprint;
 
 		const blueprintName = resolveThemeAccessor(nextBptName);
-		const blueprint = await getBlueprint(blueprintName);
+		const blueprint = getBlueprint(blueprintName);
 
 		const blueprintPrpSpec = blueprint.acceptPrps;
 		delete blueprint.acceptPrps;
@@ -182,7 +182,7 @@ const applyBlueprints = async mda => {
 		if (typeof (value) !== 'object' || value === null)
 			continue;
 
-		await applyBlueprints(value);
+		applyBlueprints(value);
 	}
 };
 

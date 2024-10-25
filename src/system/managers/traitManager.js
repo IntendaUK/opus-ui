@@ -111,7 +111,7 @@ const deleteAuthFieldsFromMda = (mda, auth) => {
 	});
 };
 
-export const applyTraits = async (mda, context) => {
+export const applyTraits = (mda, context) => {
 	const entries = Object.entries(mda);
 
 	for (let [k, v] of entries) {
@@ -122,7 +122,7 @@ export const applyTraits = async (mda, context) => {
 				const { trait = t, traitPrps = {}, condition, auth } = t;
 
 				if (condition) {
-					const shouldApply = await isConditionMet(condition, mda.parentId);
+					const shouldApply = isConditionMet(condition, mda.parentId);
 
 					if (!shouldApply)
 						continue;
@@ -130,13 +130,11 @@ export const applyTraits = async (mda, context) => {
 				if (trait.includes('%') || trait.includes('$'))
 					return;
 
-				const traitMda = await getTrait(trait);
-
-				const clonedTraitMda = clone({}, traitMda);
+				const clonedTraitMda = getTrait(trait);
 
 				applyTraitProps(clonedTraitMda, traitPrps, trait, mda, context);
 
-				await applyTraits(clonedTraitMda, context);
+				applyTraits(clonedTraitMda, context);
 
 				if (auth)
 					deleteAuthFieldsFromMda(mda, auth);
@@ -144,7 +142,7 @@ export const applyTraits = async (mda, context) => {
 				combineTraitAndMda(mda, clonedTraitMda);
 			}
 		} else if (typeof(v) === 'object' && !!v && !v.traits)
-			await applyTraits(v, context);
+			applyTraits(v, context);
 	}
 };
 

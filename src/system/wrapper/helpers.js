@@ -1,10 +1,7 @@
 //System
 import { emit } from '../managers/eventManager';
 import { getPropertyContainer } from '../managers/propertyManager';
-import { getComponent as getComponentFromManager, getPropSpec } from '../managers/componentManager';
-
-//System Helpers
-import { clone } from '../helpers';
+import { getComponent as getComponentFromManager } from '../managers/componentManager';
 
 //Components
 import ChildWgt from './childWgt';
@@ -14,9 +11,6 @@ import morphProps from './helpers/morphProps';
 import applyExtraProps from './helpers/applyExtraProps';
 import setAutoHoverPrps from './helpers/setAutoHoverPrps';
 import { registerScripts as registerScriptsBase } from '../../components/scriptRunner/interface';
-
-//Config
-import baseProps from '../../components/baseProps/index';
 
 export const applyPropSpec = ({ prps = {}, id, type }, propSpec) => {
 	//The first run ignores default values that are functions since
@@ -99,7 +93,7 @@ const warnDeprecations = ({ id, type, prps = {} }, propSpec) => {
 	});
 };
 
-const buildMorphProps = (props, result = [], path = []) => {
+export const buildMorphProps = (props, result = [], path = []) => {
 	Object.entries(props).forEach(([k, v]) => {
 		if (v?.indexOf && (v.indexOf('{{morph.') === 0 || v.indexOf('((morph.') === 0)) {
 			result.push([...path, k].join('.'));
@@ -135,21 +129,6 @@ export const getComponent = ({ type }, context, setComponent) => {
 	const Component = getComponentFromManager(type);
 
 	setComponent({ Component });
-};
-
-export const loadPropSpec = type => {
-	const props = clone({}, baseProps);
-
-	try {
-		const propSpec = getPropSpec(type);
-
-		//The props is a combination of the propSpec and baseProps but the propSpec should be able
-		// to override the baseProps
-		clone(props, propSpec);
-	} catch (e) {
-	}
-
-	return props;
 };
 
 export const getKey = ({ id, index }) => {

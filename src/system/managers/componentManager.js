@@ -4,6 +4,7 @@ import { init as initSetWgtState } from './stateManager/setWgtState';
 import { init as initGetListenerStates } from './flowManager/helpers/applyListenerStates';
 import { getTheme } from './themeManager';
 import { clone } from '../helpers';
+import baseProps from '../../components/baseProps/index';
 
 //Components
 import { Container } from '../../components/container';
@@ -60,11 +61,30 @@ const propSpecs = {
 	viewport: propsViewport
 };
 
+const fullPropSpecs = Object.fromEntries(
+	Object.entries(propSpecs).map(([componentType, propSpec]) => {
+		const fullPropSpec = {};
+		clone(fullPropSpec, baseProps);
+		clone(fullPropSpec, propSpec);
+
+		return [
+			componentType,
+			fullPropSpec
+		];
+	})
+);
+
 //Exports
 export const registerExternalTypes = externalTypes => {
 	externalTypes.forEach(({ type, component, propSpec }) => {
 		components[type] = component;
 		propSpecs[type] = propSpec;
+
+		const fullPropSpec = {};
+		clone(fullPropSpec, baseProps);
+		clone(fullPropSpec, propSpec);
+
+		fullPropSpecs[type] = fullPropSpec;
 	});
 };
 
@@ -85,6 +105,8 @@ export const applyPropSpecDefaults = () => {
 export const getComponent = type => components[type];
 
 export const getPropSpec = type => propSpecs[type];
+
+export const getFullPropSpec = type => fullPropSpecs[type];
 
 export const getPropSpecs = () => propSpecs;
 

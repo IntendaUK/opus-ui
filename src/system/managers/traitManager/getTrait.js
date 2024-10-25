@@ -12,11 +12,11 @@ export const setTrait = (name, trait) => {
 	traits.set(name, trait);
 };
 
-const getTrait = async key => {
+const getTrait = key => {
 	let trait = traits.get(key);
 
 	if (!trait) {
-		trait = await getMdaHelper({
+		trait = getMdaHelper({
 			type: 'dashboard',
 			key
 		});
