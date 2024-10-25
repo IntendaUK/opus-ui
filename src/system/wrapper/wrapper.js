@@ -68,8 +68,7 @@ const onMount = (mda, setCpnProps, cpnProps, setCpnState, cpnState) => {
 		attributes,
 		ChildWgt: ChildWgt.bind(null, id),
 		setState: stateManager.setSelfState.bind(null, id),
-		setWgtState: stateManager.setWgtState,
-		wgts
+		setWgtState: stateManager.setWgtState
 	});
 
 	const getHandler = (fn, ...rest) => fn.bind(null, cpnPropsNew, ...rest);
@@ -81,7 +80,7 @@ const onMount = (mda, setCpnProps, cpnProps, setCpnState, cpnState) => {
 
 
 const Wrapper = _props => {
-	const { mda: { type } } = _props;
+	const { mda: { type, wgts } } = _props;
 
 	const [cpnProps, setCpnProps] = useState({});
 	const [cpnState, setCpnState] = useState({ updates: 0 });
@@ -123,9 +122,8 @@ const Wrapper = _props => {
 	if (!cpnProps.id)
 		return null;
 
-	cpnProps.state = cpnState;
 
-	return <Component key={cpnProps.id} {...cpnProps} {...styles} classNames={classNames} />;
+	return <Component key={cpnProps.id} {...cpnProps} {...styles} classNames={classNames} state={cpnState} wgts={wgts} />;
 };
 
 export { Wrapper };
