@@ -15,7 +15,7 @@ import { stateManager } from '../managers/stateManager';
 import { getPropertyContainer } from '../managers/propertyManager';
 
 const onMount = (mda, setCpnProps, cpnProps, setCpnState, cpnState) => {
-	let { id, type, wgts } = mda;
+	let { id, wgts, type } = mda;
 
 	if (!id)
 		id = generateGuid();
@@ -40,8 +40,11 @@ const onMount = (mda, setCpnProps, cpnProps, setCpnState, cpnState) => {
 		delete mda.traitPrps;
 	}
 
-	while (mda.traits)
+	while (mda.traits) {
 		applyTraits(mda, {});
+
+		type = mda.type;
+	}
 
 	const propSpec = getFullPropSpec(type);
 

@@ -8,6 +8,7 @@ loadMdaPackage({
 	path: 'trait',
 	contents: {
 		index: {
+			type: 'containerSimple',
 			prps: {
 				width: '1%',
 				height: '100%'
@@ -41,7 +42,6 @@ for (let i = 0; i < 10; i++) {
 
 	for (let j = 0; j < 10; j++) {
 		row.wgts.push({
-			type: 'containerSimple',
 			traits: [{
 				trait: 'trait/index',
 				traitPrps: {}
