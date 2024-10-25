@@ -122,8 +122,10 @@ const Wrapper = _props => {
 	if (!cpnProps.id)
 		return null;
 
+	cpnProps.state = cpnState;
+	cpnProps.wgts = wgts;
 
-	return <Component key={cpnProps.id} {...cpnProps} {...styles} classNames={classNames} state={cpnState} wgts={wgts} />;
+	return <Component key={cpnProps.id} {...cpnProps} {...styles} classNames={classNames} />;
 };
 
 export { Wrapper };
