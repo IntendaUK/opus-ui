@@ -53,11 +53,11 @@ const onMount = (mda, setCpnProps, cpnProps, setCpnState, cpnState) => {
 	cpnStateNew.type = type
 	cpnStateNew.updates = cpnState.updates;
 	cpnStateNew._genStyles = true;
+	cpnStateNew._genClassNames = true;
 
 	stateManager.initState(id, setCpnState, cpnState);
 	stateManager.setComponentType(id, type)
 
-	const classNames = generateClassNames(cpnStateNew, propSpec);
 	const attributes = generateAttributes(cpnStateNew);
 
 	const cpnPropsNew = getPropertyContainer(id);
@@ -65,7 +65,6 @@ const onMount = (mda, setCpnProps, cpnProps, setCpnState, cpnState) => {
 	Object.assign(cpnPropsNew, {
 		id,
 		type,
-		classNames,
 		attributes,
 		ChildWgt: ChildWgt.bind(null, id),
 		setState: stateManager.setSelfState.bind(null, id),
@@ -87,29 +86,46 @@ const Wrapper = _props => {
 	const [cpnProps, setCpnProps] = useState({});
 	const [cpnState, setCpnState] = useState({ updates: 0 });
 	const [styles, setStyles] = useState();
+	const [classNames, setClassNames] = useState();
 
 	const Component = useMemo(() => getComponent(type), [type]);
 
 	useEffect(onMount.bind(null, _props.mda, setCpnProps, cpnProps, setCpnState, cpnState), []);
+
+	const fullPropSpec = useMemo(() => getFullPropSpec(cpnState.type), [cpnState.type]);
+
 	useEffect(() => {
-		if (!cpnProps.id || !cpnState._genStyles)
+		if (!cpnState._genStyles)
 			return;
 
-		const styles = generateStyles(cpnState, getFullPropSpec(cpnState.type));
+		const styles = generateStyles(cpnState, fullPropSpec);
 
 		setStyles(styles);
 
 		cpnProps.setState({
 			_genStyles: false
 		});
-	}, [cpnState._genStyles, cpnProps.setState]);
+	}, [cpnState._genStyles]);
+
+	useEffect(() => {
+		if (!cpnState._genClassNames)
+			return;
+
+		const classNames = generateClassNames(cpnState, fullPropSpec);
+
+		setClassNames(classNames);
+
+		cpnProps.setState({
+			_genClassNames: false
+		});
+	}, [cpnState._genClassNames]);
 
 	if (!cpnProps.id)
 		return null;
 
 	cpnProps.state = cpnState;
 
-	return <Component key={cpnProps.id} {...cpnProps} {...styles} />;
+	return <Component key={cpnProps.id} {...cpnProps} {...styles} classNames={classNames} />;
 };
 
 export { Wrapper };

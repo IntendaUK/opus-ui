@@ -117,6 +117,16 @@ const getNextStateComplex = (propSpec, prev, newState, fullPropSpec) => {
 	if (needNewStyles)
 		result._genStyles = true;
 
+	const needNewClassNames = Object.entries(newState).some(([k, v]) => {
+		const spec = fullPropSpec[k];
+		if (!spec)
+			return false;
+
+		return spec.classMap;
+	});
+	if (needNewClassNames)
+		result._genClassNames = true;
+
 	return result;
 };
 
