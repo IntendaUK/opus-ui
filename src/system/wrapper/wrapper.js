@@ -13,6 +13,7 @@ import generateStyles from './helpers/generateStyles';
 import { applyTraits } from '../managers/traitManager';
 import { stateManager } from '../managers/stateManager';
 import { getPropertyContainer } from '../managers/propertyManager';
+import isConditionMet from '../managers/traitManager/isConditionMet';
 
 const onMount = (mda, setCpnProps, cpnProps, setCpnState, cpnState) => {
 	let { id, wgts, type } = mda;
@@ -44,6 +45,12 @@ const onMount = (mda, setCpnProps, cpnProps, setCpnState, cpnState) => {
 		applyTraits(mda, {});
 
 		type = mda.type;
+	}
+
+	if (mda.condition) {
+		const conditionMet = isConditionMet(mda.condition, mda.parentId);
+		if (conditionMet === false)
+			return;
 	}
 
 	const propSpec = getFullPropSpec(type);
