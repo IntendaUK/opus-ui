@@ -36,28 +36,9 @@ const applyErrorProps = (mda, cpt) => {
 	});
 };
 
-//The 'isFirstLevel' property is used to discern if the metadata we're looking at is the
-// component being mounted right now, or some child component. We should only apply traits
-// for components that are being mounted right now
-const recurseMutateMda = (mda, ctx) => {
+const recurseMutateMda = mda => {
 	while (mda.blueprint)
 		applyBlueprints(mda);
-
-	if (mda.trait) {
-		if (!mda.traits)
-			mda.traits = [];
-
-		mda.traits.push({
-			trait: mda.trait,
-			traitPrps: mda.traitPrps
-		});
-
-		delete mda.trait;
-		delete mda.traitPrps;
-	}
-
-	while (mda.traits)
-		applyTraits(mda, ctx);
 
 	if (
 		mda.type === 'containerSimple' &&
@@ -89,7 +70,7 @@ const recurseMutateMda = (mda, ctx) => {
 	if (mda.wgts) {
 		mda.wgts.spliceWhere(w => typeof(w) !== 'object' || w === null);
 		for (const wgtMda of mda.wgts)
-			recurseMutateMda(wgtMda, ctx);
+			recurseMutateMda(wgtMda);
 	}
 };
 

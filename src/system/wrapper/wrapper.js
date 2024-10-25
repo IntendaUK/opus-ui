@@ -13,11 +13,10 @@ import WrapperInner from './wrapperInner';
 
 //Helpers
 const needsDynamicWrapper = mda => {
-	const { id, index, type, blueprint, traits, wgts = [], condition, dynamic } = mda;
+	const { id, index, type, blueprint, wgts = [], condition, dynamic } = mda;
 
 	const res = (
 		blueprint !== undefined ||
-		traits?.length ||
 		index !== undefined ||
 		type === undefined ||
 		id === undefined ||

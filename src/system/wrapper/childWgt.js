@@ -6,6 +6,7 @@ import WrapperStatic from './wrapperStatic';
 import wrapWidgets from '../../components/wrapWidgets';
 import { getFullPropSpec } from '../managers/componentManager';
 import { applyPropSpec } from './helpers';
+import { applyTraits } from '../managers/traitManager';
 import generateClassNames from './helpers/generateClassNames';
 import generateAttributes from './helpers/generateAttributes';
 import generateStyles from './helpers/generateStyles';
@@ -16,6 +17,22 @@ let ChildWgt;
 //Helpers
 const buildPropsStatic = mda => {
 	const { id, type, wgts } = mda;
+
+	if (mda.trait) {
+		if (!mda.traits)
+			mda.traits = [];
+
+		mda.traits.push({
+			trait: mda.trait,
+			traitPrps: mda.traitPrps
+		});
+
+		delete mda.trait;
+		delete mda.traitPrps;
+	}
+
+	while (mda.traits)
+		applyTraits(mda, {});
 
 	const propSpec = getFullPropSpec(type);
 
