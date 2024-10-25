@@ -131,12 +131,6 @@ export const getComponent = ({ type }, context, setComponent) => {
 	setComponent({ Component });
 };
 
-export const getKey = ({ id, index }) => {
-	const key = `${id}-${index}`;
-
-	return key;
-};
-
 export const registerScripts = async ({ id, scps }) => {
 	if (!scps)
 		return;

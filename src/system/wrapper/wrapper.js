@@ -1,72 +1,112 @@
-//React
-import React, { useContext } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 
-//System
-import { AppContext } from '../managers/appManager';
+import { getComponent } from '../managers/componentManager';
 
 //System Helpers
-import { getPropSpec } from '../managers/componentManager';
+import { generateGuid } from '../helpers';
+import ChildWgt from './childWgt';
+import { getFullPropSpec } from '../managers/componentManager';
+import applyPropSpec from './helpers/applyPropSpec';
+import generateClassNames from './helpers/generateClassNames';
+import generateAttributes from './helpers/generateAttributes';
+import generateStyles from './helpers/generateStyles';
+import { applyTraits } from '../managers/traitManager';
+import { stateManager } from '../managers/stateManager';
+import { getPropertyContainer } from '../managers/propertyManager';
 
-//Components
-import WrapperDynamic from './wrapperDynamic';
-import WrapperInner from './wrapperInner';
+const onMount = (mda, setCpnProps, cpnProps, setCpnState, cpnState) => {
+	let { id, type, wgts } = mda;
 
-//Helpers
-const needsDynamicWrapper = mda => {
-	const { id, index, type, blueprint, wgts = [], condition, dynamic } = mda;
+	if (!id)
+		id = generateGuid();
 
-	const res = (
-		blueprint !== undefined ||
-		index !== undefined ||
-		type === undefined ||
-		id === undefined ||
-		condition !== undefined ||
-		dynamic === true
-	);
-	if (res)
-		return true;
-
-	const wgtNeedsDynamicWrapper = wgts.some(w => needsDynamicWrapper(w));
-
-	return wgtNeedsDynamicWrapper;
-};
-
-//Components
-const Wrapper = props => {
-	const { mda, children } = props;
-
-	const appContext = useContext(AppContext);
-
-	if (mda.split)
-		return null;
-
-	const mdaString = JSON.stringify(mda);
-
-	const isDynamic = needsDynamicWrapper(mda);
-	if (isDynamic) {
-		return (
-			<WrapperDynamic
-				mdaString={mdaString}
-				mda={mda}
-				children={children}
-				ctx={appContext}
-			/>
-		);
+	if (wgts) {
+		wgts.forEach(w => {
+			if (!w.id)
+				w.id = generateGuid();
+		});
 	}
 
-	const propSpec = getPropSpec(mda.type);
-	if (!propSpec)
-		return `Component type unsupported: ${mda.type}`;
+	if (mda.trait) {
+		if (!mda.traits)
+			mda.traits = [];
 
-	return (
-		<WrapperInner
-			key={mda.id}
-			mdaString={mdaString}
-			mda={mda}
-			children={children}
-			ctx={appContext}
-		/>
-	);
+		mda.traits.push({
+			trait: mda.trait,
+			traitPrps: mda.traitPrps
+		});
+
+		delete mda.trait;
+		delete mda.traitPrps;
+	}
+
+	while (mda.traits)
+		applyTraits(mda, {});
+
+	const propSpec = getFullPropSpec(type);
+
+	const cpnStateNew = applyPropSpec(mda, propSpec);
+	cpnStateNew.id = id;
+	cpnStateNew.type = type
+	cpnStateNew.updates = cpnState.updates;
+	cpnStateNew._genStyles = true;
+
+	stateManager.initState(id, setCpnState, cpnState);
+	stateManager.setComponentType(id, type)
+
+	const classNames = generateClassNames(cpnStateNew, propSpec);
+	const attributes = generateAttributes(cpnStateNew);
+
+	const cpnPropsNew = getPropertyContainer(id);
+
+	Object.assign(cpnPropsNew, {
+		id,
+		type,
+		classNames,
+		attributes,
+		ChildWgt: ChildWgt.bind(null, id),
+		setState: stateManager.setSelfState.bind(null, id),
+		setWgtState: stateManager.setWgtState,
+		wgts
+	});
+
+	const getHandler = (fn, ...rest) => fn.bind(null, cpnPropsNew, ...rest);
+	cpnPropsNew.getHandler = getHandler;
+
+	setCpnProps(cpnPropsNew);
+	setCpnState(cpnStateNew);
+};
+
+
+const Wrapper = _props => {
+	const { mda: { type } } = _props;
+
+	const [cpnProps, setCpnProps] = useState({});
+	const [cpnState, setCpnState] = useState({ updates: 0 });
+	const [styles, setStyles] = useState();
+
+	const Component = useMemo(() => getComponent(type), [type]);
+
+	useEffect(onMount.bind(null, _props.mda, setCpnProps, cpnProps, setCpnState, cpnState), []);
+	useEffect(() => {
+		if (!cpnProps.id || !cpnState._genStyles)
+			return;
+
+		const styles = generateStyles(cpnState, getFullPropSpec(cpnState.type));
+
+		setStyles(styles);
+
+		cpnProps.setState({
+			_genStyles: false
+		});
+	}, [cpnState._genStyles, cpnProps.setState]);
+
+	if (!cpnProps.id)
+		return null;
+
+	cpnProps.state = cpnState;
+
+	return <Component key={cpnProps.id} {...cpnProps} {...styles} />;
 };
 
 export { Wrapper };

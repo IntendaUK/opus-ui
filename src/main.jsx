@@ -20,6 +20,7 @@ loadMdaPackage({
 const root = createRoot(document.getElementById('root'));
 
 const mda = {
+	id: 'outer',
 	type: 'containerSimple',
 	prps: {
 		singlePage: true,
@@ -28,7 +29,7 @@ const mda = {
 	wgts: []
 };
 
-for (let i = 0; i < 100; i++) {
+for (let i = 0; i < 10; i++) {
 	const row = {
 		type: 'containerSimple',
 		prps: {
@@ -38,7 +39,7 @@ for (let i = 0; i < 100; i++) {
 		wgts: []
 	};
 
-	for (let j = 0; j < 100; j++) {
+	for (let j = 0; j < 10; j++) {
 		row.wgts.push({
 			type: 'containerSimple',
 			traits: [{
@@ -47,7 +48,23 @@ for (let i = 0; i < 100; i++) {
 			}],
 			prps: {
 				backgroundColor: '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0')
-			}
+			},
+			wgts: [{
+				type: 'container',
+				prps: {
+					width: '100%',
+					height: '100%',
+					canClick: true,
+					fireScript: {
+						actions: [{
+							type: 'setState',
+							target: 'outer',
+							key: 'opacity',
+							value: 0.2
+						}]
+					}
+				}
+			}]
 		});
 	}
 

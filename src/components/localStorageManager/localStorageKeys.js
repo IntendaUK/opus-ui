@@ -1,24 +1,17 @@
 //React
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 
 //System
 import { Wrapper } from '../../system/wrapper/wrapper';
 import { getItemForKey } from '../../system/managers/localStorageManager';
-import { getKey } from '../../system/wrapper/helpers';
 import { createContext } from '../../system/managers/appManager';
 
 const LocalStorageManagerContext = createContext('localStorageManager');
 
 const generateFlows = ({ id }) => {
-	const codeKey = getKey({
-		id,
-		index: 'code'
-	});
+	const codeKey = `${id}-code`;
 
-	const removeItemBtnKey = getKey({
-		id,
-		index: 'removeBtn'
-	});
+	const removeItemBtnKey =`${id}-removeBtn`;
 
 	const flows = [
 		{

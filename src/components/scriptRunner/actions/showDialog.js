@@ -1,5 +1,3 @@
-import { getKey } from '../../../system/wrapper/helpers';
-
 const buildMdaButtons = (id, buttons, { id: { scriptId } }) => {
 	const mdaButtons = buttons.map(({ cpt, onClick }, i) => {
 		const fireScript = {
@@ -39,10 +37,7 @@ const buildMda = (id, action, script) => {
 
 	if (action.hasInput) {
 		const inputIndex = 'input';
-		const inputKey = getKey({
-			id,
-			index: inputIndex
-		});
+		const inputKey = `${id}-${inputIndex}`
 
 		Object.assign(mda, {
 			blueprint: 'system/dialogWithInput',

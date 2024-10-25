@@ -3,6 +3,7 @@ import opusConfig from '../../config';
 
 //System Helpers
 import { getPropertyContainer } from './propertyManager';
+import { getFullPropSpec } from './componentManager';
 
 //Helpers
 import sysSetWgtState from './stateManager/setWgtState';
@@ -34,6 +35,7 @@ const setComponentType = (id, type) => {
 		return;
 
 	current.type = type;
+	current.fullPropSpec = getFullPropSpec(type);
 };
 
 const getWgtState = id => {

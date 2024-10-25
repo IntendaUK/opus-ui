@@ -28,12 +28,12 @@ const getWgts = props => {
 		wgts: useWgts
 	});
 
-	if (children) {
+	/*if (children) {
 		if (children.length)
 			result.push(...children);
 		else
 			result.push(children);
-	}
+	}*/
 
 	return result;
 };

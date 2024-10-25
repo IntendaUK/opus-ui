@@ -1,4 +1,3 @@
-import { getKey } from '../../system/wrapper/helpers';
 import { getKeys as getLocalStorageKeys, clearLocalStorage,
 	removeItem } from '../../system/managers/localStorageManager';
 
@@ -13,10 +12,7 @@ export const onClose = ({ setState }) => {
 };
 
 export const onRemoveItem = ({ id, setState, getWgtState, state: { lookupKeys } }) => {
-	const keysGridKey = getKey({
-		id,
-		index: 'keysGrid'
-	});
+	const keysGridKey = `${id}-keysGrid`;
 
 	const { value: { type, subType, key } } = getWgtState(keysGridKey);
 

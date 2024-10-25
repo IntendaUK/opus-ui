@@ -87,7 +87,7 @@ const applySubKeyStates = (state, subKeys) => {
 	});
 };
 
-const getNextStateComplex = (propSpec, prev, newState) => {
+const getNextStateComplex = (propSpec, prev, newState, fullPropSpec) => {
 	const deleteKeys = newState.deleteKeys || [];
 	delete newState.deleteKeys;
 
@@ -104,13 +104,26 @@ const getNextStateComplex = (propSpec, prev, newState) => {
 	applySetActions(result, propSpec, prev, newState, deleteKeys);
 	applyDeleteActions(result, propSpec, prev, deleteKeys);
 
+	const needNewStyles = Object.entries(newState).some(([k, v]) => {
+		const spec = fullPropSpec[k];
+		if (!spec)
+			return false;
+
+		return (
+			spec.cssAttr ||
+			spec.cssVar
+		);
+	});
+	if (needNewStyles)
+		result._genStyles = true;
+
 	return result;
 };
 
-export const getNextState = (propSpec, prev, newState) => {
+export const getNextState = (propSpec, prev, newState, fullPropSpec) => {
 	//If there's a propSpec, we use a different (more complex) function
 	if (propSpec) {
-		const complexResult = getNextStateComplex(propSpec, prev, newState);
+		const complexResult = getNextStateComplex(propSpec, prev, newState, fullPropSpec);
 
 		return complexResult;
 	}
@@ -166,11 +179,11 @@ const setWgtState = (id, newState, currentState, getWgtState) => {
 	if (stateRecorder && stateRecorder.recordState)
 		stateRecorder.recordState(id, newState);
 
-	const { setLocalState, type } = currentState;
+	const { setLocalState, type, fullPropSpec } = currentState;
 	const propSpec = getPropSpec(type);
 
 	setLocalState(prev => {
-		const next = getNextState(propSpec, prev, newState);
+		const next = getNextState(propSpec, prev, newState, fullPropSpec);
 		next.updates++;
 
 		currentState.localState = next;

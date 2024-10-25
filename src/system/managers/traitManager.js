@@ -1,5 +1,5 @@
 //System Helpers
-import { clone, cloneNoOverrideNoCopy, getDeepPropertyArray } from '../helpers';
+import { cloneNoOverrideNoCopy, getDeepPropertyArray } from '../helpers';
 import { recurseProps } from '../wrapper/helpers/morphProps';
 import { applyPrpDefaults,
 	findMissingPrps,

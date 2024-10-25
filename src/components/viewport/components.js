@@ -5,7 +5,6 @@ import React, { useContext, useEffect } from 'react';
 import { createContext } from '../../system/managers/appManager';
 
 //Helpers
-import { getKey } from '../../system/wrapper/helpers';
 import { generateGuid } from '../../system/helpers';
 
 //Events
@@ -49,21 +48,11 @@ export const RegularInner = () => {
 	if (!outerMda)
 		return null;
 
-	const { mda: { id, index, idGuid } } = outerMda;
-
-	let key = getKey({
-		id,
-		index
-	});
-
-	if (idGuid) {
-		key = generateGuid();
-		outerMda.mda.id = key;
-	}
+	const { mda: { id } } = outerMda;
 
 	return (
 		<ChildWgt
-			key={key}
+			key={id}
 			mda={outerMda.mda}
 			parentAndPathSet={true}
 		/>
