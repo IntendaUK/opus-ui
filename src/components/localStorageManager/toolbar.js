@@ -16,8 +16,7 @@ const ClearLocalStorageButton = () => {
 
 	return (
 		<Wrapper mda={{
-			id,
-			index: 'clearLocalStorageBtn',
+			id: `${id}-clearLocalStorageBtn`,
 			type: 'button',
 			prps: {
 				cpt: 'Clear All',
@@ -35,8 +34,7 @@ const RemoveItemButton = () => {
 
 	return (
 		<Wrapper mda={{
-			id,
-			index: 'removeBtn',
+			id: `${id}-removeBtn`,
 			type: 'button',
 			prps: {
 				cpt: 'Remove',
@@ -53,8 +51,7 @@ const CloseButton = () => {
 
 	return (
 		<Wrapper mda={{
-			id,
-			index: 'closeBtn',
+			id: `${id}-closeBtn`,
 			type: 'button',
 			prps: {
 				cpt: 'Close',

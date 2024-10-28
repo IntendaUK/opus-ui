@@ -1,0 +1,62 @@
+.cpnButton {
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	align-items: center;
+	user-select: none;
+	cursor: pointer;
+	transition-property: background-color;
+	transition-duration: 0.2s;
+	position: relative;
+
+	&.round {
+		border-radius: 100%;
+	}
+
+	&.hidden {
+		display: none;
+	}
+
+	&.hasBorder {
+		border: 1px solid black;
+	}
+
+	&.shadow {
+		box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.14);
+	}
+
+	&.horizontal {
+		flex-direction: row;
+	}
+
+	&.horizontal-reverse {
+		flex-direction: row-reverse;
+	}
+
+	&.vertical {
+		flex-direction: column;
+	}
+
+	&.vertical-reverse {
+		flex-direction: column-reverse;
+	}
+
+	&:hover {
+		filter: brightness(1.1);
+
+		&.shadow {
+			box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.24);
+		}
+
+	}
+
+	&.hasBadge {
+		vertical-align: super;
+
+		>.cpnBadge {
+			padding-left: 2px;
+		}
+
+	}
+
+}

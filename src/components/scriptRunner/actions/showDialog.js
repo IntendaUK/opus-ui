@@ -11,8 +11,7 @@ const buildMdaButtons = (id, buttons, { id: { scriptId } }) => {
 		};
 
 		return {
-			id,
-			index: `button_${i}_${cpt}`,
+			id: `${id}-button_${i}_${cpt}`,
 			type: 'button',
 			prps: {
 				cpt,
@@ -27,8 +26,7 @@ const buildMdaButtons = (id, buttons, { id: { scriptId } }) => {
 
 const buildMda = (id, action, script) => {
 	const mda = {
-		id,
-		index: 'container',
+		id: `${id}-container`,
 		blueprint: 'system/dialog',
 		heading: action.heading,
 		message: action.msg,

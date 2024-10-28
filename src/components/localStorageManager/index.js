@@ -23,8 +23,7 @@ const LocalStorageCode = () => {
 	return (
 		<div className='localStorageCode'>
 			<Wrapper mda={{
-				id,
-				index: 'code',
+				id: `${id}-code`,
 				type: 'code',
 				prps: {
 					value,
@@ -47,8 +46,7 @@ export const LocalStorageManager = props => {
 	return (
 		<LocalStorageManagerContext.Provider value={props}>
 			<Wrapper mda={{
-				id,
-				index: 'container',
+				id: `${id}-container`,
 				type: 'container',
 				container: 'SYSMODAL',
 				prps: {

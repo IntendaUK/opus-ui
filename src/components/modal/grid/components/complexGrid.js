@@ -14,13 +14,11 @@ const GridToolbar = () => {
 
 	return (
 		<ChildWgt mda={{
-			id,
-			index: 'toolbar',
+			id: `${id}-toolbar`,
 			type: 'containerSimple',
 			prps: { mainAxisAlign: 'end' },
 			wgts: [{
-				id,
-				index: 'closeButton',
+				id: `${id}-closeButton`,
 				type: 'button',
 				prps: {
 					prpsIcon: { value: 'close' },

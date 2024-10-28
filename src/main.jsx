@@ -1,90 +1,138 @@
-//React
+// React
 import { createRoot } from 'react-dom/client';
 
-//System
+// System
 import Opus, { Component, loadMdaPackage } from './library';
 
 loadMdaPackage({
 	path: 'trait',
 	contents: {
-		index: {
-			type: 'containerSimple',
+		expander: {
+			acceptPrps: {
+				rowData: 'object'
+			},
+			type: 'container',
 			prps: {
-				width: '1%',
-				height: '100%'
-			}
+				canClick: true,
+				fireScript: {
+					actions: [
+						{
+							type: 'setState',
+							target: '||treeview||',
+							key: 'tToggleParent',
+							value: '$rowData$'
+						}
+					]
+				}
+			},
+			wgts: [
+				{
+					type: 'icon',
+					prps: {
+						value: 'face'
+					}
+				}
+			]
+		},
+		label: {
+			acceptPrps: {
+				rowData: 'object'
+			},
+			type: 'containerSimple',
+			prps: {},
+			wgts: [
+				{
+					id: '%rowData.id%label',
+					type: 'container',
+					prps: {
+						canClick: true,
+						fireScript: {
+							actions: [
+								{
+									type: 'setState',
+									target: '||treeview||',
+									key: 'value',
+									value: '$rowData$'
+								}
+							]
+						}
+					},
+					wgts: [
+						{
+							type: 'label',
+							prps: {
+								cpt: '%rowData.name%'
+							}
+						}
+					]
+				},
+				{
+					id: '%rowData.id%expander',
+					traits: [
+						{
+							trait: 'trait/expander',
+							traitPrps: {
+								rowData: '$rowData$'
+							}
+						}
+					]
+				}
+			]
 		}
 	}
 });
 
-//Setup
+// Setup
 const root = createRoot(document.getElementById('root'));
 
 const mda = {
-	id: 'outer',
-	type: 'containerSimple',
+	scope: 'treeview',
+	type: 'treeview',
 	prps: {
-		singlePage: true,
-		backgroundColor: '#eee'
-	},
-	wgts: []
-};
-
-for (let i = 0; i < 10; i++) {
-	const row = {
-		type: 'containerSimple',
-		prps: {
-			dir: 'horizontal',
-			height: '1%'
-		},
-		wgts: []
-	};
-
-	for (let j = 0; j < 10; j++) {
-		row.wgts.push({
-			traits: [{
-				trait: 'trait/index',
-				traitPrps: {}
-			}],
-			prps: {
-				backgroundColor: '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0')
-			},
-			wgts: [{
-				type: 'container',
-				prps: {
-					width: '100%',
-					height: '100%',
-					canClick: true,
-					fireScript: {
-						actions: [{
-							type: 'setState',
-							target: 'outer',
-							key: 'opacity',
-							value: 0.2
-						}]
+		dtaAtr: 'id',
+		disAtr: 'name',
+		childAtr: 'children',
+		renderExpander: false,
+		staticData: [
+			{
+				id: 'rooty',
+				name: 'Tree Root',
+				isRoot: true,
+				children: [
+					{
+						id: 'things',
+						name: 'Things',
+						children: [
+							{
+								id: 'door',
+								name: 'Door'
+							},
+							{
+								id: 'floor',
+								name: 'Floor'
+							},
+							{
+								id: 'banana',
+								name: 'Banana'
+							}
+						]
 					}
+				]
+			}
+		],
+		mdaLabel: {
+			traits: [{
+				trait: 'trait/label',
+				traitPrps: {
+					rowData: '{{rowData}}'
 				}
 			}]
-		});
+		}
 	}
-
-	mda.wgts.push(row);
-}
-
-const timeA = +new Date();
+};
 
 root.render(
 	<Opus
 		startupMda={mda}
 	/>
 );
-
-const interval = setInterval(() => {
-	if (document.querySelectorAll('.cpnContainerSimple').length === 10102) {
-		clearInterval(interval);
-
-		const timeB = +new Date();
-
-		console.log(timeB - timeA);
-	}
-}, 100);

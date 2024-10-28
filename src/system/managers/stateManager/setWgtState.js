@@ -94,17 +94,10 @@ const getNextStateComplex = (propSpec, prev, newState, fullPropSpec) => {
 	const subKeys = newState.subKeys || [];
 	delete newState.subKeys;
 
-	const result = {
-		...prev,
-		...newState
-	};
-
-	applyLastStates(result, propSpec, prev, newState, deleteKeys);
-	applySubKeyStates(result, subKeys);
-	applySetActions(result, propSpec, prev, newState, deleteKeys);
-	applyDeleteActions(result, propSpec, prev, deleteKeys);
-
 	const needNewStyles = Object.entries(newState).some(([k, v]) => {
+		if (prev[k] === newState[k])
+			return;
+
 		const spec = fullPropSpec[k];
 		if (!spec)
 			return false;
@@ -114,18 +107,33 @@ const getNextStateComplex = (propSpec, prev, newState, fullPropSpec) => {
 			spec.cssVar
 		);
 	});
-	if (needNewStyles)
-		result._genStyles = true;
 
 	const needNewClassNames = Object.entries(newState).some(([k, v]) => {
+		if (prev[k] === newState[k])
+			return;
+
 		const spec = fullPropSpec[k];
 		if (!spec)
 			return false;
 
 		return spec.classMap;
 	});
+
+	const result = {
+		...prev,
+		...newState
+	};
+
+	if (needNewStyles)
+		result._genStyles = true;
 	if (needNewClassNames)
 		result._genClassNames = true;
+
+	applyLastStates(result, propSpec, prev, newState, deleteKeys);
+	applySubKeyStates(result, subKeys);
+	applySetActions(result, propSpec, prev, newState, deleteKeys);
+	applyDeleteActions(result, propSpec, prev, deleteKeys);
+
 
 	return result;
 };
@@ -170,7 +178,7 @@ const notifyFlowManagerOfChanges = (id, newState, deleteKeys, finalState) => {
 	queueChanges(id, delta, deltaDelete, finalState);
 };
 
-const setWgtState = (id, newState, currentState, getWgtState) => {
+const setWgtState = (id, newState, currentState) => {
 	//It's allowed to call deleteKeys with just an array of keys instead of { key, value }
 	//  in which case we just morph it here so that flowManager doesn't need any hackery
 	const deleteKeys = newState.deleteKeys;
@@ -184,10 +192,6 @@ const setWgtState = (id, newState, currentState, getWgtState) => {
 	}
 
 	const subKeys = newState.subKeys || [];
-
-	const stateRecorder = getWgtState('STATERECORDER');
-	if (stateRecorder && stateRecorder.recordState)
-		stateRecorder.recordState(id, newState);
 
 	const { setLocalState, type, fullPropSpec } = currentState;
 	const propSpec = getPropSpec(type);

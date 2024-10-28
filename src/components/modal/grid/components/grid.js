@@ -19,8 +19,7 @@ const Grid = () => {
 
 	return (
 		<ChildWgt mda={{
-			id: gridId,
-			index: gridIndex,
+			id: `${gridId}-${gridIndex}`,
 			type: 'grid',
 			prps: gridPrps,
 			wgts: gridWgts

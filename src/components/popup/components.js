@@ -18,8 +18,7 @@ const ComboGrid = ({ flows }) => {
 
 	return (
 		<ChildWgt mda={{
-			id,
-			index: fromId,
+			id: `${id}-${fromId}`,
 			type: 'grid',
 			prps: {
 				staticData: lookupData,

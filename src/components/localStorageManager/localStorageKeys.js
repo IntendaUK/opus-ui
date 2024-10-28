@@ -34,8 +34,7 @@ const generateKeysGridMda = props => {
 	const flows = generateFlows(props);
 
 	const keysGridMda = {
-		id,
-		index: 'keysGrid',
+		id: `${id}-keysGrid`,
 		type: 'grid',
 		prps: {
 			cpt: 'Keys',

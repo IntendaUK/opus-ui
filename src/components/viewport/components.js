@@ -28,8 +28,7 @@ export const TabInner = () => {
 
 	return (
 		<ChildWgt mda={{
-			id: id + '_container',
-			index: 'tabContainer',
+			id: `${id}_container-tabContainer`,
 			type: 'tabContainer',
 			wgts: tabsMda,
 			prps: {

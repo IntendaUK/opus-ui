@@ -116,7 +116,7 @@ const setWgtState = (id, newState, source) => {
 		}
 	}
 
-	sysSetWgtState(id, newState, currentState, getWgtState);
+	sysSetWgtState(id, newState, currentState);
 };
 
 const setSelfState = (id, newState) => {

@@ -1,0 +1,29 @@
+{
+	"propSpecConfig": {
+		"path": "dist/components/treeview/props.js",
+		"functions": [],
+		"dependents": [
+			{
+				"fileExistsInOpusUiFolder": true,
+				"path": "dist/components/dataLoader/propsShared.js",
+				"functions": [
+					{
+						"key": "filtersSet",
+						"path": "dist/props/actions/filtersSet.js"
+					},
+					{
+						"key": "filtersDelete",
+						"path": "dist/props/actions/filtersDelete.js"
+					}
+				],
+				"dependents": []
+			},
+			{
+				"fileExistsInOpusUiFolder": true,
+				"path": "dist/components/dataLoader/propsSharedExternal.js",
+				"functions": [],
+				"dependents": []
+			}
+		]
+	}
+}

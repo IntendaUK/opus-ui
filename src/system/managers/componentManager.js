@@ -7,6 +7,9 @@ import { clone } from '../helpers';
 import baseProps from '../../components/baseProps/index';
 
 //Components
+import { Button } from '../../components/button';
+import { Icon } from '../../components/icon';
+import { Treeview } from '../../components/treeview';
 import { Container } from '../../components/container';
 import { ContainerSimple } from '../../components/containerSimple';
 import { ContextMenuManager } from '../../components/contextMenuManager';
@@ -20,6 +23,9 @@ import { SystemModal } from '../../components/systemModal';
 import { Viewport } from '../../components/viewport';
 
 //PropSpecs
+import propsButton from '../../components/button/props';
+import propsIcon from '../../components/icon/props';
+import propsTreeview from '../../components/treeview/props';
 import propsContainer from '../../components/container/props';
 import propsContainerSimple from '../../components/containerSimple/props';
 import propsContextMenuManager from '../../components/contextMenuManager/props';
@@ -34,6 +40,9 @@ import propsViewport from '../../components/viewport/props';
 
 //Internal
 const components = {
+	button: Button,
+	icon: Icon,
+	treeview: Treeview,
 	container: Container,
 	containerSimple: ContainerSimple,
 	contextMenuManager: ContextMenuManager,
@@ -48,6 +57,9 @@ const components = {
 };
 
 const propSpecs = {
+	button: propsButton,
+	icon: propsIcon,
+	treeview: propsTreeview,
 	container: propsContainer,
 	containerSimple: propsContainerSimple,
 	contextMenuManager: propsContextMenuManager,

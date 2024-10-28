@@ -56,8 +56,7 @@ const ModalViewport = () => {
 	const { id, ChildWgt, state: { inputMda, lookup } } = useContext(ModalContext);
 
 	return <ChildWgt mda={{
-		id,
-		index: 'viewport',
+		id: `${id}-viewport`,
 		type: 'viewport',
 		prps: {
 			inputMda,
