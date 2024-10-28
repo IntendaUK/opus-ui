@@ -4,6 +4,7 @@ import { init as initSetWgtState } from './stateManager/setWgtState';
 import { init as initGetListenerStates } from './flowManager/helpers/applyListenerStates';
 import { getTheme } from './themeManager';
 import { clone } from '../helpers';
+import baseProps from '../../components/baseProps/index';
 
 //Components
 import { Container } from '../../components/container';
@@ -60,11 +61,27 @@ const propSpecs = {
 	viewport: propsViewport
 };
 
+const fullPropSpecs = {};
+
+const setFullPropSpec = (type, propSpec) => {
+	const fullPropSpec = {};
+	clone(fullPropSpec, baseProps)
+	clone(fullPropSpec, propSpec);
+
+	fullPropSpecs[type] = fullPropSpec;
+};
+
+Object.entries(propSpecs).forEach(([k, v]) => {
+	setFullPropSpec(k, v);
+});
+
 //Exports
 export const registerExternalTypes = externalTypes => {
 	externalTypes.forEach(({ type, component, propSpec }) => {
 		components[type] = component;
 		propSpecs[type] = propSpec;
+
+		setFullPropSpec(type, propSpec);
 	});
 };
 
@@ -86,6 +103,8 @@ export const getComponent = type => components[type];
 
 export const getPropSpec = type => propSpecs[type];
 
+export const getFullPropSpec = type => fullPropSpecs[type];
+
 export const getPropSpecs = () => propSpecs;
 
 export const doesComponentTypeExist = type => !!components[type];
@@ -93,6 +112,6 @@ export const doesComponentTypeExist = type => !!components[type];
 export const getComponentTypes = () => Object.keys(components);
 
 export const init = () => {
-	initSetWgtState({ getPropSpec });
+	initSetWgtState({ getPropSpec, getFullPropSpec });
 	initGetListenerStates({ getPropSpec });
 };

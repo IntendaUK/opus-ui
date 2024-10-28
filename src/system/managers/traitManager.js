@@ -130,9 +130,7 @@ export const applyTraits = async (mda, context) => {
 				if (trait.includes('%') || trait.includes('$'))
 					return;
 
-				const traitMda = await getTrait(trait);
-
-				const clonedTraitMda = clone({}, traitMda);
+				const clonedTraitMda = await getTrait(trait);
 
 				applyTraitProps(clonedTraitMda, traitPrps, trait, mda, context);
 

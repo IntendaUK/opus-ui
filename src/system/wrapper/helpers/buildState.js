@@ -1,6 +1,6 @@
 //System Helpers
 import { getInitialState } from '../../managers/flowManager/index';
-import { getNextState } from '../../managers/stateManager/setWgtState';
+import { getNextState, setExtraStates } from '../../managers/stateManager/setWgtState';
 import { getPersistedStates } from '../../managers/propertyManager';
 
 //Exports
@@ -38,6 +38,8 @@ const buildState = (mappedProps, { id, path, type, parentId }, propSpec, ignoreF
 		parentId,
 		...mappedProps
 	};
+
+	setExtraStates(propSpec, builtState);
 
 	if (builtState.persist) {
 		const persisted = getPersistedStates(id);

@@ -6,7 +6,7 @@ import { removePersistedStatesForScope, persistState } from '../managers/propert
 import opusConfig from '../../config';
 
 //Helpers
-import { getComponent, buildMappedProps } from './helpers';
+import { buildMappedProps } from './helpers';
 import { buildProps } from './helpers';
 import buildState from './helpers/buildState';
 
@@ -38,10 +38,6 @@ const onUnmount = mda => {
 	removePersistedStatesForScope(id);
 
 	removeNodeFromDom(mda);
-};
-
-export const onGetComponent = (mda, context, setComponent) => {
-	getComponent(mda, context, setComponent);
 };
 
 export const onMount = (mda, ctx, setWrapperState, propSpec, cpnState, setComponentState) => {
@@ -86,9 +82,7 @@ export const onStyleChanged = (id, state) => {
 	if (!style && !styleOverrides)
 		return;
 
-	const mergedStyles = {};
-	if (style)
-		clone(mergedStyles, style);
+	const mergedStyles = style;
 	if (styleOverrides)
 		clone(mergedStyles, styleOverrides);
 

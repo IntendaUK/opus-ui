@@ -1,9 +1,46 @@
 import { queueChanges } from '../flowManager/index';
 
-let getPropSpec;
+import generateStyles from '../../wrapper/helpers/generateStyles';
+import generateClassNames from '../../wrapper/helpers/generateClassNames';
 
-export const init = ({ getPropSpec: _getPropSpec }) => {
+let getPropSpec;
+let getFullPropSpec;
+
+import baseProps from '../../../components/baseProps';
+
+export const init = ({ getPropSpec: _getPropSpec, getFullPropSpec: _getFullPropSpec }) => {
 	getPropSpec = _getPropSpec;
+	getFullPropSpec = _getFullPropSpec;
+};
+
+export const setExtraStates = (propSpec, newState) => {
+	let needStyles = false;
+	let needClassNames = false;
+	//let needAttributes = false;
+
+	Object.entries(newState).forEach(([k, v]) => {
+		const entry = propSpec[k] ?? baseProps[k];
+
+		if (!entry)
+			return;
+
+		if (entry.cssAttr || entry.cssVar)
+			needStyles = true;
+		if (entry.classMap)
+			needClassNames = true;
+
+		//Todo: attributes
+	});
+
+	if (needStyles) {
+		const genStyles = generateStyles(newState, propSpec);
+		newState.genStyles = genStyles;
+	}
+
+	if (needClassNames) {
+		const genClassNames = generateClassNames(newState, propSpec);
+		newState.genClassNames = genClassNames;
+	}
 };
 
 const applyLastStates = (next, propSpec, oldState, newState, deleteKeys) => {
@@ -99,10 +136,38 @@ const getNextStateComplex = (propSpec, prev, newState) => {
 		...newState
 	};
 
+	let needStyles = false;
+	let needClassNames = false;
+	//let needAttributes = false;
+
+	Object.entries(newState).forEach(([k, v]) => {
+		const entry = propSpec[k] ?? baseProps[k];
+
+		if (!entry || newState[k] === prev[k])
+			return;
+
+		if (entry.cssAttr || entry.cssVar)
+			needStyles = true;
+		if (entry.classMap)
+			needClassNames = true;
+
+		//Todo: attributes
+	});
+
 	applyLastStates(result, propSpec, prev, newState, deleteKeys);
 	applySubKeyStates(result, subKeys);
 	applySetActions(result, propSpec, prev, newState, deleteKeys);
 	applyDeleteActions(result, propSpec, prev, deleteKeys);
+
+	if (needStyles) {
+		const genStyles = generateStyles(result, getFullPropSpec(result.type));
+		result.genStyles = genStyles;
+	}
+
+	if (needClassNames) {
+		const genClassNames = generateClassNames(result, propSpec);
+		result.genClassNames = genClassNames;
+	}
 
 	return result;
 };
