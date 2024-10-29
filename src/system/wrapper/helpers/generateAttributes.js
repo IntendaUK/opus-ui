@@ -18,7 +18,7 @@ const generateAttributes = state => {
 
 		const { key, attr } = a;
 
-		res[key] = state[attr];
+		res[attr] = state[key];
 	});
 
 	return res;

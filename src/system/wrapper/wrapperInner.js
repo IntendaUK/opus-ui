@@ -10,42 +10,11 @@ import { getComponent, getFullPropSpec } from '../managers/componentManager';
 import { onMount, onNewProps, onStyleChanged } from './events';
 import { registerScripts } from './helpers';
 
-//Helpers
-/*import generateClassNames from './helpers/generateClassNames';
-import generateAttributes from './helpers/generateAttributes';
-import generateStyles from './helpers/generateStyles';*/
-
 //External helpers
 import { lateBindTriggers } from '../../components/scriptRunner/helpers/lateBoundTriggers';
 import { fixScopeIds } from '../../components/scriptRunner/helpers/morphConfig';
 
 //Components
-
-//This component is in charge of firing the flowManager mount event for WrapperInner.
-// We render it as a component so as to ensure that the initial wrapper setup is completed.
-/*const FlowChecker = ({ id, propSpec, setState, state }) => {
-	const [hasRun, setHasRun] = useState(false);
-
-	useEffect(() => {
-		if (hasRun)
-			return;
-
-		setHasRun(true);
-
-		(async () => {
-			await registerScripts(state);
-			lateBindTriggers(id);
-			emitEvent(id, 'onMount', { full: state });
-		})();
-
-		const flowState = getInitialState(id, {}, propSpec);
-		if (Object.keys(flowState).length)
-			setState(flowState);
-	// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [state.updates]);
-
-	return null;
-};*/
 
 const onRunFlowChecker = (id, propSpec, setState, state) => {
 	if (!setState)

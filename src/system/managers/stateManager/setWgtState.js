@@ -2,6 +2,7 @@ import { queueChanges } from '../flowManager/index';
 
 import generateStyles from '../../wrapper/helpers/generateStyles';
 import generateClassNames from '../../wrapper/helpers/generateClassNames';
+import generateAttributes from '../../wrapper/helpers/generateAttributes';
 
 let getPropSpec;
 let getFullPropSpec;
@@ -14,33 +15,46 @@ export const init = ({ getPropSpec: _getPropSpec, getFullPropSpec: _getFullPropS
 };
 
 export const setExtraStates = (propSpec, newState) => {
-	let needStyles = false;
-	let needClassNames = false;
-	//let needAttributes = false;
+	let needAttributes = false;
+	if (newState.attrs) {
+		needAttributes = newState.attrs.some(f => {
+			const key = f.key ?? f;
 
-	Object.entries(newState).forEach(([k, v]) => {
-		const entry = propSpec[k] ?? baseProps[k];
+			return newState[key] !== undefined;
+		});
+	}
 
-		if (!entry)
-			return;
+	const keys = Object.keys(newState);
 
-		if (entry.cssAttr || entry.cssVar)
-			needStyles = true;
-		if (entry.classMap)
-			needClassNames = true;
+	const needStyles = keys.some(k => {
+		const propSpecEntry = propSpec[k] ?? baseProps[k];
 
-		//Todo: attributes
+		return (
+			propSpecEntry !== undefined &&
+			(
+				propSpecEntry.cssAttr ||
+				propSpecEntry.cssVar
+			)
+		);
 	});
 
-	if (needStyles) {
-		const genStyles = generateStyles(newState, propSpec);
-		newState.genStyles = genStyles;
-	}
+	const needClassNames = keys.some(k => {
+		const propSpecEntry = propSpec[k] ?? baseProps[k];
 
-	if (needClassNames) {
-		const genClassNames = generateClassNames(newState, propSpec);
-		newState.genClassNames = genClassNames;
-	}
+		return (
+			propSpecEntry !== undefined &&
+			propSpecEntry.classMap
+		);
+	});
+
+	if (needStyles)
+		newState.genStyles = generateStyles(newState, propSpec);
+
+	if (needClassNames)
+		newState.genClassNames = generateClassNames(newState, propSpec);
+
+	if (needAttributes)
+		newState.genAttributes = generateAttributes(newState);
 };
 
 const applyLastStates = (next, propSpec, oldState, newState, deleteKeys) => {
@@ -136,38 +150,58 @@ const getNextStateComplex = (propSpec, prev, newState) => {
 		...newState
 	};
 
-	let needStyles = false;
-	let needClassNames = false;
-	//let needAttributes = false;
-
-	Object.entries(newState).forEach(([k, v]) => {
-		const entry = propSpec[k] ?? baseProps[k];
-
-		if (!entry || newState[k] === prev[k])
-			return;
-
-		if (entry.cssAttr || entry.cssVar)
-			needStyles = true;
-		if (entry.classMap)
-			needClassNames = true;
-
-		//Todo: attributes
-	});
-
 	applyLastStates(result, propSpec, prev, newState, deleteKeys);
 	applySubKeyStates(result, subKeys);
 	applySetActions(result, propSpec, prev, newState, deleteKeys);
 	applyDeleteActions(result, propSpec, prev, deleteKeys);
 
-	if (needStyles) {
-		const genStyles = generateStyles(result, getFullPropSpec(result.type));
-		result.genStyles = genStyles;
+	let needAttributes = newState.attrs !== undefined;
+	const htmlAttributes = result.attrs;
+	if (htmlAttributes && !needAttributes) {
+		needAttributes = htmlAttributes.some(k => {
+			const checkKey = k.key ?? k;
+
+			return result[checkKey] !== prev[checkKey];
+		});
 	}
 
-	if (needClassNames) {
-		const genClassNames = generateClassNames(result, propSpec);
-		result.genClassNames = genClassNames;
-	}
+	const entries = Object.entries(result);
+	Object.entries(prev).forEach(e => {
+		if (!entries.some(f => f[0] === e[0]))
+			entries.push(e);
+	});
+
+	const needStyles = entries.some(([k, v]) => {
+		const propSpecEntry = propSpec[k] ?? baseProps[k];
+
+		return (
+			propSpecEntry !== undefined &&
+			(
+				propSpecEntry.cssAttr ||
+				propSpecEntry.cssVar
+			) &&
+			v !== prev[k]
+		);
+	});
+
+	const needClassNames = entries.some(([k, v]) => {
+		const propSpecEntry = propSpec[k] ?? baseProps[k];
+
+		return (
+			propSpecEntry !== undefined &&
+			propSpecEntry.classMap &&
+			v !== prev[k]
+		);
+	});
+
+	if (needStyles)
+		result.genStyles = generateStyles(result, getFullPropSpec(result.type));
+
+	if (needClassNames)
+		result.genClassNames = generateClassNames(result, getFullPropSpec(result.type));
+
+	if (needAttributes)
+		result.genAttributes = generateAttributes(result);
 
 	return result;
 };
@@ -232,7 +266,7 @@ const setWgtState = (id, newState, currentState, getWgtState) => {
 		stateRecorder.recordState(id, newState);
 
 	const { setLocalState, type } = currentState;
-	const propSpec = getPropSpec(type);
+	const propSpec = getFullPropSpec(type);
 
 	setLocalState(prev => {
 		const next = getNextState(propSpec, prev, newState);

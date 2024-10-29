@@ -91,11 +91,17 @@ export const applyPropSpecDefaults = () => {
 		return;
 
 	Object.entries(componentsTheme).forEach(([k, v]) => {
-		const propSpec = propSpecs[k];
-		if (!propSpec || !v.propSpec)
+		if (!v.propSpec)
 			return;
 
-		clone(propSpec, v.propSpec);
+		const propSpec = propSpecs[k];
+		const fullPropSpec = fullPropSpecs[k];
+
+		if (propSpec)
+			clone(propSpec, v.propSpec);
+
+		if (fullPropSpec)
+			clone(fullPropSpec, v.propSpec);
 	});
 };
 
