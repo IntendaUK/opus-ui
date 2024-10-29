@@ -3,6 +3,8 @@ import React from 'react';
 
 const wrapWidgets = ({ ChildWgt, wgts = [] }) => {
 	const result = wgts.map((w, i) => {
+		if (!w)
+			debugger;
 		if (!w.prps)
 			w.prps = {};
 
