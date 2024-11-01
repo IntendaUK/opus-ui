@@ -11,12 +11,12 @@ export const setBlueprint = (name, blueprint) => {
 	blueprints.set(name, blueprint);
 };
 
-export const getBlueprint = async name => {
+export const getBlueprint = name => {
 	let blueprint = blueprints.get(name);
 	if (blueprint)
 		return clone({}, blueprint);
 
-	blueprint = await getMdaHelper({
+	blueprint = getMdaHelper({
 		type: 'blueprint',
 		key: name
 	});
@@ -85,15 +85,15 @@ const notifyVariableOverrides = function (a, b) {
 	}
 };
 
-export const applyBlueprints = async (mda, blueprintVariables = {}) => {
+export const applyBlueprints = (mda, blueprintVariables = {}) => {
 	if (mda.blueprintPrps) {
-		await applyBlueprintsNew(mda);
+		applyBlueprintsNew(mda);
 
 		return;
 	}
 
 	if (mda.blueprint) {
-		const blueprint = await getBlueprint(mda.blueprint);
+		const blueprint = getBlueprint(mda.blueprint);
 
 		notifyVariableOverrides(blueprintVariables, mda);
 
@@ -108,7 +108,7 @@ export const applyBlueprints = async (mda, blueprintVariables = {}) => {
 	for (const [key, value] of entries) {
 		const type = typeof (value);
 		if (type === 'object' && value !== null) {
-			await applyBlueprints(value, blueprintVariables);
+			applyBlueprints(value, blueprintVariables);
 
 			continue;
 		} else if (
@@ -122,8 +122,8 @@ export const applyBlueprints = async (mda, blueprintVariables = {}) => {
 			mda[key] = getMorphedString(value, blueprintVariables);
 
 		if (mda[key][0] === '&' && mda[key].slice(-1) === '&') {
-			mda[key] = await getBlueprint(mda[key].split('&').join(''));
-			await applyBlueprints(mda, blueprintVariables);
+			mda[key] = getBlueprint(mda[key].split('&').join(''));
+			applyBlueprints(mda, blueprintVariables);
 		}
 	}
 };

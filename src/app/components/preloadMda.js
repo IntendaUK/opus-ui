@@ -13,13 +13,13 @@ import { getMdaHelper } from '../../components/scriptRunner/actions/getMda/getMd
 const AppInnerContext = createContext('appInnerContext');
 
 //Helpers
-const preloadTraitsRecursively = async (mda, appContext) => {
+const preloadTraitsRecursively = (mda, appContext) => {
 	if (mda.traits)
-		await applyTraits(mda, appContext);
+		applyTraits(mda, appContext);
 
 	for (const v of Object.values(mda)) {
 		if (typeof(v) === 'object' && v !== null)
-			await preloadTraitsRecursively(v, appContext);
+			preloadTraitsRecursively(v, appContext);
 	}
 };
 

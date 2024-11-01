@@ -32,7 +32,7 @@ export const runScript = async (context, props, script, actions, isRootScript) =
 
 	spreadActions(script, actions, props);
 
-	await applyTraitsToArray(actions, context);
+	applyTraitsToArray(actions, context);
 
 	const entry = {
 		id: script.id,

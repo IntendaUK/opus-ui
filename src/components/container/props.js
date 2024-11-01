@@ -2,13 +2,46 @@
 
 //System
 import opusConfig from '../../config';
+import { AppContext } from '../../system/managers/appManager';
 
 //System Helpers
 import { clone, generateGuid } from '../../system/helpers';
+import { applyTraits } from '../../system/managers/traitManager';
 
 //Shared Props
 import propsShared from './propsShared';
 
+//Helpers
+const recurseAssignIds = obj => {
+	if (!obj.id)
+		obj.id = generateGuid();
+
+	if (obj.wgts)
+		obj.wgts.forEach(w => recurseAssignIds(w));
+};
+
+const recurseApplyTraits = obj => {
+	if (obj.trait) {
+		if (!obj.traits)
+			obj.traits = [];
+
+		obj.traits.push({
+			trait: obj.trait,
+			traitPrps: obj.traitPrps
+		});
+
+		delete obj.trait;
+		delete obj.traitPrps;
+	}
+
+	while (obj.traits)
+		applyTraits(obj, AppContext);
+
+	if (obj.wgts)
+		obj.wgts.forEach(w => recurseApplyTraits(w));
+};
+
+//Props
 const props = {
 	handlerOnScroll: {
 		type: 'function',
@@ -65,7 +98,14 @@ const props = {
 		desc: 'A single metadata object, or array of metadata objects that should be added to the container\'s list of children',
 		dft: () => [],
 
-		setAction: (oldValue = [], newValue) => {
+		setAction: (
+			oldValue = [],
+			newValue,
+			{
+				recursivelyAssignExtraWgtIds,
+				recursivelyApplyExtraWgtTraits
+			}
+		) => {
 			if (!newValue) {
 				if (opusConfig.env === 'development') {
 					//eslint-disable-next-line no-console
@@ -90,7 +130,13 @@ const props = {
 					return;
 
 				const cloned = clone({}, mda);
-				if (!cloned.id)
+
+				if (recursivelyApplyExtraWgtTraits === true)
+					recurseApplyTraits(cloned);
+
+				if (recursivelyAssignExtraWgtIds === true)
+					recurseAssignIds(cloned);
+				else if (!cloned.id)
 					cloned.id = generateGuid();
 
 				oldValue.push(cloned);
@@ -101,7 +147,7 @@ const props = {
 
 		deleteAction: (oldValue = [], deletedValue) => {
 			if (!deletedValue.push)
-				deletedValue = [ deletedValue];
+				deletedValue = [deletedValue];
 
 			deletedValue.forEach(mda => {
 				oldValue.spliceWhere(({ id }) => {
@@ -120,6 +166,14 @@ const props = {
 
 			return oldValue;
 		}
+	},
+	recursivelyAssignExtraWgtIds: {
+		type: 'boolean',
+		desc: 'When true, assigning new extraWgts will cause the full metadata of the widgets to be recursed and given random id\'s if they do not already have id\'s (This happens after recursively applying traits, if recursivelyApplyExtraWgtTraits is set to true)'
+	},
+	recursivelyApplyExtraWgtTraits: {
+		type: 'boolean',
+		desc: 'When true, assigning new extraWgts will cause the all traits to be applied (This happens before recursivley assigning id\'s if recursivelyAssignExtraWgtIds is set to true)'
 	},
 	clicked: {
 		type: 'boolean',

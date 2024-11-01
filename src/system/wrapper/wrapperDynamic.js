@@ -39,9 +39,9 @@ const applyErrorProps = (mda, cpt) => {
 //The 'isFirstLevel' property is used to discern if the metadata we're looking at is the
 // component being mounted right now, or some child component. We should only apply traits
 // for components that are being mounted right now
-const recurseMutateMda = async mda => {
+const recurseMutateMda = mda => {
 	while (mda.blueprint)
-		await applyBlueprints(mda);
+		applyBlueprints(mda);
 
 	if (!mda.id)
 		mda.id = generateGuid();
@@ -59,55 +59,53 @@ const recurseMutateMda = async mda => {
 	if (mda.wgts) {
 		mda.wgts.spliceWhere(w => typeof(w) !== 'object' || w === null);
 		for (const wgtMda of mda.wgts)
-			await recurseMutateMda(wgtMda);
+			recurseMutateMda(wgtMda);
 	}
 };
 
 //Events
 export const onMutateMda = (initialMda, mdaString, setFixedMda, ctx) => {
-	(async () => {
-		const mda = clone({}, initialMda);
+	const mda = clone({}, initialMda);
 
-		if (mda.applyBlueprint === false)
-			delete mda.applyBlueprint;
-		else {
-			if (mda.trait) {
-				if (!mda.traits)
-					mda.traits = [];
+	if (mda.applyBlueprint === false)
+		delete mda.applyBlueprint;
+	else {
+		if (mda.trait) {
+			if (!mda.traits)
+				mda.traits = [];
 
-				mda.traits.push({
-					trait: mda.trait,
-					traitPrps: mda.traitPrps
-				});
+			mda.traits.push({
+				trait: mda.trait,
+				traitPrps: mda.traitPrps
+			});
 
-				delete mda.trait;
-				delete mda.traitPrps;
-			}
-
-			while (mda.traits)
-				await applyTraits(mda, ctx);
-
-			if (mda.condition) {
-				const conditionMet = await isConditionMet(mda.condition, mda.parentId);
-				if (conditionMet === false)
-					return;
-			}
-
-			await recurseMutateMda(mda);
-
-			const errorCaption = getErrorCaption(mda);
-			if (errorCaption) {
-				applyErrorProps(mda, errorCaption);
-
-				return;
-			}
+			delete mda.trait;
+			delete mda.traitPrps;
 		}
 
-		setFixedMda({
-			mda,
-			mdaString
-		});
-	})();
+		while (mda.traits)
+			applyTraits(mda, ctx);
+
+		if (mda.condition) {
+			const conditionMet = isConditionMet(mda.condition, mda.parentId);
+			if (conditionMet === false)
+				return;
+		}
+
+		recurseMutateMda(mda);
+
+		const errorCaption = getErrorCaption(mda);
+		if (errorCaption) {
+			applyErrorProps(mda, errorCaption);
+
+			return;
+		}
+	}
+
+	setFixedMda({
+		mda,
+		mdaString
+	});
 };
 
 //Components
