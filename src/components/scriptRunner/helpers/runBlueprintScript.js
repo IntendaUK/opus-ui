@@ -7,13 +7,13 @@ import spreadActions from './spreadActions';
 
 //Helper
 const runBlueprintScript = async (context, props, script) => {
-	await applyBlueprints(script);
+	applyBlueprints(script);
 
 	const { actions } = script;
 
 	spreadActions(script, actions, props);
 
-	runScript(context, props, script, actions);
+	await runScript(context, props, script, actions);
 };
 
 export default runBlueprintScript;

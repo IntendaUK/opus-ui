@@ -3,6 +3,7 @@ import { register, destroyScope, emitEvent, queueChanges } from '../managers/flo
 import { addNodeToDom, removeNodeFromDom } from '../managers/scopeManager';
 import { stateManager } from '../managers/stateManager';
 import { removePersistedStatesForScope, persistState } from '../managers/propertyManager';
+import { clearForOwnerId as clearSuiteDataForOwnerId } from '../managers/suiteManager/data';
 import opusConfig from '../../config';
 
 //Helpers
@@ -36,6 +37,7 @@ const onUnmount = mda => {
 	destroyScope(id);
 	removeStyleTag(id);
 	removePersistedStatesForScope(id);
+	clearSuiteDataForOwnerId(id);
 
 	removeNodeFromDom(mda);
 };

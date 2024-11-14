@@ -10,7 +10,7 @@ import * as triggers from '../triggers';
 
 const hookTrigger = async (config, props, script, context) => {
 	if (config.blueprint)
-		await applyBlueprints(config);
+		applyBlueprints(config);
 
 	const morphedConfig = morphConfig(config, script, props);
 
