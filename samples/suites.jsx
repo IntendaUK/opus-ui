@@ -116,7 +116,10 @@ root.render(
 						caption: 'Click me',
 						scps: [{
 							actions: [{
-								handler: () => 
+								someConfig: 'bla',
+								handler: ({ someConfig }, { ownerId }, { setWgtState }) => {
+									setWgtState(ownerId, { caption: `My id is ${ownerId}...${someConfig}` })
+								}
 							}]
 						}]
 					}
