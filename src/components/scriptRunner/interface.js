@@ -1,6 +1,7 @@
 //System Helpers
 import { clone } from '../../system/helpers';
 import { applyBlueprints } from '../../system/managers/blueprintManager';
+import setupSuiteActions from './helpers/setupSuiteActions';
 
 //Helpers
 import hookTrigger from './helpers/hookTrigger';
@@ -37,6 +38,7 @@ export const removeDisposer = (id, disposer) => {
 	disposeStash[id].spliceWhere(d => d === disposer);
 };
 
+/* eslint-disable-next-line max-lines-per-function */
 export const registerScripts = async scripts => {
 	for (let { id, script: originalScript } of scripts) {
 		const script = clone({}, originalScript);
@@ -48,7 +50,16 @@ export const registerScripts = async scripts => {
 		const { blueprint } = script;
 
 		if (blueprint !== undefined)
-			await applyBlueprints(script);
+			applyBlueprints(script);
+
+		if (script.suite) {
+			setupSuiteActions({
+				ownerId: id,
+				script
+			});
+
+			delete script.suite;
+		}
 
 		let { triggers = [] } = script;
 		if (triggers.length === 0)

@@ -9,6 +9,7 @@ import { clone } from '../../../system/helpers';
 import { processAction, processActionSync } from './processAction';
 import spreadActions from './spreadActions';
 import { register as registerDiagnostics } from '../diagnostics/scripts';
+import setupSuiteActions from './setupSuiteActions';
 
 const scriptsQueue = [];
 const runningScripts = [];
@@ -29,6 +30,15 @@ let processNextInQueue;
 /* eslint-disable-next-line max-lines-per-function, complexity */
 export const runScript = async (context, props, script, actions, isRootScript) => {
 	const { state: { stopScriptString } } = props;
+
+	if (script.suite) {
+		setupSuiteActions({
+			ownerid: script.ownerId,
+			script
+		});
+
+		actions = script.actions;
+	}
 
 	spreadActions(script, actions, props);
 
@@ -107,6 +117,15 @@ export const runScript = async (context, props, script, actions, isRootScript) =
 // in which we need to wait too long to see initial mounts.
 export const runScriptSync = (context, props, script, actions) => {
 	const { state: { stopScriptString } } = props;
+
+	if (script.suite) {
+		setupSuiteActions({
+			ownerid: script.ownerId,
+			script
+		});
+
+		actions = script.actions;
+	}
 
 	spreadActions(script, actions, props);
 

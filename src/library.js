@@ -89,6 +89,8 @@ export { registerComponentTypes } from './library/externalComponentTypes';
 
 export { registerExternalDataLocations } from './library/externalDataLocations';
 
+export { default as registerSuite } from './system/managers/suiteManager/register';
+
 export const ThemedComponent = ({ mda }) => {
 	applyThemesToMdaPackage(mda);
 

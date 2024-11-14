@@ -23,13 +23,13 @@ const preloadTraitsRecursively = (mda, appContext) => {
 	}
 };
 
-const performPreload = async (path, appContext) => {
+const performPreload = (path, appContext) => {
 	const splitPath = path.split('/');
 	const [ type ] = splitPath.splice(0, 1);
 
 	const key = splitPath.join('/');
 
-	const mda = await getMdaHelper({
+	const mda = getMdaHelper({
 		type,
 		key
 	});
@@ -49,7 +49,7 @@ const performPreload = async (path, appContext) => {
 
 		const fakeMda = { traits: [ key ] };
 
-		await preloadTraitsRecursively(fakeMda, appContext);
+		preloadTraitsRecursively(fakeMda, appContext);
 	} else if (isBlueprint) {
 		setBlueprint(key, mda);
 
@@ -58,7 +58,7 @@ const performPreload = async (path, appContext) => {
 			blueprintPrps: {}
 		};
 
-		await applyBlueprints(fakeMda, '');
+		applyBlueprints(fakeMda, '');
 	}
 };
 
@@ -67,25 +67,19 @@ const onThemesSet = ({ setState, themesLoaded }, appContext) => {
 	if (!themesLoaded)
 		return;
 
-	(async () => {
-		const promises = [];
+	const themes = Object.values(getThemes());
+	themes.forEach(t => {
+		const { themeConfig, preload } = t;
 
-		const themes = Object.values(getThemes());
-		themes.forEach(t => {
-			const { themeConfig, preload } = t;
+		if (!themeConfig?.isPreloadTheme || !preload)
+			return;
 
-			if (!themeConfig?.isPreloadTheme || !preload)
-				return;
-
-			preload.forEach(p => {
-				promises.push(performPreload(p, appContext));
-			});
+		preload.forEach(p => {
+			performPreload(p, appContext);
 		});
+	});
 
-		await Promise.all(promises);
-
-		setState({ mdaPreloaded: true });
-	})();
+	setState({ mdaPreloaded: true });
 };
 
 //Components

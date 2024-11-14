@@ -29,7 +29,7 @@ const shouldRunAction = ({ actionCondition }, script, props) => {
 /* eslint-disable max-lines-per-function, complexity */
 export const processAction = async (config, script, props, context) => {
 	if (config.blueprint)
-		await applyBlueprints(config);
+		applyBlueprints(config);
 
 	let actionTrackers;
 	if (opusConfig.env === 'development' && script.trackAction) {
@@ -51,7 +51,16 @@ export const processAction = async (config, script, props, context) => {
 	if (config.actionCondition && !shouldRunAction(morphedConfig, script, props))
 		return;
 
-	const { type, storeAsVariable, pushToVariable } = morphedConfig;
+	const { type, storeAsVariable, pushToVariable, handler, isAsync } = morphedConfig;
+
+	if (handler) {
+		if (isAsync)
+			await handler(config, script, props, context);
+		else
+			handler(config, script, props, context);
+
+		return;
+	}
 
 	const fn = actions[type] ?? actions.getExternalAction(type);
 
@@ -125,7 +134,13 @@ export const processActionSync = (config, script, props, context) => {
 	if (config.actionCondition && !shouldRunAction(props, config))
 		return props.state.stopScriptString;
 
-	const { type, storeAsVariable, pushToVariable } = morphedConfig;
+	const { type, storeAsVariable, pushToVariable, handler } = morphedConfig;
+
+	if (handler) {
+		handler(config, script, props, context);
+
+		return;
+	}
 
 	const fn = actions[type] ?? actions.getExternalAction(type);
 
