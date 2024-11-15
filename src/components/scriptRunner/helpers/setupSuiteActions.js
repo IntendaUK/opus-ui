@@ -7,7 +7,7 @@ import { get as getSuiteData, set as setSuiteData } from '../../../system/manage
 
 //Helper
 const setupSuiteActions = ({ ownerId, script }) => {
-	let { suite, method } = script.suite;
+	let { suite, method, args } = script.suite;
 
 	if (typeof(script.suite) === 'string')
 		[suite, method] = script.suite.split('.');
@@ -30,7 +30,8 @@ const setupSuiteActions = ({ ownerId, script }) => {
 
 	script.actions = [{
 		handler: boundHandler,
-		isAsync: suiteEntry.isAsync
+		isAsync: suiteEntry.isAsync,
+		args
 	}];
 };
 

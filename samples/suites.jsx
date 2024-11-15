@@ -38,14 +38,14 @@ const doWeirdStuffWithLabel = async ({ setState, getExternalState, getData, setD
 	});
 };
 
-const containerClick = ({ ownerId, getData, setData, setExternalState }) => {
+const containerClick = ({ ownerId, getData, setData, setExternalState },  { args }) => {
 	const idLabel = getScopedId('||clicker.label||', ownerId);
 
 	let clickCount = getData('clickCount', 0);
 	clickCount++;
 
 	setExternalState(idLabel, {
-		caption: `I have been clicked x ${clickCount}`
+		caption: `I have been clicked x ${clickCount} and the suffix is ${args.suffix}`
 	});
 
 	setData('clickCount', clickCount);
@@ -105,7 +105,10 @@ root.render(
 					fireScript: {
 						suite: {
 							suite: 'colorManager',
-							method: 'containerClick'
+							method: 'containerClick',
+							args: {
+								suffix: 'some string'
+							}
 						}
 					}
 				},

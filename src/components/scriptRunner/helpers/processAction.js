@@ -54,10 +54,14 @@ export const processAction = async (config, script, props, context) => {
 	const { type, storeAsVariable, pushToVariable, handler, isAsync } = morphedConfig;
 
 	if (handler) {
+		//We always drill one level into the suite's args
+		if (morphedConfig.args)
+			morphedConfig.args = morphConfig(morphedConfig.args, script, props, false, true, actionTrackers);
+
 		if (isAsync)
-			await handler(config, script, props, context);
+			await handler(morphedConfig, script, props, context);
 		else
-			handler(config, script, props, context);
+			handler(morphedConfig, script, props, context);
 
 		return;
 	}
