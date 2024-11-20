@@ -1348,7 +1348,7 @@ const actions = [
 			{
 				key: 'fromList',
 				desc: 'An array of id\'s to flow from',
-				type: 'string'
+				type: 'array'
 			},
 			{
 				key: 'fromKey',
@@ -1358,7 +1358,7 @@ const actions = [
 			{
 				key: 'fromKeyList',
 				desc: 'A list of keys to flow from (when used with fromList)',
-				type: 'string'
+				type: 'array'
 			},
 			{
 				key: 'fromSubKey',
@@ -1368,7 +1368,7 @@ const actions = [
 			{
 				key: 'fromSubKeyList',
 				desc: 'An array of subKeys to flow from (when used with fromKeyList)',
-				type: 'string'
+				type: 'array'
 			},
 			{
 				key: 'to',
@@ -1378,7 +1378,7 @@ const actions = [
 			{
 				key: 'toList',
 				desc: 'An array of id\'s to flow to',
-				type: 'string'
+				type: 'array'
 			},
 			{
 				key: 'toTag',
@@ -1398,7 +1398,7 @@ const actions = [
 			{
 				key: 'toKeyList',
 				desc: 'An array of keys to flow to (when used with toList)',
-				type: 'string'
+				type: 'array'
 			},
 			{
 				key: 'mapFunctionString',
@@ -2189,7 +2189,7 @@ const actions = [
 			{
 				key: 'paths',
 				desc: 'A list of paths to remove the keys at',
-				type: 'string'
+				type: 'array'
 			}
 		],
 		spec: {
