@@ -65,7 +65,7 @@ const fullPropSpecs = {};
 
 const setFullPropSpec = (type, propSpec) => {
 	const fullPropSpec = {};
-	clone(fullPropSpec, baseProps)
+	clone(fullPropSpec, baseProps);
 	clone(fullPropSpec, propSpec);
 
 	fullPropSpecs[type] = fullPropSpec;
@@ -118,6 +118,9 @@ export const doesComponentTypeExist = type => !!components[type];
 export const getComponentTypes = () => Object.keys(components);
 
 export const init = () => {
-	initSetWgtState({ getPropSpec, getFullPropSpec });
+	initSetWgtState({
+		getPropSpec,
+		getFullPropSpec
+	});
 	initGetListenerStates({ getPropSpec });
 };

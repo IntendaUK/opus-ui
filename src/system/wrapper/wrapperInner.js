@@ -33,7 +33,7 @@ const onRunFlowChecker = (id, propSpec, setState, state) => {
 
 
 /* eslint-disable-next-line max-lines-per-function */
-const WrapperInner = ({ mda, children, ctx, mdaString }) => {
+const WrapperInner = ({ mda, children, ctx, mdaString, timeStart }) => {
 	const [componentProps, setWrapperState] = useState();
 	const [cpnState, setCpnState] = useState({ updates: 0 });
 
@@ -62,6 +62,13 @@ const WrapperInner = ({ mda, children, ctx, mdaString }) => {
 
 	if (!Component || !componentProps || !cpnState.type)
 		return null;
+
+	if (timeStart) {
+		window.tt += performance.now() - timeStart;
+		window.tc++;
+
+		console.log(window.tc, window.tt);
+	}
 
 	componentProps.state = cpnState;
 	componentProps.wgts = wgts;

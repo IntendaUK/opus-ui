@@ -1,5 +1,5 @@
 //System Helpers
-import { cloneNoOverrideNoCopy, getDeepPropertyArray } from '../helpers';
+import { cloneNoOverrideNoCopy, getDeepPropertyArray, generateGuid } from '../helpers';
 import { recurseProps } from '../wrapper/helpers/morphProps';
 import { applyPrpDefaults,
 	findMissingPrps,
@@ -73,6 +73,18 @@ const combineArrayProps = [
 	'lookupFlows'
 ];
 
+const recursivelyAssignIds = mda => {
+	Object.entries(mda).forEach(([k, v]) => {
+		if (v === null || typeof(v) !== 'object')
+			return;
+
+		recursivelyAssignIds(v);
+
+		if (v.isStatic)
+			v.id = generateGuid();
+	});
+};
+
 export const combineTraitAndMda = (mda, trait) => {
 	if (mda.scope && trait.scope) {
 		const combinedScope = Array.isArray(mda.scope) ? mda.scope : [ mda.scope ];
@@ -98,6 +110,8 @@ export const combineTraitAndMda = (mda, trait) => {
 	});
 
 	cloneNoOverrideNoCopy(mda, trait);
+
+	recursivelyAssignIds(mda);
 };
 
 const deleteAuthFieldsFromMda = (mda, auth) => {

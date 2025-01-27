@@ -30,13 +30,15 @@ const triggerIsMatch = ({ config: { source }, script }, mountedId) => {
 	return true;
 };
 
+// eslint-disable-next-line max-lines-per-function
 export const lateBindTriggers = async id => {
 	const promises = [];
 
 	lateBoundTriggers.forEach(q => {
 		const { config, props, script, context, boundTo } = q;
 
-		if (boundTo[id] || !triggerIsMatch(q, id))
+		const isMatch = triggerIsMatch(q, id);
+		if (boundTo[id] || !isMatch)
 			return;
 
 		boundTo[id] = { disposers: [] };
