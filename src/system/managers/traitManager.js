@@ -1,4 +1,5 @@
 //System Helpers
+import opusConfig from '../../config';
 import { cloneNoOverrideNoCopy, getDeepPropertyArray } from '../helpers';
 import { recurseProps } from '../wrapper/helpers/morphProps';
 import { applyPrpDefaults,
@@ -73,7 +74,19 @@ const combineArrayProps = [
 	'lookupFlows'
 ];
 
-export const combineTraitAndMda = (mda, trait) => {
+export const combineTraitAndMda = (mda, trait, traitPath) => {
+	if (opusConfig.env === 'development') {
+		if (!mda.prps)
+			mda.prps = {};
+
+		if (!mda.prps.traitMappings)
+			mda.prps.traitMappings = {};
+
+		const traitOwnedPrps = Object.keys(trait.prps).filter(f => f !== 'path');
+		mda.prps.traitMappings[`dashboard/${traitPath}.json`] = { prps: traitOwnedPrps };
+		delete trait.prps.path;
+	}
+
 	if (mda.scope && trait.scope) {
 		const combinedScope = Array.isArray(mda.scope) ? mda.scope : [ mda.scope ];
 		if (Array.isArray(trait.scope)) {
@@ -139,7 +152,7 @@ export const applyTraits = (mda, context) => {
 				if (auth)
 					deleteAuthFieldsFromMda(mda, auth);
 
-				combineTraitAndMda(mda, clonedTraitMda);
+				combineTraitAndMda(mda, clonedTraitMda, trait);
 			}
 		} else if (typeof(v) === 'object' && !!v && !v.traits)
 			applyTraits(v, context);

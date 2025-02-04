@@ -10,19 +10,37 @@ import sysSetWgtState from './stateManager/setWgtState';
 //Internals
 const appState = new Map();
 
+//A list of component id's and the file path from where it was built
+const componentPathMap = new Map();
+
 export const deletedKeyValue = '{deleted}';
 
 const reset = () => {
 	appState.clear();
 };
 
-const initState = (id, setLocalState, localState) => {
+const initState = (id, setLocalState, localState, path, traitMappings, cpnForceRemount) => {
 	if (appState.get(id))
 		return;
 
+	if (!componentPathMap.get(path))
+		componentPathMap.set(path, []);
+
+	componentPathMap.get(path).push(id);
+
+	if (traitMappings) {
+		Object.keys(traitMappings).forEach(traitPath => {
+			if (!componentPathMap.get(traitPath))
+				componentPathMap.set(traitPath, []);
+
+			componentPathMap.get(traitPath).push(id);
+		});
+	}
+
 	const state = {
 		localState,
-		setLocalState
+		setLocalState,
+		forceRemount: cpnForceRemount
 	};
 
 	appState.set(id, state);
@@ -69,7 +87,20 @@ const getWgtStatesWithTag = tag => {
 	return result;
 };
 
-const cleanupState = id => appState.delete(id);
+const cleanupState = (id, path, traitMappings) => {
+	appState.delete(id);
+
+	componentPathMap.get(path).spliceWhere(f => f === id);
+
+	if (traitMappings) {
+		Object.keys(traitMappings).forEach(traitPath => {
+			if (!componentPathMap.get(traitPath))
+				componentPathMap.set(traitPath, []);
+
+			componentPathMap.get(traitPath).push(id);
+		});
+	}
+};
 
 const setAll = newState => {
 	appState.forEach(val => {
@@ -147,6 +178,17 @@ const getOwnerComponent = childId => {
 	}
 
 	return res;
+};
+
+export const getComponentIdsForPath = path => {
+	return componentPathMap.get(path) ?? [];
+};
+
+export const forceRemount = (id, newMda) => {
+	let includeNewMda = newMda.acceptPrps === undefined;
+	const mda = includeNewMda ? newMda : undefined;
+
+	appState.get(id).forceRemount(mda);
 };
 
 const stateManager = {

@@ -33,7 +33,7 @@ const onRunFlowChecker = (id, propSpec, setState, state) => {
 
 
 /* eslint-disable-next-line max-lines-per-function */
-const WrapperInner = ({ mda, children, ctx, mdaString }) => {
+const WrapperInner = ({ mda, children, ctx, mdaString, forceRemount }) => {
 	const [componentProps, setWrapperState] = useState();
 	const [cpnState, setCpnState] = useState({ updates: 0 });
 
@@ -44,7 +44,7 @@ const WrapperInner = ({ mda, children, ctx, mdaString }) => {
 	const Component = useMemo(() => getComponent(type), [type]);
 
 	//Mount hook in charge of doing all the initial setup
-	const cbMount = onMount.bind(null, mda, ctx, setWrapperState, propSpec, cpnState, setCpnState);
+	const cbMount = onMount.bind(null, mda, ctx, setWrapperState, propSpec, cpnState, setCpnState, forceRemount);
 	useEffect(cbMount, []);
 
 	//Hook that builds style and override style tags

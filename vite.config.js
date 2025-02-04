@@ -1,8 +1,8 @@
-import { resolve } from 'node:path'
+import { resolve } from 'node:path';
 
-import react from '@vitejs/plugin-react'
-import { defineConfig, transformWithEsbuild  } from 'vite'
-import * as packageJson from './package.json'
+import react from '@vitejs/plugin-react';
+import { defineConfig, transformWithEsbuild } from 'vite';
+import * as packageJson from './package.json';
 import libCss from 'vite-plugin-libcss';
 
 import { promises as fs } from 'fs';
@@ -20,9 +20,9 @@ const customCopyPlugin = () => {
 					const relativePath = path.relative(srcDir, dirent);
 					const destPath = path.join(distDir, relativePath);
 
-					if ((await fs.lstat(dirent)).isDirectory()) {
+					if ((await fs.lstat(dirent)).isDirectory())
 						await fs.mkdir(destPath, { recursive: true });
-					} else {
+					else {
 						await fs.mkdir(path.dirname(destPath), { recursive: true });
 
 						await fs.copyFile(dirent, destPath);
@@ -30,12 +30,11 @@ const customCopyPlugin = () => {
 				}));
 			};
 
-
 			await copyFiles('src/components', 'dist/components', 'src/components/**/*');
 			await copyFiles('', 'dist', 'lspconfig.json');
 		}
 	};
-}
+};
 
 export default defineConfig(() => ({
 	plugins: [
@@ -43,37 +42,27 @@ export default defineConfig(() => ({
 		libCss(),
 		{
 			name: 'treat-js-files-as-jsx',
-			async transform(code, id) {
+			async transform (code, id) {
 				if (!id.match(/src\/.*\.js$/))
 					return null;
 
 				return transformWithEsbuild(code, id, {
 					loader: 'jsx',
-					jsx: 'automatic',
+					jsx: 'automatic'
 				});
-			},
+			}
 		},
-		react(),
+		react()
 	],
 	build: {
 		lib: {
 			entry: resolve('src', 'library.js'),
 			name: '@intenda/opus-ui',
 			formats: ['es'],
-			fileName: () => `lib.js`,
+			fileName: () => 'lib.js'
 		},
-		rollupOptions: {
-			external: [...Object.keys(packageJson.peerDependencies)],
-		},
+		rollupOptions: { external: [...Object.keys(packageJson.peerDependencies)] }
 	},
-	optimizeDeps: {
-		esbuildOptions: {
-			loader: {
-				'.js': 'jsx',
-			},
-		},
-	},
-	test: {
-		environment: 'jsdom'
-	}
+	optimizeDeps: { esbuildOptions: { loader: { '.js': 'jsx' } } },
+	test: { environment: 'jsdom' }
 }));

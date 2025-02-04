@@ -1,5 +1,6 @@
 //React
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
+import ReactDOM from 'react-dom';
 
 //System
 import { AppContext } from '../managers/appManager';
@@ -36,9 +37,27 @@ const needsDynamicWrapper = mda => {
 const Wrapper = props => {
 	const { mda, children } = props;
 
+	const [wrapperKey, setWrapperKey] = useState(0);
+	const [doUnmount, setDoUnmount] = useState(false);
+
 	const appContext = useContext(AppContext);
 
-	if (mda.split)
+	const forceRemount = newMda => {
+		if (newMda) {
+			Object.keys(mda).forEach(k => delete mda[k]);
+
+			Object.assign(mda, newMda);
+		}
+
+		setDoUnmount(true);
+		setWrapperKey(prev => prev + 1);
+
+		setTimeout(() => {
+			setDoUnmount(false);
+		}, 100);
+	};
+
+	if (doUnmount || mda.split)
 		return null;
 
 	const mdaString = JSON.stringify(mda);
@@ -51,6 +70,7 @@ const Wrapper = props => {
 				mda={mda}
 				children={children}
 				ctx={appContext}
+				forceRemount={forceRemount}
 			/>
 		);
 	}
@@ -66,6 +86,7 @@ const Wrapper = props => {
 			mda={mda}
 			children={children}
 			ctx={appContext}
+			forceRemount={forceRemount}
 		/>
 	);
 };

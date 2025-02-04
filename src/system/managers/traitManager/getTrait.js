@@ -21,6 +21,13 @@ const getTrait = key => {
 			key
 		});
 
+		if (!trait) {
+			trait = {
+				type: 'label',
+				prps: { cpt: `Trait not found: ${key}` }
+			};
+		}
+
 		setTrait(key, trait);
 	}
 

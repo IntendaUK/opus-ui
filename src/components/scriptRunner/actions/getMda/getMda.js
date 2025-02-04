@@ -1,3 +1,5 @@
+/* eslint-disable max-lines */
+
 //Plugins
 import { of } from 'rxjs';
 import { ajax } from 'rxjs/ajax';
@@ -16,9 +18,7 @@ const mdaPackage = {
 	package: null
 };
 
-const namespaces = {
-	contents: null
-};
+const namespaces = { contents: null };
 
 //Helpers
 export const getHostedMda = async ({ type, key }) => {
@@ -240,6 +240,9 @@ export const setMdaAtPath = ({ type, key, mda }) => {
 	accessor.forEach(a => {
 		if (!res)
 			return;
+
+		if (!res[a])
+			res[a] = {};
 
 		res = res[a];
 	});

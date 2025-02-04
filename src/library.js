@@ -112,4 +112,6 @@ const Opus = props => {
 	);
 };
 
+export { reloadComponentsFromPath } from './system/managers/reloadManager';
+
 export default Opus;

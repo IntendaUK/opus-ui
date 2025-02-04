@@ -110,7 +110,7 @@ export const onMutateMda = (initialMda, mdaString, setFixedMda, ctx) => {
 
 //Components
 const WrapperDynamic = React.memo(
-	({ mda, children, ctx, mdaString }) => {
+	({ mda, children, ctx, mdaString, forceRemount }) => {
 		const [fixedMda, setFixedMda] = useState(null);
 
 		const onFixMda = useCallback(
@@ -131,6 +131,7 @@ const WrapperDynamic = React.memo(
 				mda={useMda}
 				children={children}
 				ctx={ctx}
+				forceRemount={forceRemount}
 			/>
 		);
 	},

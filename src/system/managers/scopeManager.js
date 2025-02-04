@@ -437,3 +437,31 @@ export const getNodeNamespace = id => {
 
 	return node?.namespace;
 };
+
+export const getFilteredParentList = ids => {
+	const res = [];
+
+	ids.forEach(id => {
+		let node = findNodeInDomTree(id);
+		if (!node)
+			return;
+
+		let foundParentInIds = false;
+
+		//Only include the node if none of the other id's are its parent
+		while (node.parentNode) {
+			node = node.parentNode;
+
+			if (ids.some(f => f === node.id)) {
+				foundParentInIds = true;
+
+				break;
+			}
+		}
+
+		if (!foundParentInIds)
+			res.push(id);
+	});
+
+	return res;
+};

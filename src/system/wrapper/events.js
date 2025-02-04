@@ -20,7 +20,7 @@ import { register as registerDiagnostics } from '../../components/scriptRunner/d
 
 //Events
 const onUnmount = mda => {
-	const { id } = mda;
+	const { id, prps: { path, traitMappings } } = mda;
 
 	emitEvent(id, 'onUnmount', { full: { id } });
 
@@ -31,7 +31,7 @@ const onUnmount = mda => {
 		});
 	}
 
-	stateManager.cleanupState(id);
+	stateManager.cleanupState(id, path, traitMappings);
 	disposeLateBoundTriggers(id);
 	disposeScripts(id);
 	destroyScope(id);
@@ -42,10 +42,14 @@ const onUnmount = mda => {
 	removeNodeFromDom(mda);
 };
 
-export const onMount = (mda, ctx, setWrapperState, propSpec, cpnState, setComponentState) => {
-	const { id, type, wgts } = mda;
+export const onMount = (
+	mda, ctx, setWrapperState, propSpec, cpnState, setComponentState, forceRemount
+) => {
+	const { id, type, wgts, prps: { path, traitMappings } } = mda;
 
-	ctx.initState(id, setComponentState, cpnState);
+	ctx.initState(
+		id, setComponentState, cpnState, path, traitMappings, forceRemount
+	);
 
 	const addedNode = addNodeToDom(mda);
 	if (!addedNode) {
