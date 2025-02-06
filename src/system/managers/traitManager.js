@@ -71,7 +71,8 @@ const combineArrayProps = [
 	'flows',
 	'morphProps',
 	'lookupFilters',
-	'lookupFlows'
+	'lookupFlows',
+	'traitMappings'
 ];
 
 export const combineTraitAndMda = (mda, trait, traitPath) => {
@@ -80,11 +81,12 @@ export const combineTraitAndMda = (mda, trait, traitPath) => {
 			mda.prps = {};
 
 		if (!mda.prps.traitMappings)
-			mda.prps.traitMappings = {};
+			mda.prps.traitMappings = [];
 
-		const traitOwnedPrps = Object.keys(trait.prps).filter(f => f !== 'path');
-		mda.prps.traitMappings[`dashboard/${traitPath}.json`] = { prps: traitOwnedPrps };
-		delete trait.prps.path;
+		if (!mda.prps.traitMappings.includes(`dashboard/${traitPath}.json`))
+			mda.prps.traitMappings.push(`dashboard/${traitPath}.json`);
+
+		delete trait?.prps?.path;
 	}
 
 	if (mda.scope && trait.scope) {

@@ -29,7 +29,7 @@ const initState = (id, setLocalState, localState, path, traitMappings, cpnForceR
 	componentPathMap.get(path).push(id);
 
 	if (traitMappings) {
-		Object.keys(traitMappings).forEach(traitPath => {
+		traitMappings.forEach(traitPath => {
 			if (!componentPathMap.get(traitPath))
 				componentPathMap.set(traitPath, []);
 
@@ -93,7 +93,7 @@ const cleanupState = (id, path, traitMappings) => {
 	componentPathMap.get(path).spliceWhere(f => f === id);
 
 	if (traitMappings) {
-		Object.keys(traitMappings).forEach(traitPath => {
+		traitMappings.forEach(traitPath => {
 			if (!componentPathMap.get(traitPath))
 				componentPathMap.set(traitPath, []);
 
