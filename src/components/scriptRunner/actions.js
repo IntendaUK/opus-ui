@@ -124,6 +124,8 @@ export const setState = (config, script, props) => {
 export const setMultiState = (config, script, { setWgtState }) => {
 	const { target = script.ownerId, value } = config;
 
+	delete value.parameters;
+
 	if (opusConfig.env === 'development') {
 		setWgtState(target, value, {
 			id: script.ownerId,
