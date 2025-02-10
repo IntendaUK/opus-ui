@@ -38,6 +38,7 @@ export { default as getBlueprint } from './actions/getBlueprint';
 export { default as getClosestParentOfType } from './actions/getClosestParentOfType';
 export { default as getComponentAtPosition } from './actions/getComponentAtPosition';
 export { default as getComponentHeight } from './actions/getComponentHeight';
+export { default as getComponentIdsWithTag } from './actions/getComponentIdsWithTag';
 export { default as getComponentPosition } from './actions/getComponentPosition';
 export { default as getComponentsOfType } from './actions/getComponentsOfType';
 export { default as getComponentWidth } from './actions/getComponentWidth';
