@@ -48,7 +48,7 @@ export const getMorphedString = (string, blueprintVariables) => {
 };
 
 export const getVariableValue = (mda, value, blueprintVariables) => {
-	const variableName = value.split('$').join('');
+	let variableName = value.split('$').join('').replace('...', '');
 
 	if (!variableName.includes('.')) {
 		const { [variableName]: variableValue } = blueprintVariables;

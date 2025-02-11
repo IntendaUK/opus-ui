@@ -1,3 +1,5 @@
+/* eslint-disable max-lines */
+
 //This method is used for blueprints that define variable specs which should,
 // going forward, be the standard way in which we use blueprints
 
@@ -52,18 +54,21 @@ const isWildcard = key => {
 };
 
 const deletePrpIfMissing = (key, value, blueprint, blueprintPrps, recurseConfig) => {
+	if (recurseConfig?.ignoreUndefinedPrps === true)
+		return false;
+
 	//We never delete composite wildcards like %prefix%-%suffix%
 	// Which is why we have the second check in this 'if'
 	if (isWildcard(value) && value.split(value[0]).length === 3) {
 		const prp = value.substring(1, value.length - 1);
-		let prpValue = blueprintPrps[prp];
 
-		const prpName = prp.includes('.') ? prp.split('.')[0] : prp;
-		if (
-			recurseConfig?.ignoreUndefinedPrps === true &&
-			recurseConfig.traitPrpSpec[prpName] === undefined
-		)
+		let prpName = prp.replace('...', '');
+		prpName = prp.includes('.') ? prp.split('.')[0] : prp;
+
+		if (recurseConfig.traitPrpSpec[prpName] === undefined)
 			return false;
+
+		let prpValue = blueprintPrps[prp];
 
 		if (prp.includes('.'))
 			prpValue = getDeepProperty(blueprintPrps, prp);
@@ -78,43 +83,73 @@ const deletePrpIfMissing = (key, value, blueprint, blueprintPrps, recurseConfig)
 	return false;
 };
 
-export const recursivelyApplyValuePrps = (blueprint, blueprintPrps, recurseConfig) => {
+export let recursivelyApplyValuePrps;
+
+const applyValuePrp = (
+	blueprint, blueprintPrps, recurseConfig, closestArrayAncestor, key, value
+) => {
+	const type = typeof (value);
+
+	if (type === 'object' && value !== null) {
+		recursivelyApplyValuePrps(value, blueprintPrps, recurseConfig, closestArrayAncestor);
+
+		return;
+	} else if (type !== 'string')
+		return;
+
+	const valuePrpDeleted = deletePrpIfMissing(key, value, blueprint, blueprintPrps, recurseConfig);
+
+	if (valuePrpDeleted)
+		return;
+
+	const isDirectReplace = value[0] === '$' && value.slice(-1) === '$';
+
+	let finalValue = (
+		isDirectReplace ?
+			getVariableValue(blueprint, value, blueprintPrps) :
+			getMorphedString(value, blueprintPrps)
+	);
+
+	finalValue = resolveThemeAccessor(finalValue);
+
+	if (value.indexOf('$...') === 0) {
+		closestArrayAncestor.splice(key, 1, ...finalValue);
+
+		return;
+	} else if (key === 'spread-') {
+		clone(blueprint, finalValue);
+		delete blueprint[key];
+
+		return;
+	}
+
+	blueprint[key] = finalValue;
+};
+
+/* eslint-disable-next-line max-lines-per-function, complexity */
+recursivelyApplyValuePrps = (
+	blueprint, blueprintPrps, recurseConfig, closestArrayAncestor
+) => {
+	let isArray = false;
+	if (Array.isArray(blueprint)) {
+		isArray = true;
+		closestArrayAncestor = blueprint;
+	}
+
 	const entries = Object.entries(blueprint);
 
-	for (const [key, value] of entries) {
-		const type = typeof (value);
+	if (isArray) {
+		for (let key = 0; key < blueprint.length; key++) {
+			const value = blueprint[key];
 
-		if (type === 'object' && value !== null) {
-			recursivelyApplyValuePrps(value, blueprintPrps, recurseConfig);
-
-			continue;
-		} else if (type !== 'string')
-			continue;
-
-		const valuePrpDeleted = deletePrpIfMissing(key, value, blueprint, blueprintPrps, recurseConfig);
-
-		if (valuePrpDeleted)
-			continue;
-
-		const isDirectReplace = value[0] === '$' && value.slice(-1) === '$';
-
-		let finalValue = (
-			isDirectReplace ?
-				getVariableValue(blueprint, value, blueprintPrps) :
-				getMorphedString(value, blueprintPrps)
-		);
-
-		finalValue = resolveThemeAccessor(finalValue);
-
-		if (key === 'spread-') {
-			clone(blueprint, finalValue);
-			delete blueprint[key];
-
-			continue;
+			applyValuePrp(blueprint, blueprintPrps, recurseConfig, closestArrayAncestor, key, value);
 		}
 
-		blueprint[key] = finalValue;
+		return;
 	}
+
+	for (const [key, value] of entries)
+		applyValuePrp(blueprint, blueprintPrps, recurseConfig, closestArrayAncestor, key, value);
 };
 
 export const recursivelyApplyKeyPrps = (blueprint, blueprintPrps, recurseConfig) => {
