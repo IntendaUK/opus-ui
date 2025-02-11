@@ -20,7 +20,10 @@ import { register as registerDiagnostics } from '../../components/scriptRunner/d
 
 //Events
 const onUnmount = mda => {
-	const { id, prps: { path, traitMappings } } = mda;
+	const { id, prps } = mda;
+
+	const path = prps?.path;
+	const traitMappings = prps?.traitMappings;
 
 	emitEvent(id, 'onUnmount', { full: { id } });
 
@@ -45,7 +48,10 @@ const onUnmount = mda => {
 export const onMount = (
 	mda, ctx, setWrapperState, propSpec, cpnState, setComponentState, forceRemount
 ) => {
-	const { id, type, wgts, prps: { path, traitMappings } } = mda;
+	const { id, type, wgts, prps } = mda;
+
+	const path = prps?.path;
+	const traitMappings = prps?.traitMappings;
 
 	ctx.initState(
 		id, setComponentState, cpnState, path, traitMappings, forceRemount
