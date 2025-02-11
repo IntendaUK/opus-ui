@@ -1,4 +1,4 @@
-/* eslint-disable max-lines */
+/* eslint-disable max-lines, no-underscore-dangle */
 
 //System
 import opusConfig from '../../config';
@@ -124,7 +124,7 @@ export const setState = (config, script, props) => {
 export const setMultiState = (config, script, { setWgtState }) => {
 	const { target = script.ownerId, value } = config;
 
-	delete value.parameters;
+	delete value._evalParameters;
 
 	if (opusConfig.env === 'development') {
 		setWgtState(target, value, {

@@ -1,4 +1,4 @@
-/* eslint-disable max-lines, max-lines-per-function, max-len */
+/* eslint-disable max-lines, max-lines-per-function, max-len, no-underscore-dangle */
 
 //System
 import opusConfig from '../../../config';
@@ -76,7 +76,7 @@ const getVariableOrState = (token, script, props, key, parentObj) => {
 		const scp = splitToken.join('.');
 
 		//eslint-disable-next-line no-unused-vars, no-underscore-dangle
-		const _evalParameters = parentObj.parameters?.[key];
+		const _evalParameters = parentObj._evalParameters?.[key];
 
 		try {
 			//eslint-disable-next-line no-eval
@@ -247,15 +247,15 @@ const replaceStrings = (value, script, props, isDrilling, key, parentObj, action
 						newValue.split('variable.').length +
 						newValue.split('eval.').length > 4
 					) {
-						if (!parentObj.parameters)
-							parentObj.parameters = {};
+						if (!parentObj._evalParameters)
+							parentObj._evalParameters = {};
 
-						if (!parentObj.parameters?.[key])
-							parentObj.parameters[key] = [];
+						if (!parentObj._evalParameters?.[key])
+							parentObj._evalParameters[key] = [];
 
-						parentObj.parameters[key].push(replacement);
+						parentObj._evalParameters[key].push(replacement);
 
-						const parameterAccessor = `_evalParameters[${parentObj.parameters[key].length - 1}]`;
+						const parameterAccessor = `_evalParameters[${parentObj._evalParameters[key].length - 1}]`;
 
 						if (actionTrackers) {
 							const fullAccessor = `{{${string}}}`;
