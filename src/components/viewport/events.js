@@ -80,7 +80,10 @@ export const onValueChange = (
 	}
 
 	(async () => {
-		const key = resolveRelativePath(value, path);
+		let folderPath = path.replace('dashboard/', '');
+		folderPath = path.substring(0, folderPath.lastIndexOf('/'));
+
+		const key = resolveRelativePath(value, folderPath);
 
 		const mda = await getMdaHelper({
 			type: 'dashboard',
