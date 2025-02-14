@@ -65,7 +65,7 @@ const deletePrpIfMissing = (key, value, blueprint, blueprintPrps, recurseConfig)
 		let prpName = prp.replace('...', '');
 		prpName = prp.includes('.') ? prp.split('.')[0] : prp;
 
-		if (recurseConfig.traitPrpSpec[prpName] === undefined)
+		if (recurseConfig?.traitPrpSpec[prpName] === undefined)
 			return false;
 
 		let prpValue = blueprintPrps[prp];
