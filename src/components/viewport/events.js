@@ -81,7 +81,7 @@ export const onValueChange = (
 
 	(async () => {
 		let folderPath = path.replace('dashboard/', '');
-		folderPath = path.substring(0, folderPath.lastIndexOf('/'));
+		folderPath = folderPath.substring(0, folderPath.lastIndexOf('/'));
 
 		const key = resolveRelativePath(value, folderPath);
 
