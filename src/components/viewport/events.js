@@ -72,7 +72,7 @@ export const onValueChange = (
 	props,
 	ctrlDown
 ) => {
-	const { state: { value, path } } = props;
+	const { state: { value, path = '' } } = props;
 	if (!value) {
 		onValueCleared(props);
 
@@ -80,10 +80,14 @@ export const onValueChange = (
 	}
 
 	(async () => {
-		let folderPath = path.replace('dashboard/', '');
-		folderPath = folderPath.substring(0, folderPath.lastIndexOf('/'));
+		let key = value;
 
-		const key = resolveRelativePath(value, folderPath);
+		if (value.indexOf('./') === 0) {
+			let folderPath = path.replace('dashboard/', '');
+			folderPath = folderPath.substring(0, folderPath.lastIndexOf('/'));
+
+			key = resolveRelativePath(value, folderPath);
+		}
 
 		const mda = await getMdaHelper({
 			type: 'dashboard',
