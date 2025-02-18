@@ -76,6 +76,7 @@ export { default as stringify } from './actions/stringify';
 export { default as toggleClass } from './actions/toggleClass';
 export { default as toggleLayoutDebug } from './actions/toggleLayoutDebug';
 export { default as wait } from './actions/wait';
+export { default as waitForCondition } from './actions/waitForCondition';
 
 export {
 	queueDelayedActions, cancelDelayedActions
