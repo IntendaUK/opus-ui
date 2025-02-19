@@ -54,9 +54,6 @@ const isWildcard = key => {
 };
 
 const deletePrpIfMissing = (key, value, blueprint, blueprintPrps, recurseConfig) => {
-	if (recurseConfig?.ignoreUndefinedPrps === true)
-		return false;
-
 	//We never delete composite wildcards like %prefix%-%suffix%
 	// Which is why we have the second check in this 'if'
 	if (isWildcard(value) && value.split(value[0]).length === 3) {
@@ -65,7 +62,10 @@ const deletePrpIfMissing = (key, value, blueprint, blueprintPrps, recurseConfig)
 		let prpName = prp.replace('...', '');
 		prpName = prp.includes('.') ? prp.split('.')[0] : prp;
 
-		if (recurseConfig !== undefined && recurseConfig?.traitPrpSpec[prpName] === undefined)
+		if (
+			recurseConfig?.ignoreUndefinedPrps === true &&
+			recurseConfig.traitPrpSpec[prpName] === undefined
+		)
 			return false;
 
 		let prpValue = blueprintPrps[prp];
