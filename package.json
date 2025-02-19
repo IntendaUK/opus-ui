@@ -1,6 +1,6 @@
 {
 	"name": "@intenda/opus-ui",
-	"version": "1.17.1",
+	"version": "2.0.0",
 	"type": "module",
 	"homepage": "https://opus-ui.com",
 	"files": [
@@ -29,34 +29,35 @@
 		"testUnit": "vitest src/tests/unit/tests",
 		"test": "vitest src/tests"
 	},
-	"dependencies": {},
 	"devDependencies": {
-		"@testing-library/jest-dom": "^6.4.6",
-		"@testing-library/react": "^16.0.0",
-		"@testing-library/user-event": "^14.5.2",
-		"@types/react": "^18.2.55",
-		"@types/react-dom": "^18.2.19",
-		"@vitejs/plugin-react": "^4.2.1",
-		"eslint": "^8.56.0",
-		"eslint-plugin-react": "^7.33.2",
-		"eslint-plugin-react-hooks": "^4.6.0",
-		"eslint-plugin-react-refresh": "^0.4.5",
-		"vite": "^5.1.0",
+		"@testing-library/jest-dom": "^6.6.3",
+		"@testing-library/react": "^16.2.0",
+		"@testing-library/user-event": "^14.6.1",
+		"@types/react": "^19.0.10",
+		"@types/react-dom": "^19.0.4",
+		"@vitejs/plugin-react": "^4.3.4",
+		"eslint": "^9.20.1",
+		"eslint-plugin-react": "^7.37.4",
+		"eslint-plugin-react-hooks": "^5.1.0",
+		"eslint-plugin-react-refresh": "^0.4.19",
+		"vite": "^6.1.0",
 		"vite-plugin-libcss": "^1.1.1",
-		"vitest": "^1.6.0"
+		"vitest": "^3.0.5"
 	},
 	"peerDependencies": {
-		"@popperjs/core": "^2.11.8",
 		"babel-preset-react-app": "^10.0.1",
 		"d3-force": "^3.0.0",
 		"l1-path-finder": "^1.0.0",
 		"ndarray": "^1.0.19",
-		"react": ">=18.0.0 < 19.0.0",
-		"react-dom": ">=18.0.0 < 19.0.0",
-		"react-popper": "^2.3.0",
+		"react": ">=19.0.0 < 20.0.0",
+		"react-dom": ">=19.0.0 < 20.0.0",
 		"rxjs": "^7.8.1"
 	},
 	"publishConfig": {
 		"access": "public"
+	},
+	"dependencies": {
+		"@floating-ui/react": "^0.27.4",
+		"@floating-ui/react-dom": "^2.1.2"
 	}
 }

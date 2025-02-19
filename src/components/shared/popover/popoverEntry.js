@@ -6,7 +6,7 @@ import ReactDOM from 'react-dom';
 import { Wrapper } from '../../../system/wrapper/wrapper';
 
 //Plugins
-import { usePopper } from 'react-popper';
+import { useFloating } from '@floating-ui/react';
 
 //Events
 
@@ -42,23 +42,24 @@ const PopoverEntry = ({ mda, popoverRef }) => {
 
 	const renderInEl = document.getElementById(popoverContainer);
 
-	const [popperElement, setPopperElement] = useState(null);
-	const popperProps = usePopper(popoverRef, popperElement, { placement: position });
-
-	const { styles, attributes, update } = popperProps;
+	const { refs, floatingStyles, update } = useFloating({
+		elements: {
+			reference: popoverRef,
+		},
+		placement: position
+	});
 
 	useEffect(onFixPopperPosition.bind(null, renderInEl, mda.id, update), [update]);
 
 	const style = {
-		...styles.popper,
+		...floatingStyles,
 		zIndex: popoverZIndex
 	};
 
 	const el = (
 		<div
-			ref={setPopperElement}
+			ref={refs.setFloating}
 			style={style}
-			{...attributes.popper}
 		>
 			<Wrapper mda={mda} />
 		</div>
