@@ -61,8 +61,6 @@ export const Container = props => {
 	const { canClick, handlerOnScroll } = state;
 
 	const clicker = canClick ? <Clicker /> : null;
-	const x = 'smagga';
-	console.log(x);
 
 	const events = {
 		onClick: getHandler(onClick),
