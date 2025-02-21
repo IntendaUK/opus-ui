@@ -61,6 +61,8 @@ const customCopyPlugin = () => {
 	};
 };
 
+const ReactCompilerConfig = { target: '19' };
+
 export default defineConfig(() => ({
 	plugins: [
 		customCopyPlugin(),
@@ -76,7 +78,13 @@ export default defineConfig(() => ({
 				});
 			}
 		},
-		react()
+		react({
+			babel: {
+				plugins: [
+					['babel-plugin-react-compiler', ReactCompilerConfig]
+				]
+			}
+		})
 	],
 	build: {
 		lib: {
