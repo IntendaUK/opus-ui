@@ -42,7 +42,7 @@ export const runScript = async (context, props, script, actions, isRootScript) =
 
 	spreadActions(script, actions, props);
 
-	applyTraitsToArray(actions, context);
+	applyTraitsToArray(actions);
 
 	const entry = {
 		id: script.id,
@@ -75,7 +75,7 @@ export const runScript = async (context, props, script, actions, isRootScript) =
 	for (let a of actions) {
 		const { id: branchScriptId, branch } = a;
 
-		const result = await processAction(a, script, props, context);
+		const result = await processAction(a, script, props);
 
 		if (result === stopScriptString)
 			break;
@@ -137,7 +137,7 @@ export const runScriptSync = (context, props, script, actions) => {
 
 	for (const a of actions) {
 		const { branch } = a;
-		const result = processActionSync(a, script, props, context);
+		const result = processActionSync(a, script, props);
 
 		if (result === stopScriptString)
 			break;

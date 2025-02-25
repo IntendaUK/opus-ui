@@ -11,7 +11,7 @@ const onMount = (mda, setType) => {
 	if (!src)
 		return;
 
-	import(`../../${src}`)
+	import(/* @vite-ignore */`../../${src}`)
 		.then(mod => setType(mod));
 };
 

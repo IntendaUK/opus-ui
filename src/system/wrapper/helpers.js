@@ -1,6 +1,7 @@
 //System
 import { emit } from '../managers/eventManager';
 import { getPropertyContainer } from '../managers/propertyManager';
+import { stateManager } from '../managers/stateManager';
 import { getComponent as getComponentFromManager } from '../managers/componentManager';
 
 //Components
@@ -51,14 +52,12 @@ export const applyPropSpec = ({ prps = {}, id, type }, propSpec) => {
 	return prps;
 };
 
-export const buildProps = (wgts, setState, context, id) => {
-	const { setWgtState, getWgtState } = context;
-
+export const buildProps = (wgts, setState, id) => {
 	const props = getPropertyContainer(id);
 	props.id = id;
 	props.setState = setState;
-	props.setWgtState = setWgtState;
-	props.getWgtState = getWgtState;
+	props.setWgtState = stateManager.setWgtState;
+	props.getWgtState = stateManager.getWgtState;
 	props.emit = emit.bind(null, id);
 	props.getHandler = (fn, ...rest) => fn.bind(null, props, ...rest);
 	props.ChildWgt = ChildWgt.bind(null, id);
@@ -107,7 +106,7 @@ const buildMorphProps = (props, result = [], path = []) => {
 	return result;
 };
 
-export const buildMappedProps = (context, propSpec, mda) => {
+export const buildMappedProps = (propSpec, mda) => {
 	if (typeof(mda.prps) !== 'object' || mda.prps === null)
 		mda.prps = {};
 
@@ -117,7 +116,7 @@ export const buildMappedProps = (context, propSpec, mda) => {
 	setAutoHoverPrps(props);
 
 	props.morphProps = buildMorphProps(props, props.morphProps);
-	morphProps(mda.id, props, context);
+	morphProps(mda.id, props);
 
 	return props;
 };

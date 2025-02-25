@@ -1,9 +1,6 @@
 //React
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
-
-//System
-import { AppContext } from '../managers/appManager';
 
 //System Helpers
 import { getPropSpec } from '../managers/componentManager';
@@ -40,8 +37,6 @@ const Wrapper = props => {
 
 	const [wrapperKey, setWrapperKey] = useState(0);
 	const [doUnmount, setDoUnmount] = useState(false);
-
-	const appContext = useContext(AppContext);
 
 	const forceRemount = newMda => {
 		if (newMda) {
@@ -80,7 +75,6 @@ const Wrapper = props => {
 				mdaString={mdaString}
 				mda={mda}
 				children={children}
-				ctx={appContext}
 				forceRemount={forceRemount}
 			/>
 		);
@@ -96,7 +90,6 @@ const Wrapper = props => {
 			mdaString={mdaString}
 			mda={mda}
 			children={children}
-			ctx={appContext}
 			forceRemount={forceRemount}
 		/>
 	);

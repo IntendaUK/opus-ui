@@ -12,7 +12,7 @@ import getTrait from './traitManager/getTrait';
 import isConditionMet from './traitManager/isConditionMet';
 
 //Helpers
-const applyTraitProps = (trait, traitPrps, traitPath, mda, context) => {
+const applyTraitProps = (trait, traitPrps, traitPath, mda) => {
 	const traitPrpSpec = trait.acceptPrps;
 
 	if (traitPrpSpec) {
@@ -46,7 +46,7 @@ const applyTraitProps = (trait, traitPrps, traitPath, mda, context) => {
 		recursivelyApplyKeyPrps(traitPrps, traitPrps, recurseConfig);
 
 		if (allowedToMorph.length > 0)
-			recurseProps(mda.id, traitPrps, context, allowedToMorph);
+			recurseProps(mda.id, traitPrps, allowedToMorph);
 
 		const missingPrps = findMissingPrps(traitPrps, traitPrpSpec);
 
@@ -126,7 +126,7 @@ const deleteAuthFieldsFromMda = (mda, auth) => {
 	});
 };
 
-export const applyTraits = (mda, context) => {
+export const applyTraits = (mda) => {
 	const entries = Object.entries(mda);
 
 	for (let [k, v] of entries) {
@@ -147,9 +147,9 @@ export const applyTraits = (mda, context) => {
 
 				const clonedTraitMda = getTrait(trait);
 
-				applyTraitProps(clonedTraitMda, traitPrps, trait, mda, context);
+				applyTraitProps(clonedTraitMda, traitPrps, trait, mda);
 
-				applyTraits(clonedTraitMda, context);
+				applyTraits(clonedTraitMda);
 
 				if (auth)
 					deleteAuthFieldsFromMda(mda, auth);
@@ -157,15 +157,15 @@ export const applyTraits = (mda, context) => {
 				combineTraitAndMda(mda, clonedTraitMda, trait);
 			}
 		} else if (typeof(v) === 'object' && !!v && !v.traits)
-			applyTraits(v, context);
+			applyTraits(v);
 	}
 };
 
-export const applyTraitsToArray = async (mda, context) => {
+export const applyTraitsToArray = async (mda) => {
 	for (let i = 0; i < mda.length; i++) {
 		const t = mda[i];
 
-		applyTraits(t, context);
+		applyTraits(t);
 
 		if (t.traitArray) {
 			mda.splice(i, 1, ...t.traitArray);

@@ -64,7 +64,7 @@ const recurseMutateMda = mda => {
 };
 
 //Events
-export const onMutateMda = (initialMda, mdaString, setFixedMda, ctx) => {
+export const onMutateMda = (initialMda, mdaString, setFixedMda) => {
 	const mda = clone({}, initialMda);
 
 	if (mda.applyBlueprint === false)
@@ -84,7 +84,7 @@ export const onMutateMda = (initialMda, mdaString, setFixedMda, ctx) => {
 		}
 
 		while (mda.traits)
-			applyTraits(mda, ctx);
+			applyTraits(mda);
 
 		if (mda.condition) {
 			const conditionMet = isConditionMet(mda.condition, mda.parentId);
@@ -110,11 +110,11 @@ export const onMutateMda = (initialMda, mdaString, setFixedMda, ctx) => {
 
 //Components
 const WrapperDynamic = React.memo(
-	({ mda, children, ctx, mdaString, forceRemount }) => {
+	({ mda, children, mdaString, forceRemount }) => {
 		const [fixedMda, setFixedMda] = useState(null);
 
 		const onFixMda = useCallback(
-			onMutateMda.bind(null, mda, mdaString, setFixedMda, ctx),
+			onMutateMda.bind(null, mda, mdaString, setFixedMda),
 			[mdaString]
 		);
 		useEffect(onFixMda, [mdaString]);
@@ -130,7 +130,6 @@ const WrapperDynamic = React.memo(
 				mdaString={useMdaString}
 				mda={useMda}
 				children={children}
-				ctx={ctx}
 				forceRemount={forceRemount}
 			/>
 		);

@@ -19,14 +19,13 @@ const initAndRunScript = async ({
 	script: originalScript,
 	scriptActions,
 	props,
-	context,
 	snapshotKeys,
 	triggerMsg,
 	setVariables,
 	isRootScript = false
 }) => {
-	props = props ?? getPropertyContainer('SCRIPTRUNNER');
-	context = context ?? AppContext;
+	const context = AppContext;
+	props = getPropertyContainer('SCRIPTRUNNER');
 
 	let script = originalScript;
 

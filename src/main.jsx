@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 
 //System
-import Opus, { Component, OC } from './library';
+import Opus, { Component, OC, OpusComponents } from './library';
 
 import json from './stuff.json';
 
@@ -94,26 +94,25 @@ const RendersMda = OC(({ Child }) => {
 const root = createRoot(document.getElementById('root'));
 
 root.render(
-	<Opus
-		startupComponent={
-			<ContainerOuter id={'outer'} scope={'outer'} aflows={[{ from: 'i2', toKey: 'backgroundColor' }]}>
-				<ContainerInner />
-				<Input id={'i1'} />
-				<Input id={'i2'} relId={'input'} scripts={[{
-					triggers: [{
-						event: 'onStateChange',
-						source: 'i1'
-					}],
-					handler: ({ triggeredFrom, setState, setExtState, getVariable }) => {
-						console.log(triggeredFrom, getVariable('triggeredFrom'));
+	<>
+		<OpusComponents />
+		<ContainerOuter id={'outer'} scope={'outer'} aflows={[{ from: 'i2', toKey: 'backgroundColor' }]}>
+			<ContainerInner />
+			<Input id={'i1'} />
+			<Input id={'i2'} relId={'input'} scripts={[{
+				triggers: [{
+					event: 'onStateChange',
+					source: 'i1'
+				}],
+				handler: ({ triggeredFrom, setState, setExtState, getVariable }) => {
+					console.log(triggeredFrom, getVariable('triggeredFrom'));
 
-						setExtState('||outer.input||', {
-							color: 'red'
-						});
-					}
-				}]} />
-				<RendersMda />
-			</ContainerOuter>
-		}
-	/>
+					setExtState('||outer.input||', {
+						color: 'red'
+					});
+				}
+			}]} />
+			<RendersMda />
+		</ContainerOuter>
+	</>
 );

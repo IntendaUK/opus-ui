@@ -8,6 +8,7 @@ export { default as applyThemesToMdaPackage } from './app/components/helpers/app
 //System
 import { Wrapper } from './system/wrapper/wrapper';
 import { AppLib } from './appLib';
+export { default as OpusComponents } from './appLib/components/systemComponents';
 import { getExternalComponentTypes } from './library/externalComponentTypes';
 
 export { createContext } from './system/managers/appManager';
@@ -117,3 +118,6 @@ export { reloadComponentsFromPath } from './system/managers/reloadManager';
 export { default as OC } from './oc';
 
 export default Opus;
+
+import { init as initComponentManager } from './system/managers/componentManager';
+initComponentManager();
