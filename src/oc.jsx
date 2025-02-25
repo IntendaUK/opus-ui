@@ -104,7 +104,7 @@ const onRunFlowChecker = (id, cpnState, setCpnState, mounted) => {
 
 //Componnets
 const OC = ComponentToRender => {
-	return _props => {
+	return (_props, a, b, c) => {
 		const { children: _children, ...props } = _props;
 
 		const [cpnState, setCpnState] = useState({
@@ -114,7 +114,7 @@ const OC = ComponentToRender => {
 			flows: props.flows,
 			scripts: props.scripts ?? props.scps,
 			parentId: props.parentId,
-			...(props.state ?? {}),
+			...(props.state ?? props.prps ?? {}),
 			type: '_opusExternal',
 			updates: 0
 		});

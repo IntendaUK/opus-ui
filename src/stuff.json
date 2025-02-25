@@ -10,6 +10,12 @@
 			"prps": {
 				"caption": "smoom"
 			}
+		},
+		{
+			"src": "./wow",
+			"prps": {
+				"someUserProp": "BOOM"
+			}
 		}
 	]
 }

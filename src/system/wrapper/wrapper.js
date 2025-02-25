@@ -11,6 +11,7 @@ import { getPropSpec } from '../managers/componentManager';
 //Components
 import WrapperDynamic from './wrapperDynamic';
 import WrapperInner from './wrapperInner';
+import WrapperSrc from './wrapperSrc';
 
 //Helpers
 const needsDynamicWrapper = mda => {
@@ -61,6 +62,16 @@ const Wrapper = props => {
 		return null;
 
 	const mdaString = JSON.stringify(mda);
+
+	if (mda.src) {
+		return (
+			<WrapperSrc
+				mda={mda}
+				children={children}
+			/>
+		);
+
+	}
 
 	const isDynamic = needsDynamicWrapper(mda);
 	if (isDynamic) {
