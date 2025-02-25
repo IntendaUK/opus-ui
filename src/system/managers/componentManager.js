@@ -1,4 +1,3 @@
-/* eslint-disable max-lines */
 
 import { init as initSetWgtState } from './stateManager/setWgtState';
 import { init as initGetListenerStates } from './flowManager/helpers/applyListenerStates';
@@ -65,7 +64,7 @@ const fullPropSpecs = {};
 
 const setFullPropSpec = (type, propSpec) => {
 	const fullPropSpec = {};
-	clone(fullPropSpec, baseProps)
+	clone(fullPropSpec, baseProps);
 	clone(fullPropSpec, propSpec);
 
 	fullPropSpecs[type] = fullPropSpec;
@@ -109,7 +108,7 @@ export const getComponent = type => components[type];
 
 export const getPropSpec = type => propSpecs[type];
 
-export const getFullPropSpec = type => fullPropSpecs[type];
+export const getFullPropSpec = type => fullPropSpecs[type] ?? baseProps;
 
 export const getPropSpecs = () => propSpecs;
 
@@ -118,6 +117,9 @@ export const doesComponentTypeExist = type => !!components[type];
 export const getComponentTypes = () => Object.keys(components);
 
 export const init = () => {
-	initSetWgtState({ getPropSpec, getFullPropSpec });
+	initSetWgtState({
+		getPropSpec,
+		getFullPropSpec
+	});
 	initGetListenerStates({ getPropSpec });
 };

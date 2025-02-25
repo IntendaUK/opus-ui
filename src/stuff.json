@@ -1,0 +1,15 @@
+{
+	"type": "containerSimple",
+	"prps": {
+		"padding": true,
+		"backgroundColor": "green"
+	},
+	"wgts": [
+		{
+			"type": "label",
+			"prps": {
+				"caption": "smoom"
+			}
+		}
+	]
+}
