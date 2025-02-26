@@ -78,13 +78,13 @@ export default defineConfig(() => ({
 				});
 			}
 		},
-		react(/*{
+		react({
 			babel: {
 				plugins: [
 					['babel-plugin-react-compiler', ReactCompilerConfig]
 				]
 			}
-		}*/)
+		})
 	],
 	build: {
 		lib: {
