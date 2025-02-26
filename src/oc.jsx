@@ -6,7 +6,8 @@ import { stateManager } from './system/managers/stateManager';
 import { getFullPropSpec } from './system/managers/componentManager';
 import { addNodeToDom, getScopedId } from './system/managers/scopeManager';
 import { registerScripts } from './system/wrapper/helpers';
-import { register, emitEvent, queueChanges, getInitialState, processQueue } from './system/managers/flowManager/index';
+import { register, emitEvent, getInitialState, processQueue } from './system/managers/flowManager/index';
+import queueChanges from './system/managers/flowManager/methods/queueChanges';
 import { lateBindTriggers } from './components/scriptRunner/helpers/lateBoundTriggers';
 import { Wrapper } from './system/wrapper/wrapper';
 

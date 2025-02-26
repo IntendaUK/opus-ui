@@ -1,5 +1,6 @@
 //System
-import { register, destroyScope, emitEvent, queueChanges } from '../managers/flowManager/index';
+import { register, destroyScope, emitEvent } from '../managers/flowManager/index';
+import queueChanges from '../managers/flowManager/methods/queueChanges';
 import { addNodeToDom, removeNodeFromDom } from '../managers/scopeManager';
 import { stateManager } from '../managers/stateManager';
 import { removePersistedStatesForScope, persistState } from '../managers/propertyManager';

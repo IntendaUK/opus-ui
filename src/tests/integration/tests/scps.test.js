@@ -10,22 +10,20 @@ describe('Scripts', () => {
 		const { container } = await setupDashboard({
 			type: 'containerSimple',
 			wgts: [{
-				"id": "f1",
-				"type": "input",
-				"prps": {
-					"value": "initialValue",
-					"scps": [
+				id: 'f1',
+				type: 'input',
+				prps: {
+					value: 'initialValue',
+					scps: [
 						{
-							"triggers": [
-								{
-									"event": "onMount"
-								}
+							triggers: [
+								{ event: 'onMount' }
 							],
-							"actions": [
+							actions: [
 								{
-									"type": "setState",
-									"key": "value",
-									"value": "changedValue"
+									type: 'setState',
+									key: 'value',
+									value: 'changedValue'
 								}
 							]
 						}
@@ -43,35 +41,31 @@ describe('Scripts', () => {
 		const { container } = await setupDashboard({
 			type: 'containerSimple',
 			wgts: [{
-				"id": "f2",
-				"type": "input",
-				"prps": {
-					"value": "initialValue",
-					"displayObject": {
-						"value": "initialValue"
-					},
-					"flows": [
+				id: 'f2',
+				type: 'input',
+				prps: {
+					value: 'initialValue',
+					displayObject: { value: 'initialValue' },
+					flows: [
 						{
-							"fromKey": "displayObject",
-							"fromSubKey": "value"
-						}	
+							fromKey: 'displayObject',
+							fromSubKey: 'value'
+						}
 					],
-					"scps": [
+					scps: [
 						{
-							"triggers": [
-								{
-									"event": "onMount"
-								}
+							triggers: [
+								{ event: 'onMount' }
 							],
-							"actions": [
+							actions: [
 								{
-									"type": "setState",
-									"key": "subKeys",
-									"value": [
+									type: 'setState',
+									key: 'subKeys',
+									value: [
 										{
-											"key": "displayObject",
-											"subKey": "value",
-											"value": "changedValue"
+											key: 'displayObject',
+											subKey: 'value',
+											value: 'changedValue'
 										}
 									]
 								}
@@ -91,23 +85,21 @@ describe('Scripts', () => {
 		const { container } = await setupDashboard({
 			type: 'containerSimple',
 			wgts: [{
-				"id": "f3",
-				"type": "input",
-				"prps": {
-					"value": "initialValue",
-					"cachedValue": "changedValue",
-					"scps": [
+				id: 'f3',
+				type: 'input',
+				prps: {
+					value: 'initialValue',
+					cachedValue: 'changedValue',
+					scps: [
 						{
-							"triggers": [
-								{
-									"event": "onMount"
-								}
+							triggers: [
+								{ event: 'onMount' }
 							],
-							"actions": [
+							actions: [
 								{
-									"type": "setState",
-									"key": "value",
-									"value": "((state.self.cachedValue))"
+									type: 'setState',
+									key: 'value',
+									value: '((state.self.cachedValue))'
 								}
 							]
 						}
@@ -125,25 +117,21 @@ describe('Scripts', () => {
 		const { container } = await setupDashboard({
 			type: 'containerSimple',
 			wgts: [{
-				"id": "f4",
-				"type": "input",
-				"prps": {
-					"value": "initialValue",
-					"cachedValue": {
-						"value": "changedValue"
-					},
-					"scps": [
+				id: 'f4',
+				type: 'input',
+				prps: {
+					value: 'initialValue',
+					cachedValue: { value: 'changedValue' },
+					scps: [
 						{
-							"triggers": [
-								{
-									"event": "onMount"
-								}
+							triggers: [
+								{ event: 'onMount' }
 							],
-							"actions": [
+							actions: [
 								{
-									"type": "setState",
-									"key": "value",
-									"value": "((state.self.cachedValue.value))"
+									type: 'setState',
+									key: 'value',
+									value: '((state.self.cachedValue.value))'
 								}
 							]
 						}
@@ -161,27 +149,25 @@ describe('Scripts', () => {
 		const { container } = await setupDashboard({
 			type: 'containerSimple',
 			wgts: [{
-				"id": "f5",
-				"type": "input",
-				"prps": {
-					"value": "initialValue",
-					"scps": [
+				id: 'f5',
+				type: 'input',
+				prps: {
+					value: 'initialValue',
+					scps: [
 						{
-							"triggers": [
-								{
-									"event": "onMount"
-								}
+							triggers: [
+								{ event: 'onMount' }
 							],
-							"actions": [
+							actions: [
 								{
-									"type": "setVariable",
-									"name": "newValue",
-									"value": "changedValue"
+									type: 'setVariable',
+									name: 'newValue',
+									value: 'changedValue'
 								},
 								{
-									"type": "setState",
-									"key": "value",
-									"value": "((variable.newValue))"
+									type: 'setState',
+									key: 'value',
+									value: '((variable.newValue))'
 								}
 							]
 						}
@@ -199,29 +185,25 @@ describe('Scripts', () => {
 		const { container } = await setupDashboard({
 			type: 'containerSimple',
 			wgts: [{
-				"id": "f6",
-				"type": "input",
-				"prps": {
-					"value": "initialValue",
-					"scps": [
+				id: 'f6',
+				type: 'input',
+				prps: {
+					value: 'initialValue',
+					scps: [
 						{
-							"triggers": [
-								{
-									"event": "onMount"
-								}
+							triggers: [
+								{ event: 'onMount' }
 							],
-							"actions": [
+							actions: [
 								{
-									"type": "setVariable",
-									"name": "newValue",
-									"value": {
-										"value": "changedValue"
-									}
+									type: 'setVariable',
+									name: 'newValue',
+									value: { value: 'changedValue' }
 								},
 								{
-									"type": "setState",
-									"key": "value",
-									"value": "((variable.newValue.value))"
+									type: 'setState',
+									key: 'value',
+									value: '((variable.newValue.value))'
 								}
 							]
 						}
@@ -239,35 +221,29 @@ describe('Scripts', () => {
 		const { container } = await setupDashboard({
 			type: 'containerSimple',
 			wgts: [{
-				"id": "f7",
-				"type": "input",
-				"prps": {
-					"value": "initialValue",
-					"cachedValue": "changedValue",
-					"displayObject": {
-						"value": "initialValue"
-					},
-					"flows": [
+				id: 'f7',
+				type: 'input',
+				prps: {
+					value: 'initialValue',
+					cachedValue: 'changedValue',
+					displayObject: { value: 'initialValue' },
+					flows: [
 						{
-							"fromKey": "displayObject",
-							"fromSubKey": "value"
-						}	
+							fromKey: 'displayObject',
+							fromSubKey: 'value'
+						}
 					],
-					"scps": [
+					scps: [
 						{
-							"id": "s7",
-							"triggers": [
-								{
-									"event": "onMount"
-								}
+							id: 's7',
+							triggers: [
+								{ event: 'onMount' }
 							],
-							"actions": [
+							actions: [
 								{
-									"type": "setState",
-									"key": "displayObject",
-									"value": {
-										"value": "((s7.state.self.cachedValue))"
-									}
+									type: 'setState',
+									key: 'displayObject',
+									value: { value: '((s7.state.self.cachedValue))' }
 								}
 							]
 						}
@@ -285,39 +261,33 @@ describe('Scripts', () => {
 		const { container } = await setupDashboard({
 			type: 'containerSimple',
 			wgts: [{
-				"id": "f8",
-				"type": "input",
-				"prps": {
-					"value": "initialValue",
-					"displayObject": {
-						"value": "initialValue"
-					},
-					"flows": [
+				id: 'f8',
+				type: 'input',
+				prps: {
+					value: 'initialValue',
+					displayObject: { value: 'initialValue' },
+					flows: [
 						{
-							"fromKey": "displayObject",
-							"fromSubKey": "value"
-						}	
+							fromKey: 'displayObject',
+							fromSubKey: 'value'
+						}
 					],
-					"scps": [
+					scps: [
 						{
-							"id": "s8",
-							"triggers": [
-								{
-									"event": "onMount"
-								}
+							id: 's8',
+							triggers: [
+								{ event: 'onMount' }
 							],
-							"actions": [
+							actions: [
 								{
-									"type": "setVariable",
-									"name": "newValue",
-									"value": "changedValue"
+									type: 'setVariable',
+									name: 'newValue',
+									value: 'changedValue'
 								},
 								{
-									"type": "setState",
-									"key": "displayObject",
-									"value": {
-										"value": "((s8.variable.newValue))"
-									}
+									type: 'setState',
+									key: 'displayObject',
+									value: { value: '((s8.variable.newValue))' }
 								}
 							]
 						}
@@ -335,24 +305,22 @@ describe('Scripts', () => {
 		const { container } = await setupDashboard({
 			type: 'containerSimple',
 			wgts: [{
-				"id": "f9",
-				"type": "input",
-				"prps": {
-					"value": "initialValue",
-					"newValue": "changedValue",
-					"scps": [
+				id: 'f9',
+				type: 'input',
+				prps: {
+					value: 'initialValue',
+					newValue: 'changedValue',
+					scps: [
 						{
-							"id": "s1",
-							"triggers": [
-								{
-									"event": "onMount"
-								}
+							id: 's1',
+							triggers: [
+								{ event: 'onMount' }
 							],
-							"actions": [
+							actions: [
 								{
-									"type": "setState",
-									"key": "value",
-									"value": "((s1.state.self.newValue))"
+									type: 'setState',
+									key: 'value',
+									value: '((s1.state.self.newValue))'
 								}
 							]
 						}
@@ -370,24 +338,22 @@ describe('Scripts', () => {
 		const { container } = await setupDashboard({
 			type: 'containerSimple',
 			wgts: [{
-				"id": "f10",
-				"type": "input",
-				"prps": {
-					"value": "initialValue",
-					"newValue": "changedValue",
-					"scps": [
+				id: 'f10',
+				type: 'input',
+				prps: {
+					value: 'initialValue',
+					newValue: 'changedValue',
+					scps: [
 						{
-							"id": "s1",
-							"triggers": [
-								{
-									"event": "onMount"
-								}
+							id: 's1',
+							triggers: [
+								{ event: 'onMount' }
 							],
-							"actions": [
+							actions: [
 								{
-									"type": "setState",
-									"key": "value",
-									"value": "((s2.state.self.newValue))"
+									type: 'setState',
+									key: 'value',
+									value: '((s2.state.self.newValue))'
 								}
 							]
 						}

@@ -117,9 +117,6 @@ export const doesComponentTypeExist = type => !!components[type];
 export const getComponentTypes = () => Object.keys(components);
 
 export const init = () => {
-	initSetWgtState({
-		getPropSpec,
-		getFullPropSpec
-	});
+	initSetWgtState({ getFullPropSpec });
 	initGetListenerStates({ getPropSpec });
 };

@@ -1,16 +1,14 @@
-import { queueChanges } from '../flowManager/index';
+import queueChanges from '../flowManager/methods/queueChanges';
 
 import generateStyles from '../../wrapper/helpers/generateStyles';
 import generateClassNames from '../../wrapper/helpers/generateClassNames';
 import generateAttributes from '../../wrapper/helpers/generateAttributes';
 
-let getPropSpec;
 let getFullPropSpec;
 
 import baseProps from '../../../components/baseProps';
 
-export const init = ({ getPropSpec: _getPropSpec, getFullPropSpec: _getFullPropSpec }) => {
-	getPropSpec = _getPropSpec;
+export const init = ({ getFullPropSpec: _getFullPropSpec }) => {
 	getFullPropSpec = _getFullPropSpec;
 };
 
