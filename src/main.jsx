@@ -95,7 +95,12 @@ const root = createRoot(document.getElementById('root'));
 
 root.render(
 	<>
-		<OpusComponents />
+		<OpusComponents
+			features={[
+				'scripts',
+				'dropdowns'
+			]}
+		/>
 		<ContainerOuter id={'outer'} scope={'outer'} aflows={[{ from: 'i2', toKey: 'backgroundColor' }]}>
 			<ContainerInner />
 			<Input id={'i1'} />
