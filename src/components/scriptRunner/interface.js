@@ -10,7 +10,6 @@ import runBlueprintScript from './helpers/runBlueprintScript';
 
 //Internal variables
 let props;
-let context;
 
 //Disposers for scripts are stored in here against the owner id
 const disposeStash = {};
@@ -38,7 +37,6 @@ export const removeDisposer = (id, disposer) => {
 	disposeStash[id].spliceWhere(d => d === disposer);
 };
 
-/* eslint-disable-next-line max-lines-per-function */
 export const registerScripts = async scripts => {
 	for (let { id, script: originalScript } of scripts) {
 		const script = clone({}, originalScript);
@@ -76,7 +74,7 @@ export const registerScripts = async scripts => {
 		});
 
 		for (let t of triggers) {
-			const disposers = await hookTrigger(t, props, script, context);
+			const disposers = await hookTrigger(t, props, script);
 			if (disposers)
 				setDisposers(id, disposers);
 		}
@@ -98,12 +96,11 @@ export const runScript = originalScript => {
 	const { actions, blueprint } = script;
 
 	if (blueprint)
-		runBlueprintScript(context, props, script);
+		runBlueprintScript(props, script);
 	else
-		runScriptBase(context, props, script, actions, true);
+		runScriptBase(props, script, actions, true);
 };
 
-export const configure = (_props, _context) => {
+export const configure = _props => {
 	props = _props;
-	context = _context;
 };

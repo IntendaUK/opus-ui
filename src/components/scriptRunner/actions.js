@@ -8,6 +8,7 @@ import { clone as cloneObject,
 	generateGuid as sysGenerateGuid,
 	getDeepProperty } from '../../system/helpers';
 import { setTheme, finalizeTheme } from '../../system/managers/themeManager';
+import { getPropSpec as sysGetPropSpec } from '../../system/managers/componentManager';
 
 //External Helpers
 import performValidation from '../../validation/validate';
@@ -203,8 +204,8 @@ export const generateGuid = () => {
 	return sysGenerateGuid();
 };
 
-export const getPropSpec = ({ cpnType }, script, props, context) => {
-	const propSpec = context.getPropSpec(cpnType);
+export const getPropSpec = ({ cpnType }) => {
+	const propSpec = sysGetPropSpec(cpnType);
 
 	return propSpec;
 };
@@ -212,7 +213,7 @@ export const getPropSpec = ({ cpnType }, script, props, context) => {
 export const parseJson = ({ value, errorResult }) => {
 	try {
 		return JSON.parse(value);
-	} catch (e) {
+	} catch {
 		return errorResult;
 	}
 };

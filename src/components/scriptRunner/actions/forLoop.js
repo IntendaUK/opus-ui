@@ -6,7 +6,7 @@ import initAndRunScript from '../helpers/initAndRunScript';
 import { shouldExitLoop } from './exitLoop';
 
 const forLoop = async (
-	{ id, loopId, count, actions, rowNumberVarName = 'rowNumber' }, script, props, context
+	{ id, loopId, count, actions, rowNumberVarName = 'rowNumber' }, script, props
 ) => {
 	const clonedScript = clone({}, script);
 	if (id !== undefined)
@@ -24,7 +24,6 @@ const forLoop = async (
 			script: clonedScript,
 			scriptActions: actions,
 			props,
-			context,
 			setVariables: { [rowNumberVarName]: i }
 		});
 		const exit = shouldExitLoop(loopId);

@@ -1,5 +1,4 @@
 //System
-import { AppContext } from '../../../system/managers/appManager';
 import { getPropertyContainer } from '../../../system/managers/propertyManager';
 
 //System Helpers
@@ -24,7 +23,6 @@ const initAndRunScript = async ({
 	setVariables,
 	isRootScript = false
 }) => {
-	const context = AppContext;
 	props = getPropertyContainer('SCRIPTRUNNER');
 
 	let script = originalScript;
@@ -46,7 +44,7 @@ const initAndRunScript = async ({
 	if (setVariables !== undefined)
 		setVariablesBase({ variables: setVariables }, script, props);
 
-	await runScript(context, props, script, script.actions, isRootScript);
+	await runScript(props, script, script.actions, isRootScript);
 };
 
 export default initAndRunScript;

@@ -2,11 +2,10 @@
 import initAndRunScript from '../helpers/initAndRunScript';
 
 //Trigger
-const onConnectionLost = (config, props, script, context) => {
+const onConnectionLost = (config, props, script) => {
 	const handler = initAndRunScript.bind(null, {
 		script,
 		props,
-		context,
 		isRootScript: true
 	});
 
