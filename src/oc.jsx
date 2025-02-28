@@ -16,6 +16,37 @@ import { generateGuid } from './system/helpers';
 import { getVariable } from './components/scriptRunner/actions/variableActions';
 import getNextScriptId from './components/scriptRunner/helpers/getNextScriptId';
 
+export const wrapScriptHandlerInActions = ({ script, ownerId, handler }) => {
+	const res = [{
+		handler: () => {
+			const getVariableHelper = variableName => {
+				const res = getVariable({
+					scope: script.id,
+					name: variableName
+				}, script, { state: stateManager.getWgtState('SCRIPTRUNNER') });
+
+				return res;
+			};
+
+			const triggeredFrom = getVariableHelper('triggeredFrom');
+
+			handler({
+				getVariable: getVariableHelper,
+				triggeredFrom,
+				setState: stateManager.setSelfState.bind(null, ownerId),
+				setExtState: (idTarget, newState) => {
+					if (idTarget.includes('||'))
+						idTarget = getScopedId(idTarget, ownerId);
+
+					stateManager.setWgtState(idTarget, newState, ownerId)
+				}
+			});
+		}
+	}];
+
+	return res;
+};
+
 //Events
 const onMount = (props, cpnState, setCpnState) => {
 	let needSetId = false;
@@ -50,40 +81,19 @@ const onRunFlowChecker = (id, cpnState, setCpnState, mounted) => {
 
 		if (scripts) {
 			scripts.forEach(s => {
-				if (!s.handler)
+				const { handler } = s;
+
+				if (!handler)
 					return;
 
 				if (!s.id)
 					s.id = getNextScriptId();
 
-				const originalHandler = s.handler;
-
-				s.actions = [{
-					handler: () => {
-						const getVariableHelper = variableName => {
-							const res = getVariable({
-								scope: s.id,
-								name: variableName
-							}, s, { state: stateManager.getWgtState('SCRIPTRUNNER') });
-
-							return res;
-						};
-
-						const triggeredFrom = getVariableHelper('triggeredFrom');
-
-						originalHandler({
-							getVariable: getVariableHelper,
-							triggeredFrom,
-							setState: stateManager.setSelfState.bind(null, id),
-							setExtState: (idTarget, newState) => {
-								if (idTarget.includes('||'))
-									idTarget = getScopedId(idTarget, id);
-
-								stateManager.setWgtState(idTarget, newState, id)
-							}
-						});
-					}
-				}]
+				s.actions = wrapScriptHandlerInActions({
+					script: s,
+					ownerId: id,
+					handler
+				});
 
 				delete s.handler;
 			});

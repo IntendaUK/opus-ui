@@ -8,7 +8,17 @@
 		{
 			"type": "label",
 			"prps": {
-				"caption": "smoom"
+				"caption": "smoom",
+				"scps": [
+					{
+						"triggers": [
+							{
+								"event": "onMount"
+							}
+						],
+						"srcActions": "./scpOnMount"
+					}
+				]
 			}
 		},
 		{

@@ -3,6 +3,7 @@ import { emit } from '../managers/eventManager';
 import { getPropertyContainer } from '../managers/propertyManager';
 import { stateManager } from '../managers/stateManager';
 import { getComponent as getComponentFromManager } from '../managers/componentManager';
+import { wrapScriptHandlerInActions } from '../../oc';
 
 //Components
 import ChildWgt from './childWgt';
@@ -128,15 +129,28 @@ export const getKey = ({ id, index }) => {
 };
 
 export const registerScripts = async ({ id, scps }) => {
-	if (!scps)
-		return;
+	if (!scps) return;
 
-	const registerQueue = scps.map(s => {
-		return {
-			id,
-			script: s
-		};
-	});
+	const registerQueue = await Promise.all(
+		scps.map(async s => {
+			if (s.srcActions) {
+				const handler = await import(/* @vite-ignore */ `../../${s.srcActions}`);
+
+				s.actions = wrapScriptHandlerInActions({
+					script: s,
+					ownerId: id,
+					handler: handler.default
+				});
+				delete s.srcActions;
+			}
+
+			return {
+				id,
+				script: s
+			};
+		})
+	);
 
 	await registerScriptsBase(registerQueue);
 };
+
