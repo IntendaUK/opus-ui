@@ -1,9 +1,6 @@
 //React
 import { useState, useEffect, useMemo } from 'react';
 
-//Opus
-import { OC } from '../../library';
-
 //Events
 const onMount = (mda, setType) => {
 	const { src } = mda;

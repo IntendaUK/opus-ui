@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 
 //Opus System
 import { stateManager } from './system/managers/stateManager';
+import { setExtraStates } from './system/managers/stateManager/setWgtState';
 import { getFullPropSpec } from './system/managers/componentManager';
 import { addNodeToDom, getScopedId } from './system/managers/scopeManager';
 import { registerScripts } from './system/wrapper/helpers';
@@ -56,6 +57,17 @@ const onMount = (props, cpnState, setCpnState) => {
 
 		cpnState.id = generateGuid();
 	}
+
+	Object.entries(getFullPropSpec()).forEach(([k, v]) => {
+		if (cpnState[k] === undefined && v.dft) {
+			if (typeof(v.dft) === 'function')
+				cpnState[k] = v.dft(cpnState);
+			else
+				cpnState[k] = v.dft;
+		}
+	});
+
+	setExtraStates(getFullPropSpec(), cpnState);
 
 	const { id } = cpnState;
 
@@ -165,17 +177,19 @@ const OC = ComponentToRender => {
 
 		return (
 			<ComponentToRender
+				key={id}
+				id={id}
 				{...props}
 				state={cpnState}
 				setState={setState}
 				setExtState={setExtState}
 				registerFlows={registerFlows}
-				Child={mda => {
+				Child={props => {
 					return (
 						<Wrapper
-							key={mda.id}
+							key={props.mda.id}
 							parentId={id}
-							{...mda}
+							{...props}
 						/>
 					);
 				}}

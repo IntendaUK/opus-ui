@@ -51,7 +51,7 @@ export { default as config } from './config';
 
 export { stateManager } from './system/managers/stateManager';
 
-export { register as registerFlow } from './system/managers/flowManager/index';
+export { register as registerFlow, reset as resetFlowManager } from './system/managers/flowManager/index';
 
 export { Wrapper as Component } from './system/wrapper/wrapper';
 

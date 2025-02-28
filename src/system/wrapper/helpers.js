@@ -1,8 +1,9 @@
+/* eslint-disable max-len, no-inline-comments */
+
 //System
 import { emit } from '../managers/eventManager';
 import { getPropertyContainer } from '../managers/propertyManager';
 import { stateManager } from '../managers/stateManager';
-import { getComponent as getComponentFromManager } from '../managers/componentManager';
 import { wrapScriptHandlerInActions } from '../../oc';
 
 //Components
@@ -10,9 +11,9 @@ import ChildWgt from './childWgt';
 
 //Helpers
 import morphProps from './helpers/morphProps';
-import applyExtraProps from './helpers/applyExtraProps';
 import setAutoHoverPrps from './helpers/setAutoHoverPrps';
 import { registerScripts as registerScriptsBase } from '../../components/scriptRunner/interface';
+import { getMdaHelper } from '../../components/scriptRunner/actions/getMda/getMda';
 
 export const applyPropSpec = ({ prps = {}, id, type }, propSpec) => {
 	//The first run ignores default values that are functions since
@@ -134,7 +135,19 @@ export const registerScripts = async ({ id, scps }) => {
 	const registerQueue = await Promise.all(
 		scps.map(async s => {
 			if (s.srcActions) {
-				const handler = await import(/* @vite-ignore */ `../../${s.srcActions}`);
+				let handler;
+
+				if (s.srcActions.path) {
+					const handlerString = await getMdaHelper({
+						type: 'dashboard',
+						key: s.srcActions.path,
+						fileType: 'js'
+					});
+
+					const moduleUrl = /* @vite-ignore */ `data:text/javascript;charset=utf-8,${encodeURIComponent(handlerString)}`;
+					handler = await import(moduleUrl);
+				} else
+					handler = await import(/* @vite-ignore */ `../../${s.srcActions}`);
 
 				s.actions = wrapScriptHandlerInActions({
 					script: s,
