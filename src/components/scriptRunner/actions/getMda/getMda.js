@@ -96,7 +96,7 @@ export const getPackagedMda = (
 };
 
 export const getMdaHelper = action => {
-	const { type, key, cwd, fileType = 'json' } = action;
+	const { type, key, cwd, fileType = 'setMdaPackage' } = action;
 
 	//Metadata can also be loaded using relative paths
 	// This is supported for traits: "traits": ["./traits/1"]
@@ -229,8 +229,8 @@ export const addMdaPackage = ({ path, contents }) => {
 
 export const getMdaPackage = () => mdaPackage.contents;
 
-export const setMdaAtPath = ({ type, key, mda }) => {
-	const accessor = `${type}/${key}.json`.split('/');
+export const setMdaAtPath = ({ type, key, mda, fileType = 'json' }) => {
+	const accessor = `${type}/${key}.${fileType}`.split('/');
 
 	let res = mdaPackage.contents;
 

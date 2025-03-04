@@ -12,13 +12,16 @@ export const reloadComponentsFromPath = (path, newMda) => {
 
 	const type = path.indexOf('blueprint/') === 0 ? 'blueprint' : 'dashboard';
 
+	const fileType = path.split('.').pop();
+
 	setMdaAtPath({
 		type,
 		key: path
 			.replace('dashboard/', '')
 			.replace('blueprint/', '')
-			.replace('.json', ''),
-		mda: newMda
+			.replace(`.${fileType}`, ''),
+		mda: newMda,
+		fileType
 	});
 
 	const targets = getComponentIdsForPath(path);

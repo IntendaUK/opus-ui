@@ -65,6 +65,7 @@ const Wrapper = props => {
 				<WrapperSrcFromMda
 					mda={mda}
 					children={children}
+					forceRemount={forceRemount}
 				/>
 			);
 		}
@@ -73,6 +74,7 @@ const Wrapper = props => {
 			<WrapperSrc
 				mda={mda}
 				children={children}
+				forceRemount={forceRemount}
 			/>
 		);
 	}

@@ -46,13 +46,26 @@ const onUnmount = mda => {
 	removeNodeFromDom(mda);
 };
 
+/* eslint-disable max-lines-per-function */
 export const onMount = (
 	mda, setWrapperState, propSpec, cpnState, setComponentState, forceRemount
 ) => {
 	const { id, type, wgts, prps } = mda;
 
 	const path = prps?.path;
-	const traitMappings = prps?.traitMappings;
+	let traitMappings = prps?.traitMappings;
+
+	if (prps?.scps) {
+		prps.scps.forEach(s => {
+			if (!s.srcActions)
+				return;
+
+			if (!traitMappings)
+				traitMappings = [];
+
+			traitMappings.push(`dashboard/${s.srcActions.path}.js`);
+		});
+	}
 
 	stateManager.initState(
 		id, setComponentState, cpnState, path, traitMappings, forceRemount

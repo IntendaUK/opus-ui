@@ -5,11 +5,13 @@ import React, { useState, useEffect } from 'react';
 import { stateManager } from './system/managers/stateManager';
 import { setExtraStates } from './system/managers/stateManager/setWgtState';
 import { getFullPropSpec } from './system/managers/componentManager';
-import { addNodeToDom, getScopedId } from './system/managers/scopeManager';
+import { addNodeToDom, removeNodeFromDom, getScopedId } from './system/managers/scopeManager';
 import { registerScripts } from './system/wrapper/helpers';
-import { register, emitEvent, getInitialState, processQueue } from './system/managers/flowManager/index';
+import { register, emitEvent, getInitialState, processQueue, destroyScope } from './system/managers/flowManager/index';
 import queueChanges from './system/managers/flowManager/methods/queueChanges';
-import { lateBindTriggers } from './components/scriptRunner/helpers/lateBoundTriggers';
+import { lateBindTriggers, disposeLateBoundTriggers } from './components/scriptRunner/helpers/lateBoundTriggers';
+import { disposeScripts } from './components/scriptRunner/interface';
+import { removeStyleTag } from './system/wrapper/helpers/styleTags.js';
 import { Wrapper } from './system/wrapper/wrapper';
 
 //Opus Helpers
@@ -49,7 +51,24 @@ export const wrapScriptHandlerInActions = ({ script, ownerId, handler }) => {
 };
 
 //Events
-const onMount = (props, cpnState, setCpnState) => {
+const onUnmount = (props, state) => {
+	const id = props.id;
+
+	const path = state?.path;
+	const traitMappings = state?.traitMappings;
+
+	emitEvent(id, 'onUnmount', { full: { id } });
+
+	stateManager.cleanupState(id, path, traitMappings);
+	disposeLateBoundTriggers(id);
+	disposeScripts(id);
+	destroyScope(id);
+	removeStyleTag(id);
+
+	removeNodeFromDom(props);
+};
+
+const onMount = (props, cpnState, setCpnState, forceRemount) => {
 	let needSetId = false;
 
 	if (!cpnState.id) {
@@ -69,9 +88,9 @@ const onMount = (props, cpnState, setCpnState) => {
 
 	setExtraStates(getFullPropSpec(), cpnState);
 
-	const { id } = cpnState;
+	const { id, path, traitMappings } = cpnState;
 
-	stateManager.initState(id, setCpnState, cpnState);
+	stateManager.initState(id, setCpnState, cpnState, path, traitMappings, forceRemount);
 
 	addNodeToDom(cpnState);
 
@@ -82,6 +101,16 @@ const onMount = (props, cpnState, setCpnState) => {
 		stateManager.setSelfState(id, { id, mounted: true });
 	else
 		stateManager.setSelfState(id, { mounted: true });
+
+
+	if (props.wgts) {
+		props.wgts.forEach(p => {
+			if (!p.id)
+				p.id = generateGuid();
+		});
+	}
+
+	return onUnmount.bind(null, props, cpnState);
 };
 
 const onRunFlowChecker = (id, cpnState, setCpnState, mounted) => {
@@ -126,8 +155,10 @@ const onRunFlowChecker = (id, cpnState, setCpnState, mounted) => {
 };
 
 //Componnets
-const OC = ComponentToRender => {
-	return (_props, a, b, c) => {
+const OC = (ComponentToRender, config) => {
+	const { forceRemount } = config;
+
+	return (_props) => {
 		const { children: _children, ...props } = _props;
 
 		const [cpnState, setCpnState] = useState({
@@ -144,7 +175,7 @@ const OC = ComponentToRender => {
 
 		const { id, mounted, updates } = cpnState;
 
-		useEffect(onMount.bind(null, props, cpnState, setCpnState), []);
+		useEffect(onMount.bind(null, props, cpnState, setCpnState, forceRemount), []);
 		useEffect(onRunFlowChecker.bind(null, props, cpnState, setCpnState, mounted), [mounted]);
 		useEffect(processQueue.bind(null, id), [updates]);
 

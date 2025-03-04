@@ -38,7 +38,7 @@ const wrapChildren = ({ Child, children, wgts = [], state }) => {
 	return result;
 };
 
-const onMount = (mda, setType) => {
+const onMount = (mda, setType, forceRemount) => {
 	const { src: { path } } = mda;
 	if (!path)
 		return;
@@ -53,17 +53,25 @@ const onMount = (mda, setType) => {
 		const moduleUrl = /* @vite-ignore */`data:text/javascript;charset=utf-8,${encodeURIComponent(handlerString)}`;
 		const handler = await import(/* @vite-ignore */ moduleUrl);
 
-		const Component = handler.default.bind(null, { React, OC, wrapChildren });
+		const Component = handler.default.bind(null, { React, OC, wrapChildren, forceRemount });
+
+		if (!mda.prps)
+			mda.prps = {};
+		if (!mda.prps.traitMappings)
+			mda.prps.traitMappings = [];
+
+		if (!mda.prps.traitMappings.includes(`dashboard/${path}.jsx`))
+			mda.prps.traitMappings.push(`dashboard/${path}.jsx`)
 
 		setType(Component);
 	})();
 };
 
-const WrapperSrcFromMda = ({ mda, children }) => {
+const WrapperSrcFromMda = ({ mda, children, forceRemount }) => {
 	const [Component, setComponent] = useState(null);
 
 	useEffect(() => {
-		onMount(mda, setComponent);
+		onMount(mda, setComponent, forceRemount);
 	}, [mda.src]);
 
 	if (!Component)
