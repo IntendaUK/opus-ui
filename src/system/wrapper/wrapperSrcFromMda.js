@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import OC from '../../oc';
+import WrapperExternal from './wrapperExternal';
 import { getMdaHelper } from '../../components/scriptRunner/actions/getMda/getMda';
 import wrapWidgets from '../../components/wrapWidgets';
 import { clone } from '../helpers';
@@ -53,7 +53,7 @@ const onMount = (mda, setType, forceRemount) => {
 		const moduleUrl = /* @vite-ignore */`data:text/javascript;charset=utf-8,${encodeURIComponent(handlerString)}`;
 		const handler = await import(/* @vite-ignore */ moduleUrl);
 
-		const Component = handler.default.bind(null, { React, OC, wrapChildren, forceRemount });
+		const Component = handler.default.bind(null, { React, WrapperExternal, wrapChildren, forceRemount });
 
 		if (!mda.prps)
 			mda.prps = {};

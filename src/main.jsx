@@ -1,15 +1,19 @@
-//React
 import { useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
+import { ExternalComponent } from './library';
 
-//System
-import Opus, { Component, OC, OpusComponents } from './library';
-
-import json from './stuff.json';
-
-//Custom Component
-const ContainerOuter = OC(({ children, state }) => {
+const CustomComponent = ExternalComponent(({ id, children, state, setState, Child }) => {
 	const { genStyles, genClassNames, genAttributes } = state;
+
+	useEffect(() => {
+		(async () => {
+			await new Promise(res => setTimeout(res, 5000));
+
+			setState({
+				childName: 'santino'
+			});
+		})();
+	}, []);
 
 	return (
 		<div
@@ -17,107 +21,29 @@ const ContainerOuter = OC(({ children, state }) => {
 			style={genStyles?.style}
 			{...genAttributes}
 		>
-			{'I am the outer container'}
 			{children}
+			<Child mda={{
+				//If no id is specified, this component will remount every time the parent's state changes
+				id: `${id}-child`,
+				type: 'label',
+				prps: {
+					caption: `I am named ${state.childName}`
+				}
+			}} />
 		</div>
 	);
 });
 
-const onMountContainerInner = registerFlows => {
-	registerFlows([{
-		from: 'i2',
-		toKey: 'backgroundColor'
-	}]);
-};
-
-const ContainerInner = OC(({ setState, setExtState, registerFlows, state }) => {
-	const { genStyles, genClassNames, genAttributes } = state;
-
-	useEffect(onMountContainerInner.bind(null, registerFlows), []);
-
-	const onClickButton = () => {
-		setState({
-			backgroundColor: 'red'
-		});
-	};
-
-	const onClickParentButton = () => {
-		setExtState('||outer||', {
-			backgroundColor: 'green'
-		});
-	};
-
-	return (
-		<div
-			className={genClassNames}
-			style={genStyles?.style}
-			{...genAttributes}
-		>
-			{'  -- I am the inner container'}
-			<button onClick={onClickButton}>
-				Click me to change my background color
-			</button>
-			<button onClick={onClickParentButton}>
-				Click me to change my parent background color
-			</button>
-		</div>
-	);
-});
-
-const Input = OC(({ setState, state }) => {
-	const { genStyles, genClassNames, genAttributes, value = '' } = state;
-
-	const setValue = e => {
-		setState({ value: e.target.value });
-	};
-
-	return (
-		<input
-			className={genClassNames}
-			style={genStyles?.style}
-			{...genAttributes}
-			onChange={setValue}
-			value={value}
-		/>
-	);
-});
-
-const RendersMda = OC(({ Child }) => {
-	return (
-		<div>
-			<Child mda={json} />
-		</div>
-	);
-});
-
-//Setup
 const root = createRoot(document.getElementById('root'));
 
 root.render(
-	<>
-		<OpusComponents
-			features={[
-				'scripts',
-				'dropdowns'
-			]}
-		/>
-		<ContainerOuter id={'outer'} scope={'outer'} aflows={[{ from: 'i2', toKey: 'backgroundColor' }]}>
-			<ContainerInner />
-			<Input id={'i1'} />
-			<Input id={'i2'} relId={'input'} scripts={[{
-				triggers: [{
-					event: 'onStateChange',
-					source: 'i1'
-				}],
-				handler: ({ triggeredFrom, setState, setExtState, getVariable }) => {
-					console.log(triggeredFrom, getVariable('triggeredFrom'));
-
-					setExtState('||outer.input||', {
-						color: 'red'
-					});
-				}
-			}]} />
-			<RendersMda />
-		</ContainerOuter>
-	</>
+	<CustomComponent
+		state={{
+			childName: 'shaun',
+			display: 'flex',
+			flexDirection: 'column'
+		}}
+	>
+		{'I am a child that was passed in'}
+	</CustomComponent>
 );

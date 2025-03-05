@@ -1,10 +1,10 @@
-/* eslint-disable max-len, no-inline-comments */
+/* eslint-disable no-inline-comments */
 
 //System
 import { emit } from '../managers/eventManager';
 import { getPropertyContainer } from '../managers/propertyManager';
 import { stateManager } from '../managers/stateManager';
-import { wrapScriptHandlerInActions } from '../../oc';
+import { wrapScriptHandlerInActions } from './wrapperExternal';
 
 //Components
 import ChildWgt from './childWgt';
@@ -130,7 +130,8 @@ export const getKey = ({ id, index }) => {
 };
 
 export const registerScripts = async ({ id, scps }) => {
-	if (!scps) return;
+	if (!scps)
+		return;
 
 	const registerQueue = await Promise.all(
 		scps.map(async s => {
@@ -144,8 +145,8 @@ export const registerScripts = async ({ id, scps }) => {
 						fileType: 'js'
 					});
 
-					const moduleUrl = /* @vite-ignore */ `data:text/javascript;charset=utf-8,${encodeURIComponent(handlerString)}`;
-					handler = await import(moduleUrl);
+					const moduleUrl = `data:text/javascript;charset=utf-8,${encodeURIComponent(handlerString)}`;
+					handler = await import(/* @vite-ignore */ moduleUrl);
 				} else
 					handler = await import(/* @vite-ignore */ `../../${s.srcActions}`);
 

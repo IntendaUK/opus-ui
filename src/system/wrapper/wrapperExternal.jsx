@@ -2,22 +2,22 @@
 import React, { useState, useEffect } from 'react';
 
 //Opus System
-import { stateManager } from './system/managers/stateManager';
-import { setExtraStates } from './system/managers/stateManager/setWgtState';
-import { getFullPropSpec } from './system/managers/componentManager';
-import { addNodeToDom, removeNodeFromDom, getScopedId } from './system/managers/scopeManager';
-import { registerScripts } from './system/wrapper/helpers';
-import { register, emitEvent, getInitialState, processQueue, destroyScope } from './system/managers/flowManager/index';
-import queueChanges from './system/managers/flowManager/methods/queueChanges';
-import { lateBindTriggers, disposeLateBoundTriggers } from './components/scriptRunner/helpers/lateBoundTriggers';
-import { disposeScripts } from './components/scriptRunner/interface';
-import { removeStyleTag } from './system/wrapper/helpers/styleTags.js';
-import { Wrapper } from './system/wrapper/wrapper';
+import { stateManager } from '../managers/stateManager';
+import { setExtraStates } from '../managers/stateManager/setWgtState';
+import { getFullPropSpec } from '../managers/componentManager';
+import { addNodeToDom, removeNodeFromDom, getScopedId } from '../managers/scopeManager';
+import { registerScripts } from './helpers';
+import { register, emitEvent, getInitialState, processQueue, destroyScope } from '../managers/flowManager/index';
+import queueChanges from '../managers/flowManager/methods/queueChanges';
+import { lateBindTriggers, disposeLateBoundTriggers } from '../../components/scriptRunner/helpers/lateBoundTriggers';
+import { disposeScripts } from '../../components/scriptRunner/interface';
+import { removeStyleTag } from './helpers/styleTags.js';
+import { Wrapper } from './wrapper';
 
 //Opus Helpers
-import { generateGuid } from './system/helpers';
-import { getVariable } from './components/scriptRunner/actions/variableActions';
-import getNextScriptId from './components/scriptRunner/helpers/getNextScriptId';
+import { generateGuid } from '../helpers';
+import { getVariable } from '../../components/scriptRunner/actions/variableActions';
+import getNextScriptId from '../../components/scriptRunner/helpers/getNextScriptId';
 
 export const wrapScriptHandlerInActions = ({ script, ownerId, handler }) => {
 	const res = [{
@@ -37,12 +37,14 @@ export const wrapScriptHandlerInActions = ({ script, ownerId, handler }) => {
 				getVariable: getVariableHelper,
 				triggeredFrom,
 				setState: stateManager.setSelfState.bind(null, ownerId),
-				setExtState: (idTarget, newState) => {
+				setExternalState: (idTarget, newState) => {
 					if (idTarget.includes('||'))
 						idTarget = getScopedId(idTarget, ownerId);
 
 					stateManager.setWgtState(idTarget, newState, ownerId)
-				}
+				},
+				getState: stateManager.getWgtState.bind(null, ownerId),
+				getExternalState: stateManager.getWgtState.bind(null)
 			});
 		}
 	}];
@@ -51,9 +53,7 @@ export const wrapScriptHandlerInActions = ({ script, ownerId, handler }) => {
 };
 
 //Events
-const onUnmount = (props, state) => {
-	const id = props.id;
-
+const onUnmount = (id, state) => {
 	const path = state?.path;
 	const traitMappings = state?.traitMappings;
 
@@ -65,16 +65,27 @@ const onUnmount = (props, state) => {
 	destroyScope(id);
 	removeStyleTag(id);
 
-	removeNodeFromDom(props);
+	removeNodeFromDom({ id });
 };
 
-const onMount = (props, cpnState, setCpnState, forceRemount) => {
+const onMount = (props, cpnState, setCpnState, forceRemount, propSpec) => {
 	let needSetId = false;
 
 	if (!cpnState.id) {
 		needSetId = true;
 
 		cpnState.id = generateGuid();
+	}
+
+	if (propSpec) {
+		Object.entries(propSpec).forEach(([k, v]) => {
+			if (cpnState[k] === undefined && v.dft) {
+				if (typeof(v.dft) === 'function')
+					cpnState[k] = v.dft(cpnState);
+				else
+					cpnState[k] = v.dft;
+			}
+		});
 	}
 
 	Object.entries(getFullPropSpec()).forEach(([k, v]) => {
@@ -110,12 +121,14 @@ const onMount = (props, cpnState, setCpnState, forceRemount) => {
 		});
 	}
 
-	return onUnmount.bind(null, props, cpnState);
+	return onUnmount.bind(null, id, cpnState);
 };
 
-const onRunFlowChecker = (id, cpnState, setCpnState, mounted) => {
+const onRunFlowChecker = (cpnState, setCpnState, mounted) => {
 	if (!mounted)
 		return;
+
+	const { id } = cpnState;
 
 	(async () => {
 		const { scripts } = cpnState;
@@ -123,6 +136,15 @@ const onRunFlowChecker = (id, cpnState, setCpnState, mounted) => {
 		if (scripts) {
 			scripts.forEach(s => {
 				const { handler } = s;
+
+				if (!s.triggers) {
+					s.triggers = [{ event: 'onMount ' }];
+				}
+
+				s.triggers.forEach(t => {
+					if (!t.source)
+						t.source = id;
+				});
 
 				if (!handler)
 					return;
@@ -155,8 +177,9 @@ const onRunFlowChecker = (id, cpnState, setCpnState, mounted) => {
 };
 
 //Componnets
-const OC = (ComponentToRender, config) => {
-	const { forceRemount } = config;
+const WrapperExternal = (ComponentToRender, config) => {
+	const forceRemount = config?.forceRemount;
+	const propSpec = config?.propSpec;
 
 	return (_props) => {
 		const { children: _children, ...props } = _props;
@@ -175,19 +198,26 @@ const OC = (ComponentToRender, config) => {
 
 		const { id, mounted, updates } = cpnState;
 
-		useEffect(onMount.bind(null, props, cpnState, setCpnState, forceRemount), []);
-		useEffect(onRunFlowChecker.bind(null, props, cpnState, setCpnState, mounted), [mounted]);
+		useEffect(onMount.bind(null, props, cpnState, setCpnState, forceRemount, propSpec), []);
+		useEffect(onRunFlowChecker.bind(null, cpnState, setCpnState, mounted), [mounted]);
 		useEffect(processQueue.bind(null, id), [updates]);
 
 		if (!mounted)
 			return null;
 
 		const setState = stateManager.setSelfState.bind(null, id);
-		const setExtState = (idTarget, newState) => {
+		const setExternalState = (idTarget, newState) => {
 			if (idTarget.includes('||'))
 				idTarget = getScopedId(idTarget, id);
 
 			stateManager.setWgtState(idTarget, newState, id)
+		};
+
+		const getExternalState = idTarget => {
+			if (idTarget.includes('||'))
+				idTarget = getScopedId(idTarget, id);
+
+			stateManager.getWgtState(idTarget)
 		};
 
 		const registerFlows = flows => {
@@ -197,11 +227,11 @@ const OC = (ComponentToRender, config) => {
 		const children = _children
 			? Array.isArray(_children)
 				? _children.map((child, i) =>
-					React.isValidElement(child)
+					React.isValidElement(child) && typeof child.type !== 'string'
 						? React.cloneElement(child, { key: `child_${i}`, parentId: id })
 						: child
 				  )
-				: React.isValidElement(_children)
+				: React.isValidElement(_children) && typeof _children.type !== 'string'
 					? React.cloneElement(_children, { parentId: id })
 					: _children
 			: null;
@@ -213,7 +243,8 @@ const OC = (ComponentToRender, config) => {
 				{...props}
 				state={cpnState}
 				setState={setState}
-				setExtState={setExtState}
+				setExternalState={setExternalState}
+				getExternalState={getExternalState}
 				registerFlows={registerFlows}
 				Child={props => {
 					return (
@@ -228,8 +259,7 @@ const OC = (ComponentToRender, config) => {
 				{children}
 			</ComponentToRender>
 		);
-
 	};
 };
 
-export default OC;
+export default WrapperExternal;

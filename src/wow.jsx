@@ -2,10 +2,10 @@
 import { useEffect } from 'react';
 
 //Opus
-import { OC } from './library';
+import { ExternalComponent } from './library';
 
 //Custom Component
-const Wow = OC(({ children, state }) => {
+const Wow = ExternalComponent(({ children, state }) => {
 	const { genStyles, genClassNames, genAttributes } = state;
 
 	return (
@@ -14,9 +14,15 @@ const Wow = OC(({ children, state }) => {
 			style={genStyles?.style}
 			{...genAttributes}
 		>
-			{`User passed in ${state.someUserProp}`}
+			{`User passed in ${state.someUserProp} and someProp is ${state.someProp}`}
 		</div>
 	);
+}, {
+	propSpec: {
+		someProp: {
+			dft: '123'
+		}
+	}
 });
 
 export default Wow;
