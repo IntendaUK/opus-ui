@@ -74,7 +74,7 @@ const generateStyles = (state, propSpec = {}) => {
 	const styleObjects = {};
 
 	Object.entries(propSpec).forEach(([prop, spec]) => {
-		const { cssVar, cssAttr, cssVarGroup = 'style' } = spec;
+		const { cssVar, cssAttr, cssVarGroup = 'style', cssAttrGroup = 'style' } = spec;
 		if (!cssVar && !cssAttr)
 			return;
 
@@ -83,6 +83,7 @@ const generateStyles = (state, propSpec = {}) => {
 			return;
 
 		const generator = cssVar ? generateVar : generateAttr;
+		const group = cssAttr !== undefined ? cssAttrGroup : cssVarGroup;
 
 		const result = generator(type, spec, prop, propVal, state);
 
@@ -91,10 +92,10 @@ const generateStyles = (state, propSpec = {}) => {
 
 		const { varName, varVal } = result;
 
-		if (!styleObjects[cssVarGroup])
-			styleObjects[cssVarGroup] = {};
+		if (!styleObjects[group])
+			styleObjects[group] = {};
 
-		styleObjects[cssVarGroup][varName] = varVal;
+		styleObjects[group][varName] = varVal;
 	});
 
 	generateCustomCssVars(state, styleObjects);

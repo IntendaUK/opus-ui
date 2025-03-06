@@ -16,7 +16,7 @@ const getClassMapEntries = (state, propSpec = {}) => {
 	return entries;
 };
 
-const generateClassNames = ({ type, ...state }, propSpec = {}) => {
+const generateClassNames = ({ type = 'external', ...state }, propSpec = {}) => {
 	const baseClass = `cpn${type[0].toUpperCase()}${type.substr(1)}`;
 
 	const classMapEntries = getClassMapEntries(state, propSpec);

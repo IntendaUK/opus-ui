@@ -50,10 +50,10 @@ const onMount = (mda, setType, forceRemount) => {
 			fileType: 'jsx'
 		});
 
-		const moduleUrl = /* @vite-ignore */`data:text/javascript;charset=utf-8,${encodeURIComponent(handlerString)}`;
+		const moduleUrl = `data:text/javascript;charset=utf-8,${encodeURIComponent(handlerString)}`;
 		const handler = await import(/* @vite-ignore */ moduleUrl);
 
-		const Component = handler.default.bind(null, { React, WrapperExternal, wrapChildren, forceRemount });
+		const Component = handler.default.bind(null, { React, ExternalComponent: WrapperExternal, wrapChildren, forceRemount });
 
 		if (!mda.prps)
 			mda.prps = {};

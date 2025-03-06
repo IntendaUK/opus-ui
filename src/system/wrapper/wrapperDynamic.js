@@ -15,9 +15,14 @@ import isConditionMet from '../managers/traitManager/isConditionMet';
 
 //Components
 import WrapperInner from './wrapperInner';
+import WrapperSrc from './wrapperSrc';
+import WrapperSrcFromMda from './wrapperSrcFromMda';
 
 //Helpers
-const getErrorCaption = ({ id, type }) => {
+const getErrorCaption = ({ id, type, src }) => {
+	if (src !== undefined)
+		return null;
+
 	if (!type)
 		return `No component type was provided for component: ${id}`;
 	else if (!doesComponentTypeExist(type))
@@ -93,7 +98,6 @@ export const onMutateMda = (initialMda, mdaString, setFixedMda) => {
 		}
 
 		recurseMutateMda(mda);
-
 		const errorCaption = getErrorCaption(mda);
 		if (errorCaption) {
 			applyErrorProps(mda, errorCaption);
@@ -123,6 +127,26 @@ const WrapperDynamic = React.memo(
 			return null;
 
 		const { mda: useMda, mdaString: useMdaString } = fixedMda;
+
+		if (useMda.src) {
+			if (useMda.src.loadFromMda) {
+				return (
+					<WrapperSrcFromMda
+						mda={useMda}
+						children={children}
+						forceRemount={forceRemount}
+					/>
+				);
+			}
+
+			return (
+				<WrapperSrc
+					mda={useMda}
+					children={children}
+					forceRemount={forceRemount}
+				/>
+			);
+		}
 
 		return (
 			<WrapperInner

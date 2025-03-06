@@ -126,7 +126,7 @@ const deleteAuthFieldsFromMda = (mda, auth) => {
 	});
 };
 
-export const applyTraits = (mda) => {
+export const applyTraits = mda => {
 	const entries = Object.entries(mda);
 
 	for (let [k, v] of entries) {
@@ -161,7 +161,7 @@ export const applyTraits = (mda) => {
 	}
 };
 
-export const applyTraitsToArray = async (mda) => {
+export const applyTraitsToArray = async mda => {
 	for (let i = 0; i < mda.length; i++) {
 		const t = mda[i];
 

@@ -1,3 +1,5 @@
+/* eslint-disable max-lines-per-function */
+
 import { resolve } from 'node:path';
 import { promises as fs } from 'fs';
 import path from 'path';
@@ -80,6 +82,7 @@ export default defineConfig(() => ({
 		},
 		react({
 			babel: {
+				compact: true,
 				plugins: [
 					['babel-plugin-react-compiler', ReactCompilerConfig]
 				]
@@ -93,7 +96,21 @@ export default defineConfig(() => ({
 			formats: ['es'],
 			fileName: () => 'lib.js'
 		},
-		rollupOptions: { external: [...Object.keys(packageJson.peerDependencies)] }
+		rollupOptions: {
+			external: [
+				'react',
+				'react-dom',
+				'react-dom/client',
+				...Object.keys(packageJson.peerDependencies)
+			],
+			output: {
+				globals: {
+					react: 'React',
+					'react-dom': 'ReactDOM',
+					'react-dom/client': 'ReactDOMClient'
+				}
+			}
+		}
 	},
 	optimizeDeps: { esbuildOptions: { loader: { '.js': 'jsx' } } },
 	test: { environment: 'jsdom' }

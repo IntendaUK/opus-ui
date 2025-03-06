@@ -13,6 +13,7 @@ import { lateBindTriggers, disposeLateBoundTriggers } from '../../components/scr
 import { disposeScripts } from '../../components/scriptRunner/interface';
 import { removeStyleTag } from './helpers/styleTags.js';
 import { Wrapper } from './wrapper';
+import { clone } from '../helpers';
 
 //Opus Helpers
 import { generateGuid } from '../helpers';
@@ -77,18 +78,13 @@ const onMount = (props, cpnState, setCpnState, forceRemount, propSpec) => {
 		cpnState.id = generateGuid();
 	}
 
-	if (propSpec) {
-		Object.entries(propSpec).forEach(([k, v]) => {
-			if (cpnState[k] === undefined && v.dft) {
-				if (typeof(v.dft) === 'function')
-					cpnState[k] = v.dft(cpnState);
-				else
-					cpnState[k] = v.dft;
-			}
-		});
-	}
+	const fullPropSpec = {};
+	clone(fullPropSpec, getFullPropSpec());
 
-	Object.entries(getFullPropSpec()).forEach(([k, v]) => {
+	if (propSpec)
+		clone(fullPropSpec, propSpec);
+
+	Object.entries(fullPropSpec).forEach(([k, v]) => {
 		if (cpnState[k] === undefined && v.dft) {
 			if (typeof(v.dft) === 'function')
 				cpnState[k] = v.dft(cpnState);
@@ -97,7 +93,7 @@ const onMount = (props, cpnState, setCpnState, forceRemount, propSpec) => {
 		}
 	});
 
-	setExtraStates(getFullPropSpec(), cpnState);
+	setExtraStates(fullPropSpec, cpnState);
 
 	const { id, path, traitMappings } = cpnState;
 
