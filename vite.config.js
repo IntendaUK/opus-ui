@@ -91,7 +91,7 @@ export default defineConfig(() => ({
 	],
 	build: {
 		lib: {
-			entry: resolve('src', 'library.js'),
+			entry: resolve('src', 'library.jsx'),
 			name: '@intenda/opus-ui',
 			formats: ['es'],
 			fileName: () => 'lib.js'

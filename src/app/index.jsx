@@ -2,8 +2,6 @@
 import React, { useEffect, useState, useContext } from 'react';
 
 //Fonts
-import 'typeface-roboto';
-
 //Styles
 import '../styles/main.css';
 import '../styles/mobile.css';
@@ -14,7 +12,6 @@ import '../system/polyfills';
 //System
 import { AppContext, appManager, createContext } from '../system/managers/appManager';
 import { init as initThemeManager } from '../system/managers/themeManager';
-import { mdaLocations } from '../config';
 
 //Components
 import Preloader from './components/preloader';
@@ -68,7 +65,7 @@ const AppInner = () => {
 	if (!setState)
 		return null;
 
-	if (mdaLocations[0] === 'packaged' && !mdaPackageLoaded)
+	if (!mdaPackageLoaded)
 		return <PackageLoader />;
 
 	return (

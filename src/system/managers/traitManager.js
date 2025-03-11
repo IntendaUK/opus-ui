@@ -112,6 +112,12 @@ export const combineTraitAndMda = (mda, trait, traitPath) => {
 		}
 	});
 
+	if (trait?.prps?.['data-testid'] && mda.prps?.['data-testid']) {
+		mda.prps['data-testid'] += ' | ' + trait.prps['data-testid'];
+
+		delete trait.prps['data-testid'];
+	}
+
 	cloneNoOverrideNoCopy(mda, trait);
 };
 
