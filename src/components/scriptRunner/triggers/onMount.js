@@ -5,7 +5,7 @@ import { subscribe } from '../../../system/managers/flowManager/index';
 import initAndRunScript from '../helpers/initAndRunScript';
 
 //Trigger
-const onMount = (config, props, script, context) => {
+const onMount = (config, props, script) => {
 	const { source = script.ownerId, sourceList, snapshotKeys } = config;
 
 	const sourceIds = sourceList ?? [ source ];
@@ -15,7 +15,6 @@ const onMount = (config, props, script, context) => {
 			initAndRunScript({
 				script,
 				props,
-				context,
 				snapshotKeys,
 				triggerMsg: msg,
 				setVariables: { triggeredFrom: msg.full.id },

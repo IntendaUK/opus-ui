@@ -36,7 +36,7 @@ const getElementById = async ({ source, sourceSelector, scriptOwnerId }) => {
 };
 
 //Trigger
-const onComponentResized = async (config, props, script, context) => {
+const onComponentResized = async (config, props, script) => {
 	const { source = script.ownerId, sourceSelector } = config;
 
 	const { el, mappedId } = await getElementById({
@@ -48,7 +48,6 @@ const onComponentResized = async (config, props, script, context) => {
 	const handler = initAndRunScript.bind(null, {
 		script,
 		props,
-		context,
 		setVariables: { triggeredFrom: mappedId },
 		isRootScript: true
 	});

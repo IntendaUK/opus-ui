@@ -1,4 +1,5 @@
-import { getNodeNamespace, getNamespace } from '../../library';
+import { getNodeNamespace } from '../../system/managers/scopeManager';
+import { getNamespace } from '../../components/scriptRunner/actions/getMda/getMda';
 
 const mapToColor = (propVal, fullState, propConfig, themes) => {
 	let { mapToTheme = 'colors' } = propConfig;

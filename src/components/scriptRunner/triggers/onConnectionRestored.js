@@ -2,11 +2,10 @@
 import initAndRunScript from '../helpers/initAndRunScript';
 
 //Trigger
-const onConnectionRestored = (config, props, script, context) => {
+const onConnectionRestored = (config, props, script) => {
 	const handler = initAndRunScript.bind(null, {
 		script,
 		props,
-		context,
 		isRootScript: true
 	});
 

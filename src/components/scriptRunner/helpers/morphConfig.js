@@ -60,7 +60,7 @@ const getStateValue = (splitToken, { ownerId }, getWgtState) => {
 //  variable.variableName
 //  variable.variableName.subKey
 //  variable.variableName.last (returns the last element of the variable if it's an array)
-/* eslint-disable-next-line max-lines-per-function */
+
 const getVariableOrState = (token, script, props, key, parentObj) => {
 	const { getWgtState, state: { variables } } = props;
 
@@ -75,7 +75,6 @@ const getVariableOrState = (token, script, props, key, parentObj) => {
 
 		const scp = splitToken.join('.');
 
-		//eslint-disable-next-line no-unused-vars, no-underscore-dangle
 		const _evalParameters = parentObj._evalParameters?.[key];
 
 		try {
@@ -83,7 +82,6 @@ const getVariableOrState = (token, script, props, key, parentObj) => {
 			evalValue = eval(scp);
 		} catch (e) {
 			if (opusConfig.env === 'development') {
-				//eslint-disable-next-line no-console
 				console.error({
 					msg: 'Evaluation crashed',
 					error: e,
@@ -92,10 +90,9 @@ const getVariableOrState = (token, script, props, key, parentObj) => {
 						evalParameters: JSON.parse(JSON.stringify(_evalParameters ?? {}))
 					}
 				});
-			} else {
-				/* eslint-disable-next-line no-console */
+			} else
+
 				console.error('Evaluation crashed');
-			}
 		}
 
 		return evalValue;
@@ -310,7 +307,6 @@ export const getMorphedValue = (value, script, props, isDrilling = false, key, p
 			//eslint-disable-next-line no-eval
 			res = eval(res.replace('eval-', ''));
 		} catch (e) {
-			/* eslint-disable-next-line no-console */
 			console.error(`EVALUATION CRASHED: ${res}`);
 		}
 	}

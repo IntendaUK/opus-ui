@@ -24,7 +24,7 @@ export {
 	onKeyDown, onGlobalKeyDown, onGlobalKeyUp
 } from './triggers/keyTriggers';
 
-const subToTag = (morphedConfig, props, script, context) => {
+const subToTag = (morphedConfig, props, script) => {
 	const { sourceTag, snapshotKeys, key = 'value', ignoreEmpty = true } = morphedConfig;
 
 	const unsub = subscribeToTag(sourceTag, script.ownerId, msg => {
@@ -44,7 +44,6 @@ const subToTag = (morphedConfig, props, script, context) => {
 		initAndRunScript({
 			script,
 			props,
-			context,
 			snapshotKeys,
 			triggerMsg: msg,
 			setVariables: { triggeredFrom: msg.full.id },
@@ -55,12 +54,12 @@ const subToTag = (morphedConfig, props, script, context) => {
 	return [unsub];
 };
 
-export const onStateChange = (config, props, script, context) => {
+export const onStateChange = (config, props, script) => {
 	const { source = script.ownerId, sourceList, sourceTag } = config;
 	const { key = 'value', keyList = [ key ], ignoreEmpty = true, snapshotKeys } = config;
 
 	if (sourceTag)
-		return subToTag(config, props, script, context);
+		return subToTag(config, props, script);
 
 	const sourceIds = sourceList ?? [ source ];
 
@@ -83,7 +82,6 @@ export const onStateChange = (config, props, script, context) => {
 				initAndRunScript({
 					script,
 					props,
-					context,
 					snapshotKeys,
 					triggerMsg: msg,
 					setVariables: { triggeredFrom: msg.full.id },
@@ -98,14 +96,13 @@ export const onStateChange = (config, props, script, context) => {
 	return unsubs;
 };
 
-const onEvent = (config, props, script, context) => {
+const onEvent = (config, props, script) => {
 	const { source = script.ownerId, event, snapshotKeys } = config;
 
 	const handler = msg => {
 		initAndRunScript({
 			script,
 			props,
-			context,
 			snapshotKeys,
 			triggerMsg: msg,
 			setVariables: { triggeredFrom: source },

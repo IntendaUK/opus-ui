@@ -2,7 +2,7 @@
 import initAndRunScript from '../helpers/initAndRunScript';
 
 //Actions
-export const queueIntervalActions = ({ id, actions, delay }, script, props, context) => {
+export const queueIntervalActions = ({ id, actions, delay }, script, props) => {
 	const scriptId = id ?? script.id;
 
 	const runner = async () => {
@@ -10,8 +10,7 @@ export const queueIntervalActions = ({ id, actions, delay }, script, props, cont
 			scriptId,
 			script,
 			scriptActions: actions,
-			props,
-			context
+			props
 		});
 	};
 

@@ -2,12 +2,11 @@
 import initAndRunScript from '../helpers/initAndRunScript';
 
 //Trigger
-const onPlatformCrash = (config, props, script, context) => {
+const onPlatformCrash = (config, props, script) => {
 	const handler = e => {
 		initAndRunScript({
 			script,
 			props,
-			context,
 			setVariables: {
 				error: e.error.message,
 				stackTrace: e.error.stack

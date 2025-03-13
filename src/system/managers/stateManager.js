@@ -185,8 +185,14 @@ export const getComponentIdsForPath = path => {
 };
 
 export const forceRemount = (id, newMda) => {
-	let includeNewMda = newMda.acceptPrps === undefined;
-	const mda = includeNewMda ? newMda : undefined;
+	//If the newMda is a trait, or a string (likely a .js file) we don't send it to wrapper since that
+	// means that the component (id) is only using this as part of its final mda.
+	const componentMustRefetchMda = (
+		newMda.acceptPrps !== undefined ||
+		typeof(newMda) === 'string'
+	);
+
+	const mda = componentMustRefetchMda ? undefined : newMda;
 
 	appState.get(id).forceRemount(mda);
 };

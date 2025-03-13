@@ -33,7 +33,7 @@ const onRunFlowChecker = (id, propSpec, setState, state) => {
 
 
 /* eslint-disable-next-line max-lines-per-function */
-const WrapperInner = ({ mda, children, ctx, mdaString, forceRemount }) => {
+const WrapperInner = ({ mda, children, mdaString, forceRemount }) => {
 	const [componentProps, setWrapperState] = useState();
 	const [cpnState, setCpnState] = useState({ updates: 0 });
 
@@ -44,7 +44,7 @@ const WrapperInner = ({ mda, children, ctx, mdaString, forceRemount }) => {
 	const Component = useMemo(() => getComponent(type), [type]);
 
 	//Mount hook in charge of doing all the initial setup
-	const cbMount = onMount.bind(null, mda, ctx, setWrapperState, propSpec, cpnState, setCpnState, forceRemount);
+	const cbMount = onMount.bind(null, mda, setWrapperState, propSpec, cpnState, setCpnState, forceRemount);
 	useEffect(cbMount, []);
 
 	//Hook that builds style and override style tags
@@ -55,7 +55,7 @@ const WrapperInner = ({ mda, children, ctx, mdaString, forceRemount }) => {
 	useEffect(cbCpnStateChanged, [updates]);
 
 	//Hook that checks if any auth properties changed and updates them accordingly
-	const cbNewProps = onNewProps.bind(null, ctx, componentProps?.setState, cpnState, mda, propSpec);
+	const cbNewProps = onNewProps.bind(null, componentProps?.setState, cpnState, mda, propSpec);
 	useEffect(cbNewProps, [mdaString]);
 
 	useEffect(onRunFlowChecker.bind(null, id, propSpec, componentProps?.setState, cpnState), [componentProps?.setState]);

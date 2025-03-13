@@ -23,21 +23,21 @@ describe('Flows', () => {
 			type: 'containerSimple',
 			wgts: [
 				{
-					"id": "a",
-					"type": "input",
-					"prps": {
-						"flows": [
+					id: 'a',
+					type: 'input',
+					prps: {
+						flows: [
 							{
-								"from": "a",
-								"to": "b"
+								from: 'a',
+								to: 'b'
 							}
 						],
-						"value": "Input 1's value"
+						value: "Input 1's value"
 					}
 				},
 				{
-					"id": "b",
-					"type": "input"
+					id: 'b',
+					type: 'input'
 				}
 			]
 		});
@@ -57,22 +57,22 @@ describe('Flows', () => {
 			type: 'containerSimple',
 			wgts: [
 				{
-					"id": "a",
-					"wgts": [],
-					"prps": {
-						"flows": [
+					id: 'a',
+					wgts: [],
+					prps: {
+						flows: [
 							{
-								"from": "a",
-								"to": "b"
+								from: 'a',
+								to: 'b'
 							}
 						],
-						"value": "Input 1's value"
+						value: "Input 1's value"
 					},
-					"type": "input"
+					type: 'input'
 				},
 				{
-					"id": "b",
-					"type": "input"
+					id: 'b',
+					type: 'input'
 				}
 			]
 		});
@@ -94,23 +94,21 @@ describe('Flows', () => {
 			type: 'containerSimple',
 			wgts: [
 				{
-					"id": "a",
-					"prps": {
-						"value": "Input 1's value"
-					},
-					"type": "input"
+					id: 'a',
+					prps: { value: "Input 1's value" },
+					type: 'input'
 				},
 				{
-					"id": "b",
-					"prps": {
-						"flows": [
+					id: 'b',
+					prps: {
+						flows: [
 							{
-								"from": "a",
-								"to": "b"
+								from: 'a',
+								to: 'b'
 							}
 						]
 					},
-					"type": "input"
+					type: 'input'
 				}
 			]
 		});
@@ -130,24 +128,22 @@ describe('Flows', () => {
 			type: 'containerSimple',
 			wgts: [
 				{
-					"id": "a",
-					"prps": {
-						"value": "Input 1's value"
-					},
-					"type": "input"
+					id: 'a',
+					prps: { value: "Input 1's value" },
+					type: 'input'
 				},
 				{
-					"id": "b",
-					"prps": {
-						"flows": [
+					id: 'b',
+					prps: {
+						flows: [
 							{
-								"from": "a",
-								"to": "b"
+								from: 'a',
+								to: 'b'
 							}
 						],
-						"cpt": "Input2"
+						cpt: 'Input2'
 					},
-					"type": "input"
+					type: 'input'
 				}
 			]
 		});

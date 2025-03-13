@@ -1,9 +1,6 @@
 //React
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
-
-//System
-import { AppContext } from '../managers/appManager';
 
 //System Helpers
 import { getPropSpec } from '../managers/componentManager';
@@ -11,6 +8,8 @@ import { getPropSpec } from '../managers/componentManager';
 //Components
 import WrapperDynamic from './wrapperDynamic';
 import WrapperInner from './wrapperInner';
+import WrapperSrc from './wrapperSrc';
+import WrapperSrcFromMda from './wrapperSrcFromMda';
 
 //Helpers
 const needsDynamicWrapper = mda => {
@@ -40,8 +39,6 @@ const Wrapper = props => {
 	const [wrapperKey, setWrapperKey] = useState(0);
 	const [doUnmount, setDoUnmount] = useState(false);
 
-	const appContext = useContext(AppContext);
-
 	const forceRemount = newMda => {
 		if (newMda) {
 			Object.keys(mda).forEach(k => delete mda[k]);
@@ -62,6 +59,26 @@ const Wrapper = props => {
 
 	const mdaString = JSON.stringify(mda);
 
+	if (mda.src) {
+		if (mda.src.loadFromMda) {
+			return (
+				<WrapperSrcFromMda
+					mda={mda}
+					children={children}
+					forceRemount={forceRemount}
+				/>
+			);
+		}
+
+		return (
+			<WrapperSrc
+				mda={mda}
+				children={children}
+				forceRemount={forceRemount}
+			/>
+		);
+	}
+
 	const isDynamic = needsDynamicWrapper(mda);
 	if (isDynamic) {
 		return (
@@ -69,7 +86,6 @@ const Wrapper = props => {
 				mdaString={mdaString}
 				mda={mda}
 				children={children}
-				ctx={appContext}
 				forceRemount={forceRemount}
 			/>
 		);
@@ -85,7 +101,6 @@ const Wrapper = props => {
 			mdaString={mdaString}
 			mda={mda}
 			children={children}
-			ctx={appContext}
 			forceRemount={forceRemount}
 		/>
 	);

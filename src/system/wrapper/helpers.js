@@ -1,16 +1,19 @@
+/* eslint-disable no-inline-comments */
+
 //System
 import { emit } from '../managers/eventManager';
 import { getPropertyContainer } from '../managers/propertyManager';
-import { getComponent as getComponentFromManager } from '../managers/componentManager';
+import { stateManager } from '../managers/stateManager';
+import { wrapScriptHandlerInActions } from './wrapperExternal';
 
 //Components
 import ChildWgt from './childWgt';
 
 //Helpers
 import morphProps from './helpers/morphProps';
-import applyExtraProps from './helpers/applyExtraProps';
 import setAutoHoverPrps from './helpers/setAutoHoverPrps';
 import { registerScripts as registerScriptsBase } from '../../components/scriptRunner/interface';
+import { getMdaHelper } from '../../components/scriptRunner/actions/getMda/getMda';
 
 export const applyPropSpec = ({ prps = {}, id, type }, propSpec) => {
 	//The first run ignores default values that are functions since
@@ -51,14 +54,12 @@ export const applyPropSpec = ({ prps = {}, id, type }, propSpec) => {
 	return prps;
 };
 
-export const buildProps = (wgts, setState, context, id) => {
-	const { setWgtState, getWgtState } = context;
-
+export const buildProps = (wgts, setState, id) => {
 	const props = getPropertyContainer(id);
 	props.id = id;
 	props.setState = setState;
-	props.setWgtState = setWgtState;
-	props.getWgtState = getWgtState;
+	props.setWgtState = stateManager.setWgtState;
+	props.getWgtState = stateManager.getWgtState;
 	props.emit = emit.bind(null, id);
 	props.getHandler = (fn, ...rest) => fn.bind(null, props, ...rest);
 	props.ChildWgt = ChildWgt.bind(null, id);
@@ -107,7 +108,7 @@ const buildMorphProps = (props, result = [], path = []) => {
 	return result;
 };
 
-export const buildMappedProps = (context, propSpec, mda) => {
+export const buildMappedProps = (propSpec, mda) => {
 	if (typeof(mda.prps) !== 'object' || mda.prps === null)
 		mda.prps = {};
 
@@ -117,7 +118,7 @@ export const buildMappedProps = (context, propSpec, mda) => {
 	setAutoHoverPrps(props);
 
 	props.morphProps = buildMorphProps(props, props.morphProps);
-	morphProps(mda.id, props, context);
+	morphProps(mda.id, props);
 
 	return props;
 };
@@ -132,12 +133,38 @@ export const registerScripts = async ({ id, scps }) => {
 	if (!scps)
 		return;
 
-	const registerQueue = scps.map(s => {
-		return {
-			id,
-			script: s
-		};
-	});
+	const registerQueue = await Promise.all(
+		scps.map(async s => {
+			if (s.srcActions) {
+				let handler;
+
+				if (s.srcActions.path) {
+					const handlerString = await getMdaHelper({
+						type: 'dashboard',
+						key: s.srcActions.path,
+						fileType: 'js'
+					});
+
+					const moduleUrl = `data:text/javascript;charset=utf-8,${encodeURIComponent(handlerString)}`;
+					handler = await import(/* @vite-ignore */ moduleUrl);
+				} else
+					handler = await import(/* @vite-ignore */ `../../${s.srcActions}`);
+
+				s.actions = wrapScriptHandlerInActions({
+					script: s,
+					ownerId: id,
+					handler: handler.default
+				});
+				delete s.srcActions;
+			}
+
+			return {
+				id,
+				script: s
+			};
+		})
+	);
 
 	await registerScriptsBase(registerQueue);
 };
+

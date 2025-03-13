@@ -6,7 +6,7 @@ import { getMorphedValue } from '../../../components/scriptRunner/helpers/morphC
 import getNextScriptId from '../../../components/scriptRunner/helpers/getNextScriptId';
 
 //Helpers
-const getPropScriptResult = (ownerId, props, context, script) => {
+const getPropScriptResult = (ownerId, props, script) => {
 	if (ownerId)
 		script.ownerId = ownerId;
 
@@ -19,7 +19,7 @@ const getPropScriptResult = (ownerId, props, context, script) => {
 
 	const srProps = getPropertyContainer('SCRIPTRUNNER');
 
-	runScriptSync(context, srProps, script, morphActions);
+	runScriptSync(srProps, script, morphActions);
 
 	const result = getVariable({
 		id,
@@ -29,7 +29,7 @@ const getPropScriptResult = (ownerId, props, context, script) => {
 	return result;
 };
 
-export const recurseProps = (ownerId, props, context, allowedToMorph, path = []) => {
+export const recurseProps = (ownerId, props, allowedToMorph, path = []) => {
 	const srProps = getPropertyContainer('SCRIPTRUNNER');
 
 	Object.entries(props).forEach(([k, v]) => {
@@ -61,7 +61,7 @@ export const recurseProps = (ownerId, props, context, allowedToMorph, path = [])
 		}
 
 		if (v.morphVariable && isMorphing) {
-			props[k] = getPropScriptResult(ownerId, props, context, v);
+			props[k] = getPropScriptResult(ownerId, props, v);
 
 			return;
 		}
@@ -72,7 +72,7 @@ export const recurseProps = (ownerId, props, context, allowedToMorph, path = [])
 			//As soon as isMorphing is true we know we reached the deepest level of the
 			// allowedToMorph property and we can keep drilling and morph everything
 			// inside the property if it is an object
-			recurseProps(ownerId, v, context, isMorphing ? undefined : allowedToMorph, [...path, k]);
+			recurseProps(ownerId, v, isMorphing ? undefined : allowedToMorph, [...path, k]);
 
 			return;
 		} else if (type !== 'string' || !isMorphing)
@@ -84,13 +84,13 @@ export const recurseProps = (ownerId, props, context, allowedToMorph, path = [])
 
 //This function replaces strings of the form ((state.id.key)) with the correct values
 // where 'id' is the id of the component and 'key' is the key you want to access.
-const morphProps = (ownerId, props, context) => {
+const morphProps = (ownerId, props) => {
 	const allowedToMorph = props.morphProps;
 
 	if (!allowedToMorph)
 		return;
 
-	recurseProps(ownerId, props, context, allowedToMorph);
+	recurseProps(ownerId, props, allowedToMorph);
 };
 
 export default morphProps;

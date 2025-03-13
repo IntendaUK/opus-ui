@@ -23,7 +23,7 @@ const getElementById = async (id, scriptOwnerId) => {
 };
 
 //Trigger
-const onComponentChildrenChanged = async (config, props, script, context) => {
+const onComponentChildrenChanged = async (config, props, script) => {
 	const { source = script.ownerId } = config;
 
 	const { el, mappedId } = await getElementById(source, script.ownerId);
@@ -31,7 +31,6 @@ const onComponentChildrenChanged = async (config, props, script, context) => {
 	const handler = initAndRunScript.bind(null, {
 		script,
 		props,
-		context,
 		setVariables: { triggeredFrom: mappedId },
 		isRootScript: true
 	});

@@ -34,7 +34,7 @@ export const lateBindTriggers = async id => {
 	const promises = [];
 
 	lateBoundTriggers.forEach(q => {
-		const { config, props, script, context, boundTo } = q;
+		const { config, props, script, boundTo } = q;
 
 		if (boundTo[id] || !triggerIsMatch(q, id))
 			return;
@@ -50,7 +50,7 @@ export const lateBindTriggers = async id => {
 		const fn = triggers[config.event];
 
 		promises.push(new Promise(async res => {
-			const disposers = await fn(newConfig, props, script, context);
+			const disposers = await fn(newConfig, props, script);
 
 			boundTo[id].disposers.push(...disposers);
 

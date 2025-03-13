@@ -1,5 +1,6 @@
 //System
-import { register, destroyScope, emitEvent, queueChanges } from '../managers/flowManager/index';
+import { register, destroyScope, emitEvent } from '../managers/flowManager/index';
+import queueChanges from '../managers/flowManager/methods/queueChanges';
 import { addNodeToDom, removeNodeFromDom } from '../managers/scopeManager';
 import { stateManager } from '../managers/stateManager';
 import { removePersistedStatesForScope, persistState } from '../managers/propertyManager';
@@ -45,15 +46,28 @@ const onUnmount = mda => {
 	removeNodeFromDom(mda);
 };
 
+/* eslint-disable max-lines-per-function */
 export const onMount = (
-	mda, ctx, setWrapperState, propSpec, cpnState, setComponentState, forceRemount
+	mda, setWrapperState, propSpec, cpnState, setComponentState, forceRemount
 ) => {
 	const { id, type, wgts, prps } = mda;
 
 	const path = prps?.path;
-	const traitMappings = prps?.traitMappings;
+	let traitMappings = prps?.traitMappings;
 
-	ctx.initState(
+	if (prps?.scps) {
+		prps.scps.forEach(s => {
+			if (!s.srcActions)
+				return;
+
+			if (!traitMappings)
+				traitMappings = [];
+
+			traitMappings.push(`dashboard/${s.srcActions.path}.js`);
+		});
+	}
+
+	stateManager.initState(
 		id, setComponentState, cpnState, path, traitMappings, forceRemount
 	);
 
@@ -64,20 +78,20 @@ export const onMount = (
 		return;
 	}
 
-	const setState = ctx.setSelfState.bind(null, id);
+	const setState = stateManager.setSelfState.bind(null, id);
 
-	const mappedProps = buildMappedProps(ctx, propSpec, mda);
+	const mappedProps = buildMappedProps(propSpec, mda);
 
 	const state = buildState(mappedProps, mda, propSpec, false);
 	Object.assign(cpnState, state);
-	const componentProps = buildProps(wgts, setState, ctx, id);
+	const componentProps = buildProps(wgts, setState, id);
 
 	if (cpnState.diagnostics?.trackStateChanges && opusConfig.env === 'development') {
 		const { trackStateChange } = registerDiagnostics(cpnState);
 		componentProps.trackStateChange = trackStateChange;
 	}
 
-	ctx.setComponentType(id, type);
+	stateManager.setComponentType(id, type);
 
 	queueChanges(id, cpnState, [], cpnState);
 	register(mappedProps.flows, id, mappedProps);
@@ -103,15 +117,15 @@ export const onStyleChanged = (id, state) => {
 };
 
 /* eslint-disable max-lines-per-function */
-export const onNewProps = (context, setState, oldState, mda, propSpec) => {
+export const onNewProps = (setState, oldState, mda, propSpec) => {
 	const auth = mda.auth;
 	if (!auth)
 		return;
 
-	const mappedProps = buildMappedProps(context, propSpec, mda);
+	const mappedProps = buildMappedProps(propSpec, mda);
 	//The last argument instructs buildState not to check flows as this event
 	// strictly deals with new metadata being passed into wrapper.
-	const state = buildState(mappedProps, mda, context.getWgtState, true);
+	const state = buildState(mappedProps, mda, true);
 
 	const allAuth = auth[0] === '*';
 

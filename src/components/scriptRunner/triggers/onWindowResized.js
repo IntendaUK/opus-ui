@@ -5,7 +5,7 @@ import initAndRunScript from '../helpers/initAndRunScript';
 const delay = 250;
 
 //Trigger
-const onWindowResized = (config, props, script, context) => {
+const onWindowResized = (config, props, script) => {
 	config.throttled = false;
 	config.delay = delay;
 
@@ -16,7 +16,6 @@ const onWindowResized = (config, props, script, context) => {
 		initAndRunScript({
 			script,
 			props,
-			context,
 			isRootScript: true
 		});
 

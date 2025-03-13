@@ -15,9 +15,14 @@ import isConditionMet from '../managers/traitManager/isConditionMet';
 
 //Components
 import WrapperInner from './wrapperInner';
+import WrapperSrc from './wrapperSrc';
+import WrapperSrcFromMda from './wrapperSrcFromMda';
 
 //Helpers
-const getErrorCaption = ({ id, type }) => {
+const getErrorCaption = ({ id, type, src }) => {
+	if (src !== undefined)
+		return null;
+
 	if (!type)
 		return `No component type was provided for component: ${id}`;
 	else if (!doesComponentTypeExist(type))
@@ -64,7 +69,7 @@ const recurseMutateMda = mda => {
 };
 
 //Events
-export const onMutateMda = (initialMda, mdaString, setFixedMda, ctx) => {
+export const onMutateMda = (initialMda, mdaString, setFixedMda) => {
 	const mda = clone({}, initialMda);
 
 	if (mda.applyBlueprint === false)
@@ -84,7 +89,7 @@ export const onMutateMda = (initialMda, mdaString, setFixedMda, ctx) => {
 		}
 
 		while (mda.traits)
-			applyTraits(mda, ctx);
+			applyTraits(mda);
 
 		if (mda.condition) {
 			const conditionMet = isConditionMet(mda.condition, mda.parentId);
@@ -93,7 +98,6 @@ export const onMutateMda = (initialMda, mdaString, setFixedMda, ctx) => {
 		}
 
 		recurseMutateMda(mda);
-
 		const errorCaption = getErrorCaption(mda);
 		if (errorCaption) {
 			applyErrorProps(mda, errorCaption);
@@ -110,11 +114,11 @@ export const onMutateMda = (initialMda, mdaString, setFixedMda, ctx) => {
 
 //Components
 const WrapperDynamic = React.memo(
-	({ mda, children, ctx, mdaString, forceRemount }) => {
+	({ mda, children, mdaString, forceRemount }) => {
 		const [fixedMda, setFixedMda] = useState(null);
 
 		const onFixMda = useCallback(
-			onMutateMda.bind(null, mda, mdaString, setFixedMda, ctx),
+			onMutateMda.bind(null, mda, mdaString, setFixedMda),
 			[mdaString]
 		);
 		useEffect(onFixMda, [mdaString]);
@@ -124,13 +128,32 @@ const WrapperDynamic = React.memo(
 
 		const { mda: useMda, mdaString: useMdaString } = fixedMda;
 
+		if (useMda.src) {
+			if (useMda.src.loadFromMda) {
+				return (
+					<WrapperSrcFromMda
+						mda={useMda}
+						children={children}
+						forceRemount={forceRemount}
+					/>
+				);
+			}
+
+			return (
+				<WrapperSrc
+					mda={useMda}
+					children={children}
+					forceRemount={forceRemount}
+				/>
+			);
+		}
+
 		return (
 			<WrapperInner
 				key={useMda.id}
 				mdaString={useMdaString}
 				mda={useMda}
 				children={children}
-				ctx={ctx}
 				forceRemount={forceRemount}
 			/>
 		);

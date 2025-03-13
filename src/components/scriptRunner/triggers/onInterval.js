@@ -2,11 +2,10 @@
 import initAndRunScript from '../helpers/initAndRunScript';
 
 //Trigger
-const onInterval = (config, props, script, context) => {
+const onInterval = (config, props, script) => {
 	const handler = initAndRunScript.bind(null, {
 		script,
 		props,
-		context,
 		setVariables: { triggeredFrom: script.ownerId },
 		isRootScript: true
 	});

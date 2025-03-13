@@ -5,7 +5,7 @@ import { clone } from '../../../system/helpers';
 import initAndRunScript from '../helpers/initAndRunScript';
 
 const morphIterateArray = async (
-	{ id, value, chain, recordVarName = 'record', rowNumVarName = 'rowNum' }, script, props, context
+	{ id, value, chain, recordVarName = 'record', rowNumVarName = 'rowNum' }, script, props
 ) => {
 	const clonedScript = clone({}, script);
 	if (id !== undefined)
@@ -25,7 +25,6 @@ const morphIterateArray = async (
 			script: clonedScript,
 			scriptActions: chain,
 			props,
-			context,
 			setVariables: {
 				[recordVarName]: v,
 				[rowNumVarName]: i

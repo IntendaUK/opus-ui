@@ -70,7 +70,7 @@ const shouldFire = (config, props, script, e) => {
 };
 
 //Triggers
-export const onKeyDown = (config, props, script, context) => {
+export const onKeyDown = (config, props, script) => {
 	const { source = script.ownerId, consumeEventOnUse = false } = config;
 
 	const unsubs = subscribeToEvent('onKeyDown', source, script.ownerId, e => {
@@ -80,7 +80,6 @@ export const onKeyDown = (config, props, script, context) => {
 		initAndRunScript({
 			script,
 			props,
-			context,
 			setVariables: {
 				triggeredKey: e.key,
 				triggeredKeyCode: e.keyCode
@@ -94,7 +93,7 @@ export const onKeyDown = (config, props, script, context) => {
 	return unsubs;
 };
 
-export const onGlobalKeyDown = (config, props, script, context) => {
+export const onGlobalKeyDown = (config, props, script) => {
 	const consumeEventOnUse = config.consumeEventOnUse ?? false;
 
 	const unsubs = subscribeToGlobalEvent('onGlobalKeyDown', script.ownerId, e => {
@@ -104,7 +103,6 @@ export const onGlobalKeyDown = (config, props, script, context) => {
 		initAndRunScript({
 			script,
 			props,
-			context,
 			setVariables: {
 				triggeredKey: e.key,
 				triggeredKeyCode: e.keyCode
@@ -118,7 +116,7 @@ export const onGlobalKeyDown = (config, props, script, context) => {
 	return unsubs;
 };
 
-export const onGlobalKeyUp = (config, props, script, context) => {
+export const onGlobalKeyUp = (config, props, script) => {
 	const consumeEventOnUse = config.consumeEventOnUse ?? false;
 
 	const unsubs = subscribeToGlobalEvent('onGlobalKeyUp', script.ownerId, e => {
@@ -128,7 +126,6 @@ export const onGlobalKeyUp = (config, props, script, context) => {
 		initAndRunScript({
 			script,
 			props,
-			context,
 			setVariables: {
 				triggeredKey: e.key,
 				triggeredKeyCode: e.keyCode

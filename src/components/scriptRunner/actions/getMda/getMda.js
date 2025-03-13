@@ -37,7 +37,6 @@ export const getHostedMda = async ({ type, key }) => {
 						if (status === 200 && !mda) {
 							const errorMsg = `'${key}' is not valid JSON`;
 
-							//eslint-disable-next-line no-console
 							console.error(errorMsg);
 
 							return of({
@@ -62,8 +61,10 @@ export const getHostedMda = async ({ type, key }) => {
 	});
 };
 
-export const getPackagedMda = ({ type, key, returnLabelWhenNotFound = true }) => {
-	const accessor = `${type}/${key}.json`.split('/');
+export const getPackagedMda = (
+	{ type, key, returnLabelWhenNotFound = true, fileType = 'json' }
+) => {
+	const accessor = `${type}/${key}.${fileType}`.split('/');
 
 	let res = mdaPackage.contents;
 
@@ -80,7 +81,6 @@ export const getPackagedMda = ({ type, key, returnLabelWhenNotFound = true }) =>
 		if (returnLabelWhenNotFound) {
 			errorMsg = `'${key}' does not exist`;
 
-			//eslint-disable-next-line no-console
 			console.error(errorMsg);
 
 			return {
@@ -96,7 +96,7 @@ export const getPackagedMda = ({ type, key, returnLabelWhenNotFound = true }) =>
 };
 
 export const getMdaHelper = action => {
-	const { type, key, cwd } = action;
+	const { type, key, cwd, fileType = 'setMdaPackage' } = action;
 
 	//Metadata can also be loaded using relative paths
 	// This is supported for traits: "traits": ["./traits/1"]
@@ -112,7 +112,7 @@ export const getMdaHelper = action => {
 		const cachedMda = getItem({
 			type: 'mda',
 			subType: type,
-			key: action.key
+			key: action.key + '.' + fileType
 		});
 
 		if (cachedMda)
@@ -229,8 +229,8 @@ export const addMdaPackage = ({ path, contents }) => {
 
 export const getMdaPackage = () => mdaPackage.contents;
 
-export const setMdaAtPath = ({ type, key, mda }) => {
-	const accessor = `${type}/${key}.json`.split('/');
+export const setMdaAtPath = ({ type, key, mda, fileType = 'json' }) => {
+	const accessor = `${type}/${key}.${fileType}`.split('/');
 
 	let res = mdaPackage.contents;
 

@@ -8,27 +8,27 @@ import { waitFor } from '@testing-library/react';
 describe('Flows', () => {
 	it('Tests that the onMount trigger fires once and only once', async () => {
 		const { container } = await setupDashboard({
-			"type": "containerSimple",
-			"wgts": [
+			type: 'containerSimple',
+			wgts: [
 				{
-					"id": "field1",
-					"type": "input",
-					"prps": {
-						"value": "Original mounted value",
-						"scps": [
+					id: 'field1',
+					type: 'input',
+					prps: {
+						value: 'Original mounted value',
+						scps: [
 							{
-								"triggers": [
+								triggers: [
 									{
-										"event": "onMount",
-										"source": "field1"
+										event: 'onMount',
+										source: 'field1'
 									}
 								],
-								"actions": [
+								actions: [
 									{
-										"type": "setState",
-										"target": "field1",
-										"key": "value",
-										"value": "((state.field1.value)) with a suffix"
+										type: 'setState',
+										target: 'field1',
+										key: 'value',
+										value: '((state.field1.value)) with a suffix'
 									}
 								]
 							}

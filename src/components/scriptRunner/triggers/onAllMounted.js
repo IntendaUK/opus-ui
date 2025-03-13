@@ -6,7 +6,7 @@ import { getScopedId, isIdInDom } from '../../../system/managers/scopeManager';
 import initAndRunScript from '../helpers/initAndRunScript';
 
 //Trigger
-const onAllMounted = async (config, props, script, context) => {
+const onAllMounted = async (config, props, script) => {
 	const { sourceList } = config;
 	const { ownerId } = script;
 
@@ -42,7 +42,6 @@ const onAllMounted = async (config, props, script, context) => {
 		initAndRunScript({
 			script,
 			props,
-			context,
 			isRootScript: true
 		});
 	})();

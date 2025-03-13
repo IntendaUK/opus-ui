@@ -46,7 +46,7 @@ const getElementById = async (config, script) => {
 //Trigger
 
 /* eslint-disable-next-line max-lines-per-function */
-const onScrollComponent = async (config, props, script, context) => {
+const onScrollComponent = async (config, props, script) => {
 	const { debounceDelay = 80 } = config;
 	const { el, mappedId } = await getElementById(config, script);
 
@@ -65,7 +65,6 @@ const onScrollComponent = async (config, props, script, context) => {
 			initAndRunScript({
 				script,
 				props,
-				context,
 				setVariables: {
 					scrollAxisX: scrollDeltaX !== 0,
 					scrollAxisY: scrollDeltaY !== 0,

@@ -2,7 +2,7 @@
 import initAndRunScript from '../helpers/initAndRunScript';
 
 const branch = async (
-	{ branches, rowNumberVarName = 'rowNumber' }, script, props, context
+	{ branches, rowNumberVarName = 'rowNumber' }, script, props
 ) => {
 	if (script.trackAction) {
 		//We track a temporary action to house these sub actions
@@ -18,7 +18,6 @@ const branch = async (
 			script,
 			scriptActions: actions,
 			props,
-			context,
 			setVariables: { [rowNumberVarName]: i }
 		});
 	}));

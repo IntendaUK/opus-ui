@@ -49,7 +49,6 @@ beforeAll(() => {
 
 		originalError.call(console, ...args);
 	};
-	console.log('----------->');
 	window.matchMedia = vi.fn().mockResolvedValue(query => {
 			return {
 				matches: false,

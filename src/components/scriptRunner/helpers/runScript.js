@@ -28,7 +28,7 @@ let processNextInQueue;
 //Asynchronous Version
 
 /* eslint-disable-next-line max-lines-per-function, complexity */
-export const runScript = async (context, props, script, actions, isRootScript) => {
+export const runScript = async (props, script, actions, isRootScript) => {
 	const { state: { stopScriptString } } = props;
 
 	if (script.suite) {
@@ -42,7 +42,7 @@ export const runScript = async (context, props, script, actions, isRootScript) =
 
 	spreadActions(script, actions, props);
 
-	applyTraitsToArray(actions, context);
+	applyTraitsToArray(actions);
 
 	const entry = {
 		id: script.id,
@@ -75,7 +75,7 @@ export const runScript = async (context, props, script, actions, isRootScript) =
 	for (let a of actions) {
 		const { id: branchScriptId, branch } = a;
 
-		const result = await processAction(a, script, props, context);
+		const result = await processAction(a, script, props);
 
 		if (result === stopScriptString)
 			break;
@@ -92,7 +92,7 @@ export const runScript = async (context, props, script, actions, isRootScript) =
 				if (script.trackSubActions)
 					script.trackSubActions();
 
-				await runScript(context, props, useScript, branchActions);
+				await runScript(props, useScript, branchActions);
 
 				if (script.trackSubActions)
 					script.stopTrackingSubActions();
@@ -107,7 +107,7 @@ export const runScript = async (context, props, script, actions, isRootScript) =
 		runningScripts.spliceWhere(f => f === entry);
 
 		if (script.concurrency)
-			processNextInQueue(context, props, script);
+			processNextInQueue(props, script);
 	}
 };
 
@@ -115,7 +115,7 @@ export const runScript = async (context, props, script, actions, isRootScript) =
 // The reason we have this one is for propScripts (morphProps.js) since we do not support
 // asynchronous scripts for calculating property values. That just lends to bad design
 // in which we need to wait too long to see initial mounts.
-export const runScriptSync = (context, props, script, actions) => {
+export const runScriptSync = (props, script, actions) => {
 	const { state: { stopScriptString } } = props;
 
 	if (script.suite) {
@@ -137,7 +137,7 @@ export const runScriptSync = (context, props, script, actions) => {
 
 	for (const a of actions) {
 		const { branch } = a;
-		const result = processActionSync(a, script, props, context);
+		const result = processActionSync(a, script, props);
 
 		if (result === stopScriptString)
 			break;
@@ -145,7 +145,7 @@ export const runScriptSync = (context, props, script, actions) => {
 		if (branch) {
 			const branchActions = branch[result + ''];
 			if (branchActions)
-				runScriptSync(context, props, script, branchActions);
+				runScriptSync(props, script, branchActions);
 		}
 	}
 
@@ -153,12 +153,12 @@ export const runScriptSync = (context, props, script, actions) => {
 		script.logDiagnostics();
 };
 
-processNextInQueue = (context, props, { concurrency: { pool } }) => {
+processNextInQueue = (props, { concurrency: { pool } }) => {
 	const next = scriptsQueue.find(s => s.script.concurrency?.pool === pool && canRunScript(s.script));
 	if (!next)
 		return;
 
 	scriptsQueue.spliceWhere(f => f === next);
 
-	runScript(context, props, next.script, next.actions, true);
+	runScript(props, next.script, next.actions, true);
 };

@@ -27,7 +27,7 @@ const shouldRunAction = ({ actionCondition }, script, props) => {
 
 //Asynchronous Version
 /* eslint-disable max-lines-per-function, complexity */
-export const processAction = async (config, script, props, context) => {
+export const processAction = async (config, script, props) => {
 	if (config.blueprint)
 		applyBlueprints(config);
 
@@ -59,9 +59,9 @@ export const processAction = async (config, script, props, context) => {
 			morphedConfig.args = morphConfig(morphedConfig.args, script, props, false, true, actionTrackers);
 
 		if (isAsync)
-			await handler(morphedConfig, script, props, context);
+			await handler(morphedConfig, script, props);
 		else
-			handler(morphedConfig, script, props, context);
+			handler(morphedConfig, script, props);
 
 		return;
 	}
@@ -70,7 +70,7 @@ export const processAction = async (config, script, props, context) => {
 
 	let result;
 	try {
-		result = await fn(morphedConfig, script, props, context);
+		result = await fn(morphedConfig, script, props);
 
 		if (opusConfig.env === 'development' && script.trackAction) {
 			script.trackAction({
@@ -127,7 +127,7 @@ export const processAction = async (config, script, props, context) => {
 // The reason we have this one is for propScripts (morphProps.js) since we do not support
 // asynchronous scripts for calculating property values. That just lends to bad design
 // in which we need to wait too long to see initial mounts.
-export const processActionSync = (config, script, props, context) => {
+export const processActionSync = (config, script, props) => {
 	const morphedConfig = morphConfig(config, script, props);
 
 	if (morphedConfig.log === true) {
@@ -141,7 +141,7 @@ export const processActionSync = (config, script, props, context) => {
 	const { type, storeAsVariable, pushToVariable, handler } = morphedConfig;
 
 	if (handler) {
-		handler(config, script, props, context);
+		handler(config, script, props);
 
 		return;
 	}
@@ -151,7 +151,7 @@ export const processActionSync = (config, script, props, context) => {
 	let result;
 
 	try {
-		result = fn(morphedConfig, script, props, context);
+		result = fn(morphedConfig, script, props);
 
 		if (opusConfig.env === 'development' && script.trackAction) {
 			script.trackAction({
