@@ -1,49 +1,26 @@
-import { useEffect } from 'react';
+//React
 import { createRoot } from 'react-dom/client';
-import { ExternalComponent } from './library';
 
-const CustomComponent = ExternalComponent(({ id, children, state, setState, Child }) => {
-	const { genStyles, genClassNames, genAttributes } = state;
+//System
+import Opus, { Component } from './library';
 
-	useEffect(() => {
-		(async () => {
-			await new Promise(res => setTimeout(res, 5000));
-
-			setState({
-				childName: 'santino'
-			});
-		})();
-	}, []);
-
+//Custom Component
+const OpusUI = () => {
 	return (
-		<div
-			className={genClassNames}
-			style={genStyles?.style}
-			{...genAttributes}
-		>
-			{children}
-			<Child mda={{
-				//If no id is specified, this component will remount every time the parent's state changes
-				id: `${id}-child`,
+		<div>
+			<Component mda={{
 				type: 'label',
-				prps: {
-					caption: `I am named ${state.childName}`
-				}
+				prps: { caption: 'Opus UI: Hit the perfect pitch between traditional development and low-code' }
 			}} />
 		</div>
 	);
-});
+};
 
+//Setup
 const root = createRoot(document.getElementById('root'));
 
 root.render(
-	<CustomComponent
-		state={{
-			childName: 'shaun',
-			display: 'flex',
-			flexDirection: 'column'
-		}}
-	>
-		{'I am a child that was passed in'}
-	</CustomComponent>
+	<Opus
+		startupComponent={<OpusUI />}
+	/>
 );
