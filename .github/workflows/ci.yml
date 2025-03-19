@@ -14,11 +14,17 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '22.14.0'
+
       - name: Install dependencies
         run: npm install
+
+      - name: Install Playwright Browsers
+        run: npx playwright install
+
       - name: Run tests
         run: npm run test
