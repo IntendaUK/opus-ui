@@ -1,0 +1,6 @@
+{
+	"opusPackagerConfig": {
+		"packagedDir": "../../../public",
+		"packagedFileName": "app"
+	}
+}

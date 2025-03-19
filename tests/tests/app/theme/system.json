@@ -1,0 +1,6 @@
+{
+  "themeConfig": {
+    "isStyleTheme": false
+  },
+  "mdaLocation": "http://localhost:3000"
+}

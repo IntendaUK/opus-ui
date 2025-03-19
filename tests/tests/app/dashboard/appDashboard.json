@@ -1,0 +1,32 @@
+{
+    "type": "containerSimple",
+    "prps": {
+        "singlePage": true,
+        "mainAxisAlign": "center",
+        "crossAxisAlign": "center"
+    },
+    "wgts": [
+        {
+            "id": "inputViewportValue",
+            "type": "input",
+            "prps": {
+                "placeholder": "Enter the path of the dashboard you wish to open",
+                "position": "absolute",
+                "bottom": "100%",
+                "value": "flows"
+            }
+        },
+        {
+            "type": "viewport",
+            "prps": {
+                "width": "100%",
+                "height": "100%",
+                "flows": [
+                    {
+                        "from": "inputViewportValue"
+                    }
+                ]
+            }
+        }
+    ]
+}

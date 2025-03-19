@@ -1,0 +1,101 @@
+{
+	"type": "containerSimple",
+	"prps": {
+		"singlePage": true,
+		"padding": true,
+		"gap": "12px"
+	},
+	"wgts": [
+		{
+			"comment": "flowing with value shorthand",
+			"scope": "block",
+			"type": "containerSimple",
+			"prps": {},
+			"wgts": [
+				{
+					"relId": "input",
+					"type": "input",
+					"prps": {
+						"placeholder": "...",
+						"scps": [
+							{
+								"actions": [
+									{
+										"type": "wait",
+										"duration": 10
+									},
+									{
+										"type": "setState",
+										"value": "<test>success"
+									}
+								]
+							}
+						]
+					}
+				},
+				{
+					"type": "label",
+					"prps": {
+						"caption": "<test>failure",
+						"flows": [
+							{
+								"from": "||block.input||",
+								"toKey": "caption"
+							}
+						]
+					}
+				}
+			]
+		},
+		{
+			"comment": "flowing with value shorthand (initial value)",
+			"scope": "block",
+			"type": "containerSimple",
+			"prps": {},
+			"wgts": [
+				{
+					"relId": "input",
+					"type": "input",
+					"prps": {
+						"value": "<test>success"
+					}
+				},
+				{
+					"type": "container",
+					"prps": {
+						"scps": [
+							{
+								"triggers": [
+									{
+										"event": "onMount",
+										"source": "||block.input||"
+									}
+								],
+								"actions": [
+									{
+										"type": "setState",
+										"key": "extraWgts",
+										"value": [
+											{
+												"type": "label",
+												"prps": {
+													"caption": "<test>failure",
+													"flows": [
+														{
+															"from": "||block.input||",
+															"toKey": "caption"
+														}
+													]
+												}
+											}
+										]
+									}
+								]
+							}
+						]
+					}
+				}
+			]
+		}
+	]
+}

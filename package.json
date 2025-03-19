@@ -25,23 +25,27 @@
 	"scripts": {
 		"start": "vite",
 		"build": "vite build",
-		"testIntegration": "vitest src/tests/integration/tests",
-		"testUnit": "vitest src/tests/unit/tests",
-		"test": "vitest src/tests"
+		"test": "npx playwright test",
+		"test-ui": "npx playwright test --ui"
 	},
 	"devDependencies": {
+		"@intenda/opus-ui-packager": "^1.7.0-alpha",
+		"@playwright/test": "^1.51.1",
 		"@testing-library/jest-dom": "^6.6.3",
 		"@testing-library/react": "^16.2.0",
 		"@testing-library/user-event": "^14.6.1",
+		"@types/node": "^22.13.10",
 		"@types/react": "^19.0.10",
 		"@types/react-dom": "^19.0.4",
 		"@vitejs/plugin-react": "^4.3.4",
 		"babel-plugin-react-compiler": "^19.0.0-beta-21e868a-20250216",
+		"concurrently": "^9.1.2",
 		"eslint": "^9.20.1",
 		"eslint-plugin-react": "^7.37.4",
 		"eslint-plugin-react-compiler": "^19.0.0-beta-21e868a-20250216",
 		"eslint-plugin-react-hooks": "^5.1.0",
 		"eslint-plugin-react-refresh": "^0.4.19",
+		"nodemon": "^3.1.9",
 		"vite": "^6.1.0",
 		"vite-plugin-libcss": "^1.1.1",
 		"vitest": "^3.0.5"
