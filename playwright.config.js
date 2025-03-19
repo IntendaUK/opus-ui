@@ -2,12 +2,14 @@
 
 import { defineConfig, devices } from '@playwright/test';
 
+const isCI = !!process.env.CI;
+
 export default defineConfig({
 	testDir: './tests',
 	fullyParallel: true,
-	forbidOnly: !!process.env.CI,
-	retries: process.env.CI ? 2 : 0,
-	workers: process.env.CI ? 1 : undefined,
+	forbidOnly: isCI,
+	retries: !isCI ? 2 : 0,
+	workers: !isCI ? 1 : undefined,
 	outputDir: './tests/results',
 	//reporter: './tests/helpers/reporter.cjs',
 	reporter: 'list',
@@ -36,7 +38,10 @@ export default defineConfig({
 		}
 	}],
 
-	webServer: {
+	webServer: isCI ? {
+		command: 'cd tests/tests/app && node ../../../node_modules/@intenda/opus-ui-packager/src/packager.js --includePaths=true --generateTestIds=true && cd ../../../ && vite --port 3000',
+		port: 3000
+	} : {
 		command: 'concurrently "vite --open test.html --port 3000" "cd tests/tests/app && nodemon ../../../node_modules/@intenda/opus-ui-packager/src/packager.js --includePaths=true --generateTestIds=true"',
 		port: 3000
 	}
