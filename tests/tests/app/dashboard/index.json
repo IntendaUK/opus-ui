@@ -1,0 +1,10 @@
+{
+	"startup": "appDashboard",
+	"themes": [
+		"system",
+		"colors",
+		"global",
+		"components"
+	],
+	"themeSets": []
+}
