@@ -1,31 +1,27 @@
-name: Run Playwright Tests
-
+name: Playwright Tests
 on:
   push:
-    branches:
-      - main
+    branches: [ main, master ]
   pull_request:
-    branches:
-      - main
-
+    branches: [ main, master ]
 jobs:
   test:
-    # Use Ubuntu Focal (20.04) instead of ubuntu-latest (Jammy) for improved Safari support
-    runs-on: ubuntu-20.04
-
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '22.14.0'
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Install Playwright Browsers
-        run: npx playwright install
-
-      - name: Run tests
-        run: npm run test
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
+      with:
+        node-version: lts/*
+    - name: Install dependencies
+      run: npm ci
+    - name: Install Playwright Browsers
+      run: npx playwright install --with-deps
+    - name: Run Playwright tests
+      run: npx playwright test
+    - uses: actions/upload-artifact@v4
+      if: ${{ !cancelled() }}
+      with:
+        name: playwright-report
+        path: playwright-report/
+        retention-days: 30
