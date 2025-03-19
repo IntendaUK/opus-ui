@@ -10,7 +10,8 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    # Use Ubuntu Focal (20.04) instead of ubuntu-latest (Jammy) for improved Safari support
+    runs-on: ubuntu-20.04
 
     steps:
       - uses: actions/checkout@v3
