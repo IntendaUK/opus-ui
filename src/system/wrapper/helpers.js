@@ -136,19 +136,14 @@ export const registerScripts = async ({ id, scps }) => {
 	const registerQueue = await Promise.all(
 		scps.map(async s => {
 			if (s.srcActions) {
-				let handler;
+				const handlerString = await getMdaHelper({
+					type: 'dashboard',
+					key: s.srcActions.path,
+					fileType: 'js'
+				});
 
-				if (s.srcActions.path) {
-					const handlerString = await getMdaHelper({
-						type: 'dashboard',
-						key: s.srcActions.path,
-						fileType: 'js'
-					});
-
-					const moduleUrl = `data:text/javascript;charset=utf-8,${encodeURIComponent(handlerString)}`;
-					handler = await import(/* @vite-ignore */ moduleUrl);
-				} else
-					handler = await import(/* @vite-ignore */ `../../${s.srcActions}`);
+				const moduleUrl = `data:text/javascript;charset=utf-8,${encodeURIComponent(handlerString)}`;
+				const handler = await import(/* @vite-ignore */ moduleUrl);
 
 				s.actions = wrapScriptHandlerInActions({
 					script: s,

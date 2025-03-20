@@ -16,7 +16,6 @@ import isConditionMet from '../managers/traitManager/isConditionMet';
 //Components
 import WrapperInner from './wrapperInner';
 import WrapperSrc from './wrapperSrc';
-import WrapperSrcFromMda from './wrapperSrcFromMda';
 
 //Helpers
 const getErrorCaption = ({ id, type, src }) => {
@@ -129,16 +128,6 @@ const WrapperDynamic = React.memo(
 		const { mda: useMda, mdaString: useMdaString } = fixedMda;
 
 		if (useMda.src) {
-			if (useMda.src.loadFromMda) {
-				return (
-					<WrapperSrcFromMda
-						mda={useMda}
-						children={children}
-						forceRemount={forceRemount}
-					/>
-				);
-			}
-
 			return (
 				<WrapperSrc
 					mda={useMda}
