@@ -1,0 +1,40 @@
+name: Create Tag
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  create-tag:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          # Fetch the full history so that git tags can be pushed correctly.
+          fetch-depth: 0
+
+      - name: Get package version
+        id: get_version
+        run: |
+          # Extract the version from package.json
+          VERSION=$(node -p "require('./package.json').version")
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "Detected version: $VERSION"
+
+      - name: Create and push tag
+        env:
+          # The version is available via the GITHUB_ENV variable set in the previous step.
+          PACKAGE_VERSION: ${{ env.VERSION }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Configure git (required for pushing the tag)
+          git config user.name "GitHub Action"
+          git config user.email "action@github.com"
+
+          # Create an annotated tag with the version as both the tag name and message
+          git tag -a "v${PACKAGE_VERSION}" -m "v${PACKAGE_VERSION}"
+
+          # Push the tag to the origin remote
+          git push origin "v${PACKAGE_VERSION}"
