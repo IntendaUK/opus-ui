@@ -30,7 +30,7 @@
 		"test-ci": ""
 	},
 	"devDependencies": {
-		"@intenda/opus-ui-packager": "^1.7.0",
+		"@intenda/opus-ui-packager": ">=1.0.0 < 2.0.0",
 		"@playwright/test": "^1.51.1",
 		"@types/node": "^22.13.10",
 		"@types/react": "^19.0.12",

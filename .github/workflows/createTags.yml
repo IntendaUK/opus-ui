@@ -23,18 +23,19 @@ jobs:
           echo "VERSION=$VERSION" >> $GITHUB_ENV
           echo "Detected version: $VERSION"
 
-      - name: Create and push tag
+      - name: Create and push tag if not exists
         env:
-          # The version is available via the GITHUB_ENV variable set in the previous step.
           PACKAGE_VERSION: ${{ env.VERSION }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Configure git (required for pushing the tag)
           git config user.name "GitHub Action"
           git config user.email "action@github.com"
-
-          # Create an annotated tag with the version as both the tag name and message
-          git tag -a "v${PACKAGE_VERSION}" -m "v${PACKAGE_VERSION}"
-
-          # Push the tag to the origin remote
-          git push origin "v${PACKAGE_VERSION}"
+          
+          # Check if the tag already exists
+          if git tag --list "v${PACKAGE_VERSION}" | grep -q "v${PACKAGE_VERSION}"; then
+            echo "Tag v${PACKAGE_VERSION} already exists. Doing nothing."
+          else
+            echo "Creating tag v${PACKAGE_VERSION}"
+            git tag -a "v${PACKAGE_VERSION}" -m "v${PACKAGE_VERSION}"
+            git push origin "v${PACKAGE_VERSION}"
+          fi
