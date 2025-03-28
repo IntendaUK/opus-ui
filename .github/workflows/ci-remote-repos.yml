@@ -1,0 +1,30 @@
+name: Run CI on Remote Repos
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  dispatch-remote:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        repo: [
+          "IntendaUK/opus-ui-components"
+        ]
+    steps:
+      - name: Dispatch to ${{ matrix.repo }}
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.PAT_REMOTE_DISPATCH }}
+          repository: ${{ matrix.repo }}
+          event-type: opus-ui-tagged
+          client-payload: |
+            {
+              "ref": "${{ github.ref }}",
+              "sha": "${{ github.sha }}"
+            }
