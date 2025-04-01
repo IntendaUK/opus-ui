@@ -2,25 +2,34 @@
 import { createRoot } from 'react-dom/client';
 
 //System
-import Opus, { Component } from './library';
-
-//Custom Component
-const OpusUI = () => {
-	return (
-		<div>
-			<Component mda={{
-				type: 'label',
-				prps: { caption: 'Opus UI: Hit the perfect pitch between traditional development and low-code' }
-			}} />
-		</div>
-	);
-};
+import Opus, { loadMdaPackage } from './library';
 
 //Setup
 const root = createRoot(document.getElementById('root'));
 
 root.render(
 	<Opus
-		startupComponent={<OpusUI />}
+		startupMda={{
+			id: 'outer',
+			type: 'container',
+			prps: {
+				singlePage: true,
+				mainAxisAlign: 'center',
+				crossAxisAlign: 'center',
+				backgroundColor: '#111',
+				gap: '24px'
+			},
+			wgts: [{
+				type: 'containerSimple',
+				prps: {},
+				wgts: [{
+					type: 'label',
+					prps: {
+						caption: 'I am a label',
+						color: 'white'
+					}
+				}]
+			}]
+		}}
 	/>
 );

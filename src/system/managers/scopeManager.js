@@ -1,5 +1,7 @@
 /* eslint-disable max-lines-per-function, max-lines, complexity */
 
+import { stateManager } from './stateManager';
+
 //List of nodes that are mounted
 const dom = [];
 const scopeOwnerLookup = {};
@@ -192,6 +194,8 @@ const addNodeToDomTree = node => {
 	}
 };
 
+let idDelayUpdateDevtools;
+
 export const addNodeToDom = mda => {
 	const { id, relId, parentId, scope, namespace } = mda;
 
@@ -256,6 +260,29 @@ export const addNodeToDom = mda => {
 
 			inScopeLookup[s].push(node);
 		});
+	}
+
+	if (window._OPUS_DEVTOOLS_GLOBAL_HOOK) {
+		if (idDelayUpdateDevtools)
+			clearTimeout(idDelayUpdateDevtools);
+
+		idDelayUpdateDevtools = setTimeout(() => {
+			const nodesDevtools = dom.map(n => {
+				const { id: _id, parentNode: _parentNode } = n;
+
+				const _node = { id: _id };
+
+				const s = stateManager.getWgtState(_id);
+				_node.type = s.type;
+
+				if (_parentNode)
+					_node.parentId = _parentNode.id;
+
+				return _node;
+			});
+
+			window._OPUS_DEVTOOLS_GLOBAL_HOOK.onDomChanged(nodesDevtools);
+		}, 100);
 	}
 
 	return node;
