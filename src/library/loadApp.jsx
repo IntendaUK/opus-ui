@@ -16,7 +16,8 @@ import createFlow from '../components/scriptRunner/actions/createFlow';
 import { init as initThemeManager } from '../system/managers/themeManager';
 import applyThemesToMdaPackage from '../app/components/helpers/applyThemesToMdaPackage';
 import { getExternalComponentTypes } from './externalComponentTypes';
-import { overrideConfig } from '../config';
+import { overrideConfig, default as opusConfig } from '../config';
+import bindDevtools from '../appLib/components/helpers/bindDevtools';
 
 //Context
 const AppInnerContext = createContext('appInnerContext');
@@ -125,6 +126,9 @@ const onMount = (
 
 	applyThemesToMdaPackage(finalMdaPackage);
 	applyPropSpecDefaults();
+
+	if (opusConfig.env === 'development' && window._OPUS_DEVTOOLS_GLOBAL_HOOK)
+		bindDevtools();
 
 	const startupDashboard = getMdaHelper({
 		type: 'dashboard',
