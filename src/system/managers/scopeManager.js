@@ -196,6 +196,39 @@ const addNodeToDomTree = node => {
 
 let idDelayUpdateDevtools;
 
+export const getNodesArrayForDevtools = () => {
+	const res = dom.map(n => {
+		const {
+			id,
+			ownScopes: scopes,
+			relId,
+			parentNode
+		} = n;
+
+		const node = {
+			id,
+			scopes,
+			relId
+		};
+
+		const state = stateManager.getWgtState(id);
+		node.type = state.type;
+
+		if (state.flows?.length > 0)
+			node.hasFlows = true;
+
+		if (state.scps?.length > 0)
+			node.hasScripts = true;
+
+		if (parentNode)
+			node.parentId = parentNode.id;
+
+		return node;
+	});
+
+	return res;
+};
+
 export const addNodeToDom = mda => {
 	const { id, relId, parentId, scope, namespace } = mda;
 
@@ -267,34 +300,7 @@ export const addNodeToDom = mda => {
 			clearTimeout(idDelayUpdateDevtools);
 
 		idDelayUpdateDevtools = setTimeout(() => {
-			const nodesDevtools = dom.map(n => {
-				const {
-					id: _id,
-					ownScopes: _scopes,
-					relId: _relId,
-					parentNode: _parentNode
-				} = n;
-
-				const _node = {
-					id: _id,
-					scopes: _scopes,
-					relId: _relId
-				};
-
-				const state = stateManager.getWgtState(_id);
-				_node.type = state.type;
-
-				if (state.flows?.length > 0)
-					_node.hasFlows = true;
-
-				if (state.scps?.length > 0)
-					_node.hasScripts = true;
-
-				if (_parentNode)
-					_node.parentId = _parentNode.id;
-
-				return _node;
-			});
+			const nodesDevtools = getNodesArrayForDevtools();
 
 			window._OPUS_DEVTOOLS_GLOBAL_HOOK.onDomChanged(nodesDevtools);
 		}, 100);

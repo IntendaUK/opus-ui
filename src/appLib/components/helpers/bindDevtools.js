@@ -2,6 +2,7 @@
 
 //Imports
 import { stateManager } from '../../../system/managers/stateManager';
+import { getNodesArrayForDevtools } from '../../../system/managers/scopeManager';
 
 //Internal
 let opusHighlightOverlay = null;
@@ -244,6 +245,7 @@ const bindDevtools = () => {
 	window._OPUS_DEVTOOLS_GLOBAL_HOOK.showComponentSelector = showComponentSelector;
 	window._OPUS_DEVTOOLS_GLOBAL_HOOK.hideComponentSelector = hideComponentSelector;
 	window._OPUS_DEVTOOLS_GLOBAL_HOOK.setComponentState = setComponentState;
+	window._OPUS_DEVTOOLS_GLOBAL_HOOK.getComponentTree = getNodesArrayForDevtools;
 };
 
 export default bindDevtools;
