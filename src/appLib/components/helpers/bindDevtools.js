@@ -1,4 +1,4 @@
-/* eslint-disable max-lines-per-function */
+/* eslint-disable max-lines-per-function, max-lines */
 
 //Imports
 import { stateManager } from '../../../system/managers/stateManager';
@@ -230,6 +230,10 @@ const showComponentSelector = () => {
 	document.addEventListener('click', clickHandler, true);
 };
 
+const setComponentState = ({ target, key, value }) => {
+	stateManager.setWgtState(target, { [key]: value });
+};
+
 //Initializer
 const bindDevtools = () => {
 	window._OPUS_DEVTOOLS_GLOBAL_HOOK.getState = getState;
@@ -239,6 +243,7 @@ const bindDevtools = () => {
 	window._OPUS_DEVTOOLS_GLOBAL_HOOK.hideFlowArrow = hideFlowArrow;
 	window._OPUS_DEVTOOLS_GLOBAL_HOOK.showComponentSelector = showComponentSelector;
 	window._OPUS_DEVTOOLS_GLOBAL_HOOK.hideComponentSelector = hideComponentSelector;
+	window._OPUS_DEVTOOLS_GLOBAL_HOOK.setComponentState = setComponentState;
 };
 
 export default bindDevtools;
