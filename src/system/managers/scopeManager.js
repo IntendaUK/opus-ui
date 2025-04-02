@@ -268,12 +268,27 @@ export const addNodeToDom = mda => {
 
 		idDelayUpdateDevtools = setTimeout(() => {
 			const nodesDevtools = dom.map(n => {
-				const { id: _id, parentNode: _parentNode } = n;
+				const {
+					id: _id,
+					ownScopes: _scopes,
+					relId: _relId,
+					parentNode: _parentNode
+				} = n;
 
-				const _node = { id: _id };
+				const _node = {
+					id: _id,
+					scopes: _scopes,
+					relId: _relId
+				};
 
-				const s = stateManager.getWgtState(_id);
-				_node.type = s.type;
+				const state = stateManager.getWgtState(_id);
+				_node.type = state.type;
+
+				if (state.flows?.length > 0)
+					_node.hasFlows = true;
+
+				if (state.scps?.length > 0)
+					_node.hasScripts = true;
 
 				if (_parentNode)
 					_node.parentId = _parentNode.id;

@@ -1,0 +1,27 @@
+{
+	"type": "containerSimple",
+	"prps": {
+		"singlePage": true,
+		"padding": true,
+		"gap": "12px"
+	},
+	"wgts": [
+		{
+			"src": "./customComponent",
+			"prps": {
+				"width": "100vw",
+				"height": "100vh",
+				"paddingSize": "100px",
+				"backgroundColor": "#eee"
+			},
+			"wgts": [
+				{
+					"type": "label",
+					"prps": {
+						"cpt": "[child component]"
+					}
+				}
+			]
+		}
+	]
+}

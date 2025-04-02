@@ -6,9 +6,11 @@ import { init as initEventManager } from '../../system/managers/eventManager';
 import { createContext } from '../../system/managers/appManager';
 import * as componentManager from '../../system/managers/componentManager';
 import { generateKeyLookup } from '../../system/managers/localStorageManager/keyLookupCache';
+import opusConfig from '../../config';
 
 //Helpers
 import loadThemes from '../helpers/loadThemes';
+import bindDevtools from './helpers/bindDevtools';
 
 //Config
 import defaultThemesConfig from './preloader/defaultThemesConfig';
@@ -48,6 +50,9 @@ const onMount = (props, appProps) => {
 	initEventManager();
 
 	componentManager.applyPropSpecDefaults();
+
+	if (opusConfig.env === 'development' && window._OPUS_DEVTOOLS_GLOBAL_HOOK)
+		bindDevtools();
 
 	props.setState({ preloadCompleted: true });
 };

@@ -1,4 +1,4 @@
-/* eslint-disable max-len, max-lines */
+/* eslint-disable max-len, max-lines, max-lines-per-function */
 
 //System
 import { expect } from '@playwright/test';
@@ -61,9 +61,20 @@ export const textEquals = async ({ locator, options: [ expectedText ] }) => {
 	return el;
 };
 
-export const valueEquals = async ({ locator, options: [ expectedValue ] }) => {
-	const el = await getEl(locator);
+export const valueEquals = async ({ locator, options: [expectedValue] }) => {
+	let el = await getEl(locator);
 
+	// Check if the element is an input
+	const isInput = await el.evaluate(element => element.tagName.toLowerCase() === 'input');
+
+	// If not an input, locate an input inside it
+	if (!isInput) {
+		const inputEl = el.locator('input');
+		await inputEl.waitFor();
+		el = inputEl;
+	}
+
+	// Check that the input value matches the expected value
 	await expect(el).toHaveValue(expectedValue);
 
 	return el;
@@ -135,6 +146,96 @@ const notification = async ({ originalLocator: notificationType }) => {
 	await el.waitFor({ state: 'detached' });
 };
 
+const setState = async ({ locator, options: [ key, value ] }) => {
+	const el = await getEl(locator);
+
+	const id = await el.getAttribute('id');
+
+	await testSteps([
+		`type , ${id} , #stateSetter-target`,
+		`type , ${key} , #stateSetter-key`,
+		`type , ${value} , #stateSetter-value`,
+		'click , #stateSetter-button'
+	]);
+};
+
+const getState = async ({ locator, options: [ key, expectedValue ] }) => {
+	const el = await getEl(locator);
+
+	const id = await el.getAttribute('id');
+
+	await testSteps([
+		`type , ${id} , #stateGetter-target`,
+		`type , ${key} , #stateGetter-key`,
+		'click , #stateGetter-button',
+		`valueEquals , ${expectedValue} , #stateGetter-value`
+	]);
+};
+
+export const chooseDatePickerDate = async ({ locator, options: [chooseDate] }) => {
+	const el = await getEl(locator);
+
+	// Click the date picker element to open the calendar
+	await el.click();
+
+	// Wait for the date picker popup to appear
+	const datePickerPopup = el.page().locator('.cpnDatePicker-popup');
+	await datePickerPopup.waitFor();
+
+	// Extract the target date components from chooseDate (YYYY/MM/DD)
+	const [year, month, day] = chooseDate.split('/').map(Number);
+
+	// Map of month names to their numeric value
+	const monthMap = {
+		January: 1,
+		February: 2,
+		March: 3,
+		April: 4,
+		May: 5,
+		June: 6,
+		July: 7,
+		August: 8,
+		September: 9,
+		October: 10,
+		November: 11,
+		December: 12
+	};
+
+	// Get the month/year dropdown inside the popup
+	const monthDropdown = datePickerPopup.locator('.monthDropdown');
+	await monthDropdown.waitFor();
+
+	// Loop until the month/year in the dropdown matches the target date
+	let currentMonthYear = await monthDropdown.innerText();
+	let [currentMonthName, currentYear] = currentMonthYear.split(', ');
+	currentYear = Number(currentYear);
+	let currentMonth = monthMap[currentMonthName];
+
+	while (currentYear !== year || currentMonth !== month) {
+		if (currentYear < year || (currentYear === year && currentMonth < month)) {
+			// Go forward in time if the target date is in the future
+			await datePickerPopup.locator('.monthNavigation .button:last-child').click();
+		} else {
+			// Go back in time if the target date is in the past
+			await datePickerPopup.locator('.monthNavigation .button:first-child').click();
+		}
+
+		// Recheck the month and year after navigation
+		currentMonthYear = await monthDropdown.innerText();
+		[currentMonthName, currentYear] = currentMonthYear.split(', ');
+		currentYear = Number(currentYear);
+		currentMonth = monthMap[currentMonthName];
+	}
+
+	// Once the month and year match, select the correct day
+	const dayLocator = datePickerPopup.locator('.datesBox .date', { hasText: String(day) });
+	await dayLocator.waitFor();
+	await dayLocator.click();
+
+	// Wait for the popup to disappear after selecting the date
+	await expect(datePickerPopup).toBeHidden();
+};
+
 //Internal
 const helperLookup = {
 	exists,
@@ -147,7 +248,12 @@ const helperLookup = {
 	childCountEquals,
 	hasClass,
 	notHasClass,
-	notification
+	notification,
+	setState,
+	ss: setState,
+	getState,
+	gs: getState,
+	chooseDatePickerDate
 };
 
 //Helpers
