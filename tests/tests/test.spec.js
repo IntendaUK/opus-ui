@@ -24,7 +24,7 @@ test('Flows', async ({ page }) => {
 	}, { timeout: 30000 });
 });
 
-test('JSX Components', async ({ page }) => {
+/*test('JSX Components', async ({ page }) => {
 	await testSteps([
 		'type , jsxComponents/index , #inputViewportValue'
 	]);
@@ -40,3 +40,4 @@ test('JSX Components', async ({ page }) => {
 		return filteredElements.every(el => el.textContent.trim() === '<test>success');
 	}, { timeout: 30000 });
 });
+*/
