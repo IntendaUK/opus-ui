@@ -1,4 +1,4 @@
-/* eslint-disable max-lines-per-function */
+/* eslint-disable max-lines-per-function, max-lines */
 
 //System
 import { test, expect } from '@playwright/test';
@@ -39,7 +39,7 @@ import morphConfig from '../../src/components/scriptRunner/helpers/morphConfig';
  */
 
 // Mock the necessary dependencies
-const buildMocks = ({ id: scriptId, states = {}, variables }) => {
+const buildMocks = ({ id: scriptId, ownerId, states = {}, variables = {} }) => {
 	Object.entries(variables).forEach(([k, v]) => {
 		if (k.includes('-'))
 			return;
@@ -49,7 +49,10 @@ const buildMocks = ({ id: scriptId, states = {}, variables }) => {
 		variables[`${scriptId}-${k}`] = v;
 	});
 
-	return [{ id: scriptId }, {
+	return [{
+		id: scriptId,
+		ownerId
+	}, {
 		getWgtState: id => {
 			return states[id];
 		},
@@ -57,11 +60,12 @@ const buildMocks = ({ id: scriptId, states = {}, variables }) => {
 	}];
 };
 
-const runMorphConfig = ({ id: scriptId = 's1', config, states, variables }) => {
+const runMorphConfig = ({ id: scriptId = 's1', ownerId, config, states, variables }) => {
 	return morphConfig(
 		config,
 		...buildMocks({
 			id: scriptId,
+			ownerId,
 			states,
 			variables
 		})
@@ -166,161 +170,262 @@ test('Variable Replacement', async () => {
 		}).text
 	).toBe('123');
 
-	/*// Test subkey variable replacement
-	const subkeyConfig = { text: '{{variable.nestedVar.subKey}}' };
-	const subkeyResult = morphConfig(subkeyConfig, mockScript, mockProps);
-	expect(subkeyResult.text).toBe('nestedVarValue');
-
 	// Test last element variable replacement
-	const lastElementConfig = { text: '{{variable.arrayVar.last}}' };
-	const lastElementResult = morphConfig(lastElementConfig, mockScript, mockProps);
-	expect(lastElementResult.text).toBe('lastItem');*/
+	expect(
+		runMorphConfig({
+			id: 's1',
+			config: { text: '{{variable.arrayVar.last}}' },
+			variables: { arrayVar: ['firstItem', 'middleItem', 'lastItem'] }
+		}).text
+	).toBe('lastItem');
 });
-/*
+
 test('State Access', async () => {
 	// Test accessing state from another component
-	const targetStateConfig = { text: '{{state.target-123.targetKey}}' };
-	const targetStateResult = morphConfig(targetStateConfig, mockScript, mockProps);
-	expect(targetStateResult.text).toBe('targetValue');
+	expect(
+		runMorphConfig({
+			id: 's1',
+			config: { text: '{{state.target.targetKey}}' },
+			states: { target: { targetKey: 'targetValue' } }
+		}).text
+	).toBe('targetValue');
 
 	// Test accessing nested state property
-	const nestedStateConfig = { text: '{{state.target-123.nested.subKey}}' };
-	const nestedStateResult = morphConfig(nestedStateConfig, mockScript, mockProps);
-	expect(nestedStateResult.text).toBe('targetNestedValue');
+	expect(
+		runMorphConfig({
+			id: 's1',
+			config: { text: '{{state.target.nested.subKey}}' },
+			states: { target: { nested: { subKey: 'targetNestedValue' } } }
+		}).text
+	).toBe('targetNestedValue');
 
 	// Test accessing own state with self
-	const selfStateConfig = { text: '{{state.self.selfKey}}' };
-	const selfStateResult = morphConfig(selfStateConfig, mockScript, mockProps);
-	expect(selfStateResult.text).toBe('selfValue');
+	expect(
+		runMorphConfig({
+			id: 's1',
+			ownerId: 'c1',
+			config: { text: '{{state.self.selfKey}}' },
+			states: { c1: { selfKey: 'selfValue' } }
+		}).text
+	).toBe('selfValue');
 });
 
 test('Scoped Variables', async () => {
-	// Test accessing scoped variables
-	const scopedVarConfig = { text: '{{scopedVariable.scope-123.scopedVar}}' };
-	const scopedVarResult = morphConfig(scopedVarConfig, mockScript, mockProps);
-	expect(scopedVarResult.text).toBe('scopedValue');
+	//Basic
+	expect(
+		runMorphConfig({
+			id: 's1',
+			config: { text: '{{scopedVariable.s2.scopedVar}}' },
+			variables: { 's2-scopedVar': 'scopedValue' }
+		}).text
+	).toBe('scopedValue');
+
+	//Don't replace nested if it's not scoped
+	expect(
+		runMorphConfig({
+			id: 's1',
+			config: { nested: { subKey: '{{variable.var1}}' } },
+			variables: { var1: 'failure' }
+		}).nested.subKey
+	).toBe('{{variable.var1}}');
+
+	//Replace nested if it has our scope
+	expect(
+		runMorphConfig({
+			id: 's1',
+			config: { nested: { subKey: '{{s1.variable.var1}}' } },
+			variables: { var1: 'success' }
+		}).nested.subKey
+	).toBe('success');
+
+	//Don't replace nested if it has the wrong scope
+	expect(
+		runMorphConfig({
+			id: 's1',
+			config: { nested: { subKey: '{{s2.variable.var1}}' } },
+			variables: { 's2-var1': 'failure' }
+		}).nested.subKey
+	).toBe('{{s2.variable.var1}}');
+
+	//Replace nested with forced drilling
+	expect(
+		runMorphConfig({
+			id: 's1',
+			config: { '^nested': { subKey: '{{variable.var1}}' } },
+			variables: { var1: 'success' }
+		}).nested.subKey
+	).toBe('success');
+
+	expect(
+		runMorphConfig({
+			id: 's1',
+			config: { '^nested': { '^subKey': { deepKey: '{{variable.var1}}' } } },
+			variables: { var1: 'success' }
+		}).nested.subKey.deepKey
+	).toBe('success');
 });
 
-test('Evaluation', async () => {
+/*test('Evaluation', async () => {
 	// Test basic evaluation
-	const basicEvalConfig = { text: '{{eval.5 + 10}}' };
-	const basicEvalResult = morphConfig(basicEvalConfig, mockScript, mockProps);
-	// The eval result is returned as a string, so we compare with a string
-	expect(basicEvalResult.text).toBe('15');
+	expect(
+		runMorphConfig({
+			id: 's1',
+			config: { text: '{{eval.5 + 10}}' },
+			states: {},
+			variables: {}
+		}).text
+	).toBe('15');
 
 	// Test complex evaluation
-	const complexEvalConfig = { text: '{{eval."Hello " + "World"}}' };
-	const complexEvalResult = morphConfig(complexEvalConfig, mockScript, mockProps);
-	expect(complexEvalResult.text).toBe('Hello World');
+	expect(
+		runMorphConfig({
+			id: 's1',
+			config: { text: '{{eval."Hello " + "World"}}' },
+			states: {},
+			variables: {}
+		}).text
+	).toBe('Hello World');
 });
 
 test('Function Calls', async () => {
 	// Test basic function call
-	const basicFnConfig = {
-		text: '{{fn.testFunction}}',
-		fnArgs: { text: {} }
-	};
-	const basicFnResult = morphConfig(basicFnConfig, mockScript, mockProps);
-	expect(basicFnResult.text).toBe('functionResult');
+	expect(
+		runMorphConfig({
+			id: 's1',
+			config: {
+				text: '{{fn.testFunction}}',
+				fnArgs: { text: {} }
+			},
+			states: {},
+			variables: {}
+		}).text
+	).toBe('functionResult');
 
 	// Test function with arguments
-	const fnWithArgsConfig = {
-		text: '{{fn.concat}}',
-		fnArgs: {
-			text: {
-				arg1: 'arg1',
-				arg2: 'arg2'
-			}
-		}
-	};
-	const fnWithArgsResult = morphConfig(fnWithArgsConfig, mockScript, mockProps);
-	expect(fnWithArgsResult.text).toBe('arg1-arg2');
+	expect(
+		runMorphConfig({
+			id: 's1',
+			config: {
+				text: '{{fn.concat}}',
+				fnArgs: {
+					text: {
+						arg1: 'arg1',
+						arg2: 'arg2'
+					}
+				}
+			},
+			states: {},
+			variables: {}
+		}).text
+	).toBe('arg1-arg2');
 });
 
 test('Scoped IDs', async () => {
 	// Test scoped ID resolution
-	const scopedIdConfig = { text: '||childComponent||' };
-	const scopedIdResult = morphConfig(scopedIdConfig, mockScript, mockProps);
-	expect(scopedIdResult.text).toBe('child-123');
+	expect(
+		runMorphConfig({
+			id: 's1',
+			config: { text: '||childComponent||' },
+			states: {},
+			variables: { childComponent: 'child-123' }
+		}).text
+	).toBe('child-123');
 });
 
 test('Recursive Morphing', async () => {
 	// Test recursive morphing of nested objects
-	const nestedConfig = {
-		level1: {
-			text: '{{variable.testVar}}',
-			level2: {
-				text: '{{state.self.selfKey}}',
-				level3: { text: '{{state.target-123.targetKey}}' }
+	const result = runMorphConfig({
+		id: 's1',
+		config: {
+			level1: {
+				text: '{{variable.testVar}}',
+				level2: {
+					text: '{{state.self.selfKey}}',
+					level3: { text: '{{state.target-123.targetKey}}' }
+				}
 			}
-		}
-	};
-	const nestedResult = morphConfig(nestedConfig, mockScript, mockProps);
-	expect(nestedResult.level1.text).toBe('testValue');
-	expect(nestedResult.level1.level2.text).toBe('selfValue');
-	expect(nestedResult.level1.level2.level3.text).toBe('targetValue');
+		},
+		states: {
+			s1: { selfKey: 'selfValue' },
+			'target-123': { targetKey: 'targetValue' }
+		},
+		variables: { testVar: 'testValue' }
+	});
+
+	expect(result.level1.text).toBe('testValue');
+	expect(result.level1.level2.text).toBe('selfValue');
+	expect(result.level1.level2.level3.text).toBe('targetValue');
 });
 
 test('Special Operations', async () => {
 	// Test spread operation
-	const spreadConfig = {
-		'spread-': {
-			prop1: 'spreadValue1',
-			prop2: 'spreadValue2'
-		}
-	};
-	const spreadResult = morphConfig(spreadConfig, mockScript, mockProps);
+	const spreadResult = runMorphConfig({
+		id: 's1',
+		config: {
+			'spread-': {
+				prop1: 'spreadValue1',
+				prop2: 'spreadValue2'
+			}
+		},
+		states: {},
+		variables: {}
+	});
 	expect(spreadResult.prop1).toBe('spreadValue1');
 	expect(spreadResult.prop2).toBe('spreadValue2');
-
-	// Test caret key morphing
-	const caretConfig = { '^{{variable.testVar}}': 'morphedKeyValue' };
-	const caretResult = morphConfig(caretConfig, mockScript, mockProps, false, true);
-	expect(caretResult.testValue).toBe('morphedKeyValue');
 });
 
 test('Combined Features', async () => {
 	// Test combination of multiple features
-	const combinedConfig = {
-		text: '{{variable.testVar}}',
-		state: '{{state.self.selfKey}}',
-		nested: {
-			scopedId: '||childComponent||',
-			eval: '{{eval.5 + 10}}',
-			fn: '{{fn.testFunction}}',
-			fnArgs: { fn: {} }
+	const result = runMorphConfig({
+		id: 's1',
+		config: {
+			text: '{{variable.testVar}}',
+			state: '{{state.self.selfKey}}',
+			nested: {
+				scopedId: '||childComponent||',
+				eval: '{{eval.5 + 10}}',
+				fn: '{{fn.testFunction}}',
+				fnArgs: { fn: {} }
+			}
+		},
+		states: { s1: { selfKey: 'selfValue' } },
+		variables: {
+			testVar: 'testValue',
+			childComponent: 'child-123'
 		}
-	};
-	const combinedResult = morphConfig(combinedConfig, mockScript, mockProps);
-	expect(combinedResult.text).toBe('testValue');
-	expect(combinedResult.state).toBe('selfValue');
-	expect(combinedResult.nested.scopedId).toBe('child-123');
+	});
+
+	expect(result.text).toBe('testValue');
+	expect(result.state).toBe('selfValue');
+	expect(result.nested.scopedId).toBe('child-123');
 	// The eval result is returned as a string, so we compare with a string
-	expect(combinedResult.nested.eval).toBe('15');
-	expect(combinedResult.nested.fn).toBe('functionResult');
+	expect(result.nested.eval).toBe('15');
+	expect(result.nested.fn).toBe('functionResult');
 });
 
 test('Nested Expressions', async () => {
 	// Test nested expressions with inside-out resolution
 	// First variable.abc resolves to 'component-abc', then state.component-abc.someKey resolves to 'nestedComponentValue'
-	const nestedExprConfig = { text: '((state.((variable.abc)).someKey))' };
-	const nestedExprResult = morphConfig(nestedExprConfig, mockScript, mockProps);
-	expect(nestedExprResult.text).toBe('nestedComponentValue');
+	expect(
+		runMorphConfig({
+			id: 's1',
+			config: { text: '((state.((variable.abc)).someKey))' },
+			states: { 'component-abc': { someKey: 'nestedComponentValue' } },
+			variables: { abc: 'component-abc' }
+		}).text
+	).toBe('nestedComponentValue');
 
 	// Test with multiple levels of nesting
-	const mockProps2 = {
-		...mockProps,
-		state: {
-			...mockProps.state,
+	expect(
+		runMorphConfig({
+			id: 's1',
+			config: { text: '((state.((variable.((variable.componentId)))).someKey))' },
+			states: { 'component-abc': { someKey: 'nestedComponentValue' } },
 			variables: {
-				...mockProps.state.variables,
-				'script-123-componentId': 'abc'
+				componentId: 'abc',
+				abc: 'component-abc'
 			}
-		}
-	};
-
-	const multiNestedConfig = { text: '((state.((variable.((variable.componentId)))).someKey))' };
-	const multiNestedResult = morphConfig(multiNestedConfig, mockScript, mockProps2);
-	expect(multiNestedResult.text).toBe('nestedComponentValue');
+		}).text
+	).toBe('nestedComponentValue');
 });
 */
