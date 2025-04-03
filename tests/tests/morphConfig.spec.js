@@ -265,8 +265,8 @@ test('Scoped Variables', async () => {
 	).toBe('success');
 });
 
-/*test('Evaluation', async () => {
-	// Test basic evaluation
+test('Evaluation', async () => {
+	//Test basic evaluation
 	expect(
 		runMorphConfig({
 			id: 's1',
@@ -274,20 +274,47 @@ test('Scoped Variables', async () => {
 			states: {},
 			variables: {}
 		}).text
-	).toBe('15');
+	).toBe(15);
 
-	// Test complex evaluation
+	//Multiple statement eval
 	expect(
 		runMorphConfig({
 			id: 's1',
-			config: { text: '{{eval."Hello " + "World"}}' },
-			states: {},
-			variables: {}
+			config: { text: '{{eval.const res = "success"; res; }}' }
 		}).text
-	).toBe('Hello World');
+	).toBe('success');
+
+	//Eval with stringified states and variables
+	expect(
+		runMorphConfig({
+			id: 's1',
+			config: { text: '{{eval."((state.target.state1))-((variable.var1))" }}' },
+			states: { target: { state1: 'success state' } },
+			variables: { var1: 'success variable' }
+		}).text
+	).toBe('success state-success variable');
+
+	//Eval with injected states and variables
+	expect(
+		runMorphConfig({
+			id: 's1',
+			config: {
+				text: [
+					'{{eval.',
+					'  const state = {{state.target.nested}};',
+					'  const variable = {{variable.nested}};',
+					'  const res = `${state.subKey}-${variable.subKey}`;',
+					'  res;',
+					'}}'
+				].join('')
+			},
+			states: { target: { nested: { subKey: 'success state' } } },
+			variables: { nested: { subKey: 'success variable' } }
+		}).text
+	).toBe('success state-success variable');
 });
 
-test('Function Calls', async () => {
+/*test('Function Calls', async () => {
 	// Test basic function call
 	expect(
 		runMorphConfig({
