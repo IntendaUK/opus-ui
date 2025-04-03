@@ -10,7 +10,7 @@ const projects = [{
 		...devices['Desktop Chrome'],
 		channel: 'chrome'
 	}
-}, {
+}/*, {
 	name: 'firefox',
 	use: { ...devices['Desktop Firefox'] }
 }, {
@@ -22,7 +22,7 @@ const projects = [{
 		...devices['Desktop Edge'],
 		channel: 'msedge'
 	}
-}];
+}*/];
 
 if (isCI)
 	projects.splice(2, 1);

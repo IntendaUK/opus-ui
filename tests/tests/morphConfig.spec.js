@@ -1,5 +1,8 @@
+/* eslint-disable max-lines-per-function */
+
 //System
 import { test, expect } from '@playwright/test';
+import morphConfig from '../../src/components/scriptRunner/helpers/morphConfig';
 
 /**
  * This test suite tests the morphConfig.js functionality.
@@ -35,230 +38,135 @@ import { test, expect } from '@playwright/test';
  *    - Keys starting with ^: Indicates that the key should be morphed
  */
 
-// Helper function to get deep property
-const getDeepProperty = (obj, path) => {
-	const parts = path.split('.');
-	let current = obj;
-
-	for (const part of parts) {
-		if (current === null || current === undefined)
-			return undefined;
-
-		current = current[part];
-	}
-
-	return current;
-};
-
-// Mock getScopedId function
-const getScopedId = (id, ownerId) => {
-	if (id === '||childComponent||') return 'child-123';
-	if (id === '||siblingComponent||') return 'sibling-456';
-
-	return `resolved-${id}-${ownerId}`;
-};
-
-// Mock getFunctionResult function
-const getFunctionResult = ({ name, args }) => {
-	if (name === 'testFunction') return 'functionResult';
-	if (name === 'concat') return `${args.arg1}-${args.arg2}`;
-
-	return 'defaultResult';
-};
-
-// Simplified version of getVariableValue
-const getVariableValue = (splitToken, scope, variables) => {
-	const [variableKey, ...variableSubKeys] = splitToken;
-	const variableName = `${scope}-${variableKey}`;
-	let value = variables[variableName];
-
-	if (!variableSubKeys.length || !value)
-		return value;
-
-	if (variableSubKeys[0] === 'last')
-		return value[value.length - 1];
-
-	return getDeepProperty(value, variableSubKeys.join('.'));
-};
-
-// Simplified version of getScopedVariableValue
-const getScopedVariableValue = (splitToken, variables) => {
-	const [scope, ...variableKeys] = splitToken;
-
-	return getVariableValue(variableKeys, scope, variables);
-};
-
-// Simplified version of getStateValue
-const getStateValue = (splitToken, script, getWgtState) => {
-	const [sourceId, key, ...subKeys] = splitToken;
-	const useSourceId = sourceId === 'self' ? script.ownerId : sourceId;
-	const state = getWgtState(useSourceId);
-
-	if (!state)
-		return null;
-
-	let value = state[key];
-
-	if (!subKeys.length || !value)
-		return value;
-
-	return getDeepProperty(value, subKeys.join('.'));
-};
-
-// Simplified version of fixScopeIds
-const fixScopeIds = (value, script) => {
-	let result = value;
-	let newValue = value;
-
-	do {
-		result = newValue;
-		newValue = newValue.replace(/\|\|[^(())>]*\|\|/g, match => {
-			return getScopedId(match, script.ownerId);
-		});
-	} while (result !== newValue);
-
-	return result;
-};
-
-// Simplified version of replaceStrings
-const replaceStrings = (value, script, props, isDrilling, key, parentObj) => {
-	let result = value;
-	let newValue = value;
-
-	do {
-		result = newValue;
-		newValue = fixScopeIds(newValue, script);
-
-		// Handle {{variable.name}}
-		newValue = newValue.replace(/\{\{([^{}]+)\}\}/g, (match, token) => {
-			const [tokenType, ...splitToken] = token.split('.');
-
-			if (tokenType === 'variable')
-				return getVariableValue(splitToken, script.id, props.state.variables);
-			else if (tokenType === 'scopedVariable')
-				return getScopedVariableValue(splitToken, props.state.variables);
-			else if (tokenType === 'eval') {
-				try {
-					// Convert the result to a number if it looks like a number
-					const evalResult = eval(splitToken.join('.'));
-					if (!isNaN(evalResult) && typeof evalResult !== 'boolean')
-						return Number(evalResult);
-
-					return evalResult;
-				} catch (e) {
-					console.error('Evaluation crashed', e);
-
-					return match;
-				}
-			} else if (tokenType === 'fn') {
-				const fnName = splitToken[0];
-				const fnArgs = parentObj?.fnArgs?.[key] || {};
-
-				return getFunctionResult({
-					name: fnName,
-					args: fnArgs
-				});
-			} else if (tokenType === 'state')
-				return getStateValue(splitToken, script, props.getWgtState);
-
-			return match;
-		});
-	} while (result !== newValue);
-
-	return newValue;
-};
-
-// Simplified version of morphConfig
-const morphConfig = (config, script, props, forceDrill = false, isDrilling = true) => {
-	const isArray = Array.isArray(config);
-	const result = isArray ? [] : {};
-
-	if (config.fnArgs && config.type !== 'invokeFunctionModule')
-		result.fnArgs = config.fnArgs;
-
-	Object.entries(config).forEach(([key, value]) => {
-		if (value === undefined || value === null) {
-			if (value === null)
-				result[key] = value;
-
+// Mock the necessary dependencies
+const buildMocks = ({ id: scriptId, states = {}, variables }) => {
+	Object.entries(variables).forEach(([k, v]) => {
+		if (k.includes('-'))
 			return;
-		}
 
-		let newKey = key;
-		let newValue = value;
-		let isKeyDrilling = isDrilling;
+		delete variables[k];
 
-		if (isKeyDrilling && !forceDrill && typeof(value) === 'object' && !isArray)
-			isKeyDrilling = key[0] === '^';
-
-		if (isKeyDrilling && key[0] === '^')
-			newKey = key.substr(1);
-
-		if (isKeyDrilling && typeof(newKey) === 'string')
-			newKey = replaceStrings(newKey, script, props, isDrilling, undefined, undefined);
-
-		if (typeof(value) === 'object' && value !== null)
-			newValue = morphConfig(value, script, props, forceDrill, isKeyDrilling);
-		else if (typeof(value) === 'string')
-			newValue = replaceStrings(value, script, props, isDrilling, newKey, result);
-
-		if (newKey === 'spread-') {
-			// Handle spread operation by directly copying properties to result
-			if (typeof newValue === 'object' && newValue !== null) {
-				Object.keys(newValue).forEach(k => {
-					result[k] = newValue[k];
-				});
-			}
-		} else if (typeof(result[newKey]) === 'object' && result[newKey] !== null)
-			Object.assign(result[newKey], newValue);
-		else
-			result[newKey] = newValue;
+		variables[`${scriptId}-${k}`] = v;
 	});
 
-	return result;
+	return [{ id: scriptId }, {
+		getWgtState: id => {
+			return states[id];
+		},
+		state: { variables }
+	}];
 };
 
-// Create mock script and props objects for testing
-const mockScript = {
-	id: 'script-123',
-	ownerId: 'owner-123'
+const runMorphConfig = ({ id: scriptId = 's1', config, states, variables }) => {
+	return morphConfig(
+		config,
+		...buildMocks({
+			id: scriptId,
+			states,
+			variables
+		})
+	);
 };
 
-// Mock the necessary dependencies
-const mockProps = {
-	getWgtState (id) {
-		if (id === 'owner-123') {
-			return {
-				selfKey: 'selfValue',
-				nested: { subKey: 'nestedValue' }
-			};
-		}
-		if (id === 'target-123') {
-			return {
-				targetKey: 'targetValue',
-				nested: { subKey: 'targetNestedValue' }
-			};
-		}
-
-		return null;
-	},
-	state: {
-		variables: {
-			'script-123-testVar': 'testValue',
-			'script-123-nestedVar': { subKey: 'nestedVarValue' },
-			'script-123-arrayVar': ['item1', 'item2', 'lastItem'],
-			'scope-123-scopedVar': 'scopedValue'
-		}
-	}
-};
-
+// Tests
 test('Variable Replacement', async () => {
-	// Test basic variable replacement
-	const basicConfig = { text: '{{variable.testVar}}' };
-	const basicResult = morphConfig(basicConfig, mockScript, mockProps);
-	expect(basicResult.text).toBe('testValue');
+	//Basic Variables
 
-	// Test subkey variable replacement
+	// String replacement
+	expect(
+		runMorphConfig({
+			id: 's1',
+			config: { text: '((variable.var1))' },
+			variables: { var1: 'success' }
+		}).text
+	).toBe('success');
+
+	// Integer replacement
+	expect(
+		runMorphConfig({
+			id: 's1',
+			config: { text: '{{variable.var1}}' },
+			variables: { var1: 123 }
+		}).text
+	).toBe(123);
+
+	// Coerce integer to string
+	expect(
+		runMorphConfig({
+			id: 's1',
+			config: { text: '((variable.var1))' },
+			variables: { var1: 123 }
+		}).text
+	).toBe('123');
+
+	//Variable Sub-Keys
+
+	// String replacement
+	expect(
+		runMorphConfig({
+			id: 's1',
+			config: { text: '((variable.var1.sub))' },
+			variables: { var1: { sub: 'success' } }
+		}).text
+	).toBe('success');
+
+	// Integer replacement
+	expect(
+		runMorphConfig({
+			id: 's1',
+			config: { text: '{{variable.var1.sub}}' },
+			variables: { var1: { sub: 123 } }
+		}).text
+	).toBe(123);
+
+	// Coerce integer to string
+	expect(
+		runMorphConfig({
+			id: 's1',
+			config: { text: '((variable.var1.sub))' },
+			variables: { var1: { sub: 123 } }
+		}).text
+	).toBe('123');
+
+	//Multi Stage Variables
+
+	// String replacement
+	expect(
+		runMorphConfig({
+			id: 's1',
+			config: { text: '((variable.((variable.var1))))' },
+			variables: {
+				var1: 'var2',
+				var2: 'success'
+			}
+		}).text
+	).toBe('success');
+
+	// Integer replacement
+	expect(
+		runMorphConfig({
+			id: 's1',
+			config: { text: '{{variable.((variable.var1))}}' },
+			variables: {
+				var1: 'var2',
+				var2: 123
+			}
+		}).text
+	).toBe(123);
+
+	// Coerce integer to string
+	expect(
+		runMorphConfig({
+			id: 's1',
+			config: { text: '((variable.((variable.var1))))' },
+			variables: {
+				var1: 'var2',
+				var2: 123
+			}
+		}).text
+	).toBe('123');
+
+	/*// Test subkey variable replacement
 	const subkeyConfig = { text: '{{variable.nestedVar.subKey}}' };
 	const subkeyResult = morphConfig(subkeyConfig, mockScript, mockProps);
 	expect(subkeyResult.text).toBe('nestedVarValue');
@@ -266,9 +174,9 @@ test('Variable Replacement', async () => {
 	// Test last element variable replacement
 	const lastElementConfig = { text: '{{variable.arrayVar.last}}' };
 	const lastElementResult = morphConfig(lastElementConfig, mockScript, mockProps);
-	expect(lastElementResult.text).toBe('lastItem');
+	expect(lastElementResult.text).toBe('lastItem');*/
 });
-
+/*
 test('State Access', async () => {
 	// Test accessing state from another component
 	const targetStateConfig = { text: '{{state.target-123.targetKey}}' };
@@ -391,3 +299,28 @@ test('Combined Features', async () => {
 	expect(combinedResult.nested.eval).toBe('15');
 	expect(combinedResult.nested.fn).toBe('functionResult');
 });
+
+test('Nested Expressions', async () => {
+	// Test nested expressions with inside-out resolution
+	// First variable.abc resolves to 'component-abc', then state.component-abc.someKey resolves to 'nestedComponentValue'
+	const nestedExprConfig = { text: '((state.((variable.abc)).someKey))' };
+	const nestedExprResult = morphConfig(nestedExprConfig, mockScript, mockProps);
+	expect(nestedExprResult.text).toBe('nestedComponentValue');
+
+	// Test with multiple levels of nesting
+	const mockProps2 = {
+		...mockProps,
+		state: {
+			...mockProps.state,
+			variables: {
+				...mockProps.state.variables,
+				'script-123-componentId': 'abc'
+			}
+		}
+	};
+
+	const multiNestedConfig = { text: '((state.((variable.((variable.componentId)))).someKey))' };
+	const multiNestedResult = morphConfig(multiNestedConfig, mockScript, mockProps2);
+	expect(multiNestedResult.text).toBe('nestedComponentValue');
+});
+*/

@@ -19,7 +19,7 @@ export const overrideConfig = overrides => {
 	Object.assign(config, overrides);
 };
 
-if (window.envConfig)
+if (typeof window !== 'undefined' && window.envConfig)
 	Object.assign(config, window.envConfig);
 
 export const dataLocations = config.dataLocations;
