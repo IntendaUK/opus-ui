@@ -20,14 +20,16 @@ import { generateGuid } from '../helpers';
 import { getVariable } from '../../components/scriptRunner/actions/variableActions';
 import getNextScriptId from '../../components/scriptRunner/helpers/getNextScriptId';
 
-export const wrapScriptHandlerInActions = ({ script, ownerId, handler }) => {
+export const wrapScriptHandlerInActions = ({ handler }) => {
 	const res = [{
-		handler: () => {
+		handler: (morphedConfig, script, { state: scriptRunnerState }) => {
+			const { id: scriptId, ownerId } = script;
+
 			const getVariableHelper = variableName => {
 				const res = getVariable({
-					scope: script.id,
+					scope: scriptId,
 					name: variableName
-				}, script, { state: stateManager.getWgtState('SCRIPTRUNNER') });
+				}, script, { state: scriptRunnerState });
 
 				return res;
 			};
