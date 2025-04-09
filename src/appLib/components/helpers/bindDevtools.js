@@ -1,8 +1,10 @@
 /* eslint-disable max-lines-per-function, max-lines */
 
 //Imports
+import { clone } from '../../../system/helpers';
 import { stateManager } from '../../../system/managers/stateManager';
 import { getNodesArrayForDevtools } from '../../../system/managers/scopeManager';
+import { getComponentTypes, getFullPropSpec } from '../../../system/managers/componentManager';
 
 //Internal
 let opusHighlightOverlay = null;
@@ -57,8 +59,7 @@ const showFlowArrow = ({ from: flowFrom, fromKey, to: flowTo, toKey }) => {
 	const fromElement = document.getElementById(flowFrom);
 	const toElement = document.getElementById(flowTo);
 
-	if (!fromElement || !toElement)
-		return;
+	if (!fromElement || !toElement) return;
 
 	const fromRect = fromElement.getBoundingClientRect();
 	const toRect = toElement.getBoundingClientRect();
@@ -82,18 +83,10 @@ const showFlowArrow = ({ from: flowFrom, fromKey, to: flowTo, toKey }) => {
 
 	existingFlowArrow = svg;
 
-	// Create arrow line
-	const line = document.createElementNS(svgNS, 'line');
-	line.setAttribute('x1', fromMidX);
-	line.setAttribute('y1', fromMidY);
-	line.setAttribute('x2', toMidX);
-	line.setAttribute('y2', toMidY);
-	line.setAttribute('stroke', 'rgba(75, 192, 192, 0.8)');
-	line.setAttribute('stroke-width', '2');
-	line.setAttribute('marker-end', 'url(#arrowhead)');
-
-	// Create arrowhead marker
+	// Create defs container (for marker and filter)
 	const defs = document.createElementNS(svgNS, 'defs');
+
+	// --- Create arrowhead marker ---
 	const marker = document.createElementNS(svgNS, 'marker');
 	marker.setAttribute('id', 'arrowhead');
 	marker.setAttribute('markerWidth', '10');
@@ -108,7 +101,54 @@ const showFlowArrow = ({ from: flowFrom, fromKey, to: flowTo, toKey }) => {
 
 	marker.appendChild(polygon);
 	defs.appendChild(marker);
+
+	// --- Create filter for outer text outline ---
+	const filter = document.createElementNS(svgNS, 'filter');
+	filter.setAttribute('id', 'text-stroke');
+	// Expand the text shape (increase radius for thicker outline)
+	const feMorphology = document.createElementNS(svgNS, 'feMorphology');
+	feMorphology.setAttribute('operator', 'dilate');
+	feMorphology.setAttribute('radius', '2');
+	feMorphology.setAttribute('in', 'SourceAlpha');
+	feMorphology.setAttribute('result', 'dilated');
+	filter.appendChild(feMorphology);
+
+	// Color the expanded area black
+	const feFlood = document.createElementNS(svgNS, 'feFlood');
+	feFlood.setAttribute('flood-color', 'black');
+	feFlood.setAttribute('result', 'flood');
+	filter.appendChild(feFlood);
+
+	// Use the dilated shape as a mask for the flood color
+	const feComposite = document.createElementNS(svgNS, 'feComposite');
+	feComposite.setAttribute('in', 'flood');
+	feComposite.setAttribute('in2', 'dilated');
+	feComposite.setAttribute('operator', 'in');
+	feComposite.setAttribute('result', 'outline');
+	filter.appendChild(feComposite);
+
+	// Merge the black outline with the original graphic (white text on top)
+	const feMerge = document.createElementNS(svgNS, 'feMerge');
+	const feMergeNode1 = document.createElementNS(svgNS, 'feMergeNode');
+	feMergeNode1.setAttribute('in', 'outline');
+	feMerge.appendChild(feMergeNode1);
+	const feMergeNode2 = document.createElementNS(svgNS, 'feMergeNode');
+	feMergeNode2.setAttribute('in', 'SourceGraphic');
+	feMerge.appendChild(feMergeNode2);
+	filter.appendChild(feMerge);
+
+	defs.appendChild(filter);
 	svg.appendChild(defs);
+
+	// Create arrow line
+	const line = document.createElementNS(svgNS, 'line');
+	line.setAttribute('x1', fromMidX);
+	line.setAttribute('y1', fromMidY);
+	line.setAttribute('x2', toMidX);
+	line.setAttribute('y2', toMidY);
+	line.setAttribute('stroke', 'rgba(75, 192, 192, 0.8)');
+	line.setAttribute('stroke-width', '2');
+	line.setAttribute('marker-end', 'url(#arrowhead)');
 	svg.appendChild(line);
 
 	// Calculate angle and perpendicular offset
@@ -118,8 +158,9 @@ const showFlowArrow = ({ from: flowFrom, fromKey, to: flowTo, toKey }) => {
 	const angleDeg = (angleRad * 180) / Math.PI;
 
 	// Perpendicular unit vector
-	const perpX = -deltaY / Math.hypot(deltaX, deltaY);
-	const perpY = deltaX / Math.hypot(deltaX, deltaY);
+	const hypotenuse = Math.hypot(deltaX, deltaY);
+	const perpX = -deltaY / hypotenuse;
+	const perpY = deltaX / hypotenuse;
 	const offset = -8;
 
 	// Add fromKey text at the start of the line
@@ -137,6 +178,8 @@ const showFlowArrow = ({ from: flowFrom, fromKey, to: flowTo, toKey }) => {
 		fromText.setAttribute('font-size', '12px');
 		fromText.setAttribute('transform', `rotate(${angleDeg}, ${fromTextX}, ${fromTextY})`);
 		fromText.textContent = fromKey;
+		// Apply the filter for an outer outline
+		fromText.setAttribute('filter', 'url(#text-stroke)');
 		svg.appendChild(fromText);
 	}
 
@@ -155,13 +198,22 @@ const showFlowArrow = ({ from: flowFrom, fromKey, to: flowTo, toKey }) => {
 		toText.setAttribute('font-size', '12px');
 		toText.setAttribute('transform', `rotate(${angleDeg}, ${toTextX}, ${toTextY})`);
 		toText.textContent = toKey;
+		// Apply the filter for an outer outline
+		toText.setAttribute('filter', 'url(#text-stroke)');
 		svg.appendChild(toText);
 	}
 
 	document.body.appendChild(svg);
 };
 
+
 const getState = idComponent => {
+	const state = { ...stateManager.getWgtState(idComponent) };
+
+	//Inputs store their boxRef in state, which we can't serialize
+	if (state.boxRef)
+		delete state.boxRef;
+
 	const res = {
 		id: idComponent,
 		state: stateManager.getWgtState(idComponent),
@@ -235,8 +287,29 @@ const setComponentState = ({ target, key, value }) => {
 	stateManager.setWgtState(target, { [key]: value });
 };
 
+const getGlobalConfig = () => {
+	const propSpecs = { baseProps: clone({}, getFullPropSpec('typeThatDoesNotExist')) };
+
+	getComponentTypes().forEach(c => {
+		propSpecs[c] = clone({}, getFullPropSpec(c));
+	});
+
+	//Remove functions since they can't be serialized
+	Object.values(propSpecs).forEach(propSpec => {
+		Object.values(propSpec).forEach(propSpecEntry => {
+			Object.entries(propSpecEntry).forEach(([k, v]) => {
+				if (typeof(v) === 'function')
+					propSpecEntry[k] = 'function';
+			});
+		});
+	});
+
+	return { propSpecs };
+};
+
 //Initializer
 const bindDevtools = () => {
+	window._OPUS_DEVTOOLS_GLOBAL_HOOK.getGlobalConfig = getGlobalConfig;
 	window._OPUS_DEVTOOLS_GLOBAL_HOOK.getState = getState;
 	window._OPUS_DEVTOOLS_GLOBAL_HOOK.showOverlay = showOverlay;
 	window._OPUS_DEVTOOLS_GLOBAL_HOOK.hideOverlay = hideOverlay;

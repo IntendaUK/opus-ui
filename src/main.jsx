@@ -20,7 +20,7 @@ root.render(
 				singlePage: true,
 				mainAxisAlign: 'center',
 				crossAxisAlign: 'center',
-				backgroundColor: '#111',
+				backgroundColor: 'white',
 				gap: '24px'
 			},
 			wgts: [{
@@ -46,6 +46,8 @@ root.render(
 					prps: {
 						caption: 'I am a label',
 						color: 'white',
+						customProperty: 'face',
+						customArray: [],
 						flows: [{
 							from : '||outerScope||',
 							fromKey: 'color',

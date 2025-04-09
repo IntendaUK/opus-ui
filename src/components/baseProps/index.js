@@ -83,6 +83,21 @@ const props = {
 		type: 'array',
 		desc: 'Defines a list of props that can have their value replaced before mount. These props should have values of the form: ((state.id.key))'
 	},
+	genClassNames: {
+		type: 'string',
+		internal: true,
+		desc: 'Class names that are generated for class-mapped properties and automatically attached to components'
+	},
+	genStyles: {
+		type: 'object',
+		internal: true,
+		desc: 'Styles that are generated for CSS attribute-, and variable properties and automatically attached to components'
+	},
+	genAttributes: {
+		type: 'object',
+		internal: true,
+		desc: 'HTML Attributes that are generated for properties (as defined in "attr" properties) and automatically attached to components'
+	},
 	cssVars: {
 		type: 'array',
 		desc: 'A list of css variables that should be attached to the element',
