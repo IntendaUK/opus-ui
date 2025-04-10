@@ -7,7 +7,7 @@
 	},
 	"wgts": [
 		{
-			"src": "./customComponent",
+			"src": "./CustomComponent",
 			"prps": {
 				"width": "100vw",
 				"height": "100vh",

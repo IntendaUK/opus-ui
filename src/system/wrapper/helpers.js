@@ -153,6 +153,34 @@ export const registerScripts = async ({ id, scps }) => {
 				delete s.srcActions;
 			}
 
+			if (s.actions) {
+				s.actions = await Promise.all(
+					s.actions.map(async a => {
+						const { srcAction } = a;
+
+						if (!srcAction)
+							return a;
+
+						const handlerString = await getMdaHelper({
+							type: 'dashboard',
+							key: srcAction.path,
+							fileType: 'js'
+						});
+
+						const moduleUrl = `data:text/javascript;charset=utf-8,${encodeURIComponent(handlerString)}`;
+						const handler = await import(/* @vite-ignore */ moduleUrl);
+
+						const [ wrappedAction ] = wrapScriptHandlerInActions({
+							script: s,
+							ownerId: id,
+							handler: handler.default
+						});
+
+						return wrappedAction;
+					})
+				);
+			}
+
 			return {
 				id,
 				script: s
@@ -162,4 +190,3 @@ export const registerScripts = async ({ id, scps }) => {
 
 	await registerScriptsBase(registerQueue);
 };
-

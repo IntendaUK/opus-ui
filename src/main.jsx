@@ -2,60 +2,25 @@
 import { createRoot } from 'react-dom/client';
 
 //System
-import Opus, { loadMdaPackage } from './library';
+import Opus, { Component } from './library';
+
+//Custom Component
+const OpusUI = () => {
+	return (
+		<div>
+			<Component mda={{
+				type: 'label',
+				prps: { caption: 'Opus UI: Hit the perfect pitch between traditional development and low-code' }
+			}} />
+		</div>
+	);
+};
 
 //Setup
 const root = createRoot(document.getElementById('root'));
 
 root.render(
 	<Opus
-		options={{
-			env: 'development'
-		}}
-		startupMda={{
-			scope: ['outerScope', 'localScope'],
-			id: 'outer',
-			type: 'container',
-			prps: {
-				singlePage: true,
-				mainAxisAlign: 'center',
-				crossAxisAlign: 'center',
-				backgroundColor: 'white',
-				gap: '24px'
-			},
-			wgts: [{
-				scope: 'innerScope',
-				type: 'containerSimple',
-				prps: {
-					scps: [{
-						triggers: [{
-							event: 'onStateChange',
-							key: 'hovered'
-						}],
-						actions: [{
-							type: 'setState',
-							target: '||localScope.label||',
-							key: 'hovered',
-							value: '{{state.||outerScope||.hovered}}'
-						}]
-					}]
-				},
-				wgts: [{
-					relId: 'label',
-					type: 'label',
-					prps: {
-						caption: 'I am a label',
-						color: 'white',
-						customProperty: 'face',
-						customArray: [],
-						flows: [{
-							from : '||outerScope||',
-							fromKey: 'color',
-							toKey: 'color'
-						}]
-					}
-				}]
-			}]
-		}}
+		startupComponent={<OpusUI />}
 	/>
 );

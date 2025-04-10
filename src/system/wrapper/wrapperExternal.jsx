@@ -10,6 +10,7 @@ import { registerScripts } from './helpers';
 import { register, emitEvent, getInitialState, processQueue, destroyScope } from '../managers/flowManager/index';
 import queueChanges from '../managers/flowManager/methods/queueChanges';
 import { lateBindTriggers, disposeLateBoundTriggers } from '../../components/scriptRunner/helpers/lateBoundTriggers';
+import { runScript } from '../../components/scriptRunner/interface';
 import { disposeScripts } from '../../components/scriptRunner/interface';
 import { removeStyleTag } from './helpers/styleTags.js';
 import { Wrapper } from './wrapper';
@@ -47,7 +48,8 @@ export const wrapScriptHandlerInActions = ({ handler }) => {
 					stateManager.setWgtState(idTarget, newState, ownerId)
 				},
 				getState: stateManager.getWgtState.bind(null, ownerId),
-				getExternalState: stateManager.getWgtState.bind(null)
+				getExternalState: stateManager.getWgtState.bind(null),
+				runScript
 			});
 		}
 	}];
