@@ -1,3 +1,6 @@
+//System Helpers
+import spliceWhere from '@spliceWhere';
+
 //Helpers
 import { getMappedFrom } from '../helpers/getMappedId';
 
@@ -15,14 +18,14 @@ import { getMappedFrom } from '../helpers/getMappedId';
 const store = [];
 
 export const destroyEventsForScope = scopeName => {
-	store.spliceWhere(e => e.scope === scopeName);
+	spliceWhere(store, e => e.scope === scopeName);
 };
 
 export const destroyEventsForListener = listener => {
 	const from = getMappedFrom(listener);
 	const { fromKey, scope } = listener;
 
-	store.spliceWhere(e => e.from === from && e.fromKey === fromKey && e.scope === scope);
+	spliceWhere(store, e => e.from === from && e.fromKey === fromKey && e.scope === scope);
 };
 
 export const findEventForListener = listener => {
@@ -48,7 +51,7 @@ export const addEventEntry = (listener, value) => {
 	const from = getMappedFrom(listener);
 	const { fromKey, fromSubKey, scope } = listener;
 
-	store.spliceWhere(e => {
+	spliceWhere(store, e => {
 		const isMatch = (
 			e.from === from &&
 			e.fromKey === fromKey &&

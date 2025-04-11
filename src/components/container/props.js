@@ -7,6 +7,7 @@ import { AppContext } from '../../system/managers/appManager';
 //System Helpers
 import { clone, generateGuid } from '../../system/helpers';
 import { applyTraits } from '../../system/managers/traitManager';
+import spliceWhere from '@spliceWhere';
 
 //Shared Props
 import propsShared from './propsShared';
@@ -150,7 +151,7 @@ const props = {
 				deletedValue = [deletedValue];
 
 			deletedValue.forEach(mda => {
-				oldValue.spliceWhere(({ id }) => {
+				spliceWhere(oldValue, ({ id }) => {
 					const doDelete = (
 						id === mda.id ||
 						mda.all ||

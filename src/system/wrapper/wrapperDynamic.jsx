@@ -4,7 +4,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 
 //System Helpers
-import { clone } from '../helpers';
+import clone from '@clone';
+import spliceWhere from '@spliceWhere';
 import { doesComponentTypeExist } from '../managers/componentManager';
 
 //External Helpers
@@ -61,7 +62,7 @@ const recurseMutateMda = mda => {
 		return;
 
 	if (mda.wgts) {
-		mda.wgts.spliceWhere(w => typeof(w) !== 'object' || w === null);
+		spliceWhere(mda.wgts, w => typeof(w) !== 'object' || w === null);
 		for (const wgtMda of mda.wgts)
 			recurseMutateMda(wgtMda);
 	}

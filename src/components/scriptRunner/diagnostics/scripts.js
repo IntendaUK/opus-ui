@@ -1,5 +1,8 @@
 /* eslint-disable no-console, max-len, no-underscore-dangle, max-lines */
 
+//System Helpers
+import spliceWhere from '@spliceWhere';
+
 //Internals
 let lastId = 0;
 const traces = {};
@@ -34,7 +37,7 @@ const trackAction = (run, { scope, config, morphedConfig, result, success, actio
 	while (lastAction?.morphedConfig.type === 'consume' && morphedConfig.type !== 'consume') {
 		useActions.push(...lastAction.actions);
 
-		actions.spliceWhere(a => a === lastAction);
+		spliceWhere(actions, a => a === lastAction);
 
 		lastAction = actions[actions.length - 1];
 	}

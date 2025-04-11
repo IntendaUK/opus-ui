@@ -1,4 +1,6 @@
-import { clone } from '../../helpers';
+//System Helpers
+import spliceWhere from '@spliceWhere';
+import clone from '@clone';
 
 let keyLookup;
 
@@ -26,7 +28,7 @@ export const addLookupKey = (type, subType, key, lookupKey) => {
 };
 
 export const removeLookupKey = lookupKey => {
-	keyLookup.spliceWhere(({ lookupKey: lKey }) => lKey === lookupKey);
+	spliceWhere(keyLookup, ({ lookupKey: lKey }) => lKey === lookupKey);
 	syncKeyLookup();
 };
 

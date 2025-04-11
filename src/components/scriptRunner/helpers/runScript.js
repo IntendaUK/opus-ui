@@ -4,6 +4,7 @@ import opusConfig from '../../../config';
 //System Helpers
 import { applyTraitsToArray } from '../../../system/managers/traitManager';
 import { clone } from '../../../system/helpers';
+import spliceWhere from '@spliceWhere';
 
 //Helpers
 import { processAction, processActionSync } from './processAction';
@@ -104,7 +105,7 @@ export const runScript = async (props, script, actions, isRootScript) => {
 		script.logDiagnostics();
 
 	if (isRootScript) {
-		runningScripts.spliceWhere(f => f === entry);
+		spliceWhere(runningScripts, f => f === entry);
 
 		if (script.concurrency)
 			processNextInQueue(props, script);
@@ -158,7 +159,7 @@ processNextInQueue = (props, { concurrency: { pool } }) => {
 	if (!next)
 		return;
 
-	scriptsQueue.spliceWhere(f => f === next);
+	spliceWhere(scriptsQueue, f => f === next);
 
 	runScript(props, next.script, next.actions, true);
 };

@@ -12,6 +12,7 @@ import '../system/polyfills';
 //System
 import { AppContext, appManager, createContext } from '../system/managers/appManager';
 import { init as initThemeManager } from '../system/managers/themeManager';
+import { setOpusHelpersInWindow } from '../system/helpers';
 
 //Components
 import Preloader from './components/preloader';
@@ -29,6 +30,9 @@ const AppInnerContext = createContext('appInnerContext');
 
 //Events
 const onMount = (state, setState, theme, setTheme) => {
+	//Make all helper methods available through window._.spliceWhere, etc.
+	setOpusHelpersInWindow({ includeAll: true });
+
 	const managerInstance = appManager();
 	managerInstance.initState('app', setState, state);
 

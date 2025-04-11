@@ -1,5 +1,6 @@
 //System Helpers
 import { addItem, getKeys, getItemForKey, removeItem } from './localStorageManager';
+import spliceWhere from '@spliceWhere';
 
 //Contains all property objects
 const propertyContainers = new Map();
@@ -37,7 +38,7 @@ export const getPropertyContainer = id => {
 export const persistState = (id, key, subKey, value, scope) => {
 	//Infinite scope does not go into the persistTracker array
 	if (scope !== '*') {
-		persistTracker.spliceWhere(f => f.id === id && f.key === key && f.subKey === subKey);
+		spliceWhere(persistTracker, f => f.id === id && f.key === key && f.subKey === subKey);
 
 		persistTracker.push({
 			id,
@@ -72,7 +73,7 @@ export const getPersistedStates = id => {
 		if (key.includes('.'))
 			[key, subKey] = key.split('.');
 
-		states.spliceWhere(s => s.key === key && s.subKey === subKey);
+		spliceWhere(states, s => s.key === key && s.subKey === subKey);
 		states.push({
 			key,
 			subKey,
@@ -84,7 +85,7 @@ export const getPersistedStates = id => {
 };
 
 export const removePersistedStates = id => {
-	persistTracker.spliceWhere(p => p.id === id);
+	spliceWhere(persistTracker, p => p.id === id);
 
 	const localStorageKeys = getKeys({
 		type: 'persistedState',
@@ -97,5 +98,5 @@ export const removePersistedStates = id => {
 };
 
 export const removePersistedStatesForScope = id => {
-	persistTracker.spliceWhere(p => p.scope === id);
+	spliceWhere(persistTracker, p => p.scope === id);
 };

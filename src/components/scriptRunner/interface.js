@@ -2,6 +2,7 @@
 import { clone } from '../../system/helpers';
 import { applyBlueprints } from '../../system/managers/blueprintManager';
 import setupSuiteActions from './helpers/setupSuiteActions';
+import spliceWhere from '@spliceWhere';
 
 //Helpers
 import hookTrigger from './helpers/hookTrigger';
@@ -34,7 +35,7 @@ export const removeDisposer = (id, disposer) => {
 	if (!disposeStash[id])
 		disposeStash[id] = [];
 
-	disposeStash[id].spliceWhere(d => d === disposer);
+	spliceWhere(disposeStash[id], d => d === disposer);
 };
 
 export const registerScripts = async scripts => {

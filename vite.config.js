@@ -58,6 +58,8 @@ const customCopyPlugin = () => {
 			};
 
 			await copyFiles('src/components', 'dist/components', 'src/components/**/*');
+			await copyFiles('src/props', 'dist/props', 'src/props/**/*');
+			await copyFiles('src/system/helpers', 'dist/system/helpers', 'src/system/helpers/**/*');
 			await copyFiles('', 'dist', 'lspconfig.json');
 		}
 	};
@@ -89,6 +91,12 @@ export default defineConfig(() => ({
 			}
 		})
 	],
+	resolve: {
+		alias: {
+			'@clone': path.resolve(__dirname, 'src/system/helpers/clone.js'),
+			'@spliceWhere': path.resolve(__dirname, 'src/system/helpers/spliceWhere.js')
+		}
+	},
 	build: {
 		lib: {
 			entry: resolve('src', 'library.jsx'),
@@ -112,6 +120,5 @@ export default defineConfig(() => ({
 			}
 		}
 	},
-	optimizeDeps: { esbuildOptions: { loader: { '.js': 'jsx' } } },
-	test: { environment: 'jsdom' }
+	optimizeDeps: { esbuildOptions: { loader: { '.js': 'jsx' } } }
 }));

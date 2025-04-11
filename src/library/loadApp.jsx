@@ -18,6 +18,7 @@ import applyThemesToMdaPackage from '../app/components/helpers/applyThemesToMdaP
 import { getExternalComponentTypes } from './externalComponentTypes';
 import { overrideConfig, default as opusConfig } from '../config';
 import bindDevtools from '../appLib/components/helpers/bindDevtools';
+import { setOpusHelpersInWindow } from '../system/helpers';
 
 //Context
 const AppInnerContext = createContext('appInnerContext');
@@ -77,8 +78,13 @@ const buildFlowObjects = statesString => {
 
 //Events
 const onMount = (
-	state, set, theme, setTheme, mdaPackage, shouldLoadUrlParameters, config, startupDashboardPath
+	state, set, theme, setTheme, mdaPackage, shouldLoadUrlParameters, config, startupDashboardPath, windowHelpers
 ) => {
+	if (windowHelpers !== undefined) {
+		//Make required helper methods available through window._.spliceWhere, etc.
+		setOpusHelpersInWindow(windowHelpers);
+	}
+
 	overrideConfig(config);
 
 	const managerInstance = appManager();
@@ -142,14 +148,14 @@ const onMount = (
 };
 
 //Components
-const OpusApp = ({ mdaPackage, loadUrlParameters, config, startupDashboardPath }) => {
+const OpusApp = ({ mdaPackage, loadUrlParameters, config, startupDashboardPath, windowHelpers }) => {
 	const [state, set] = useState({ });
 	const [theme, setTheme] = useState({});
 
 	const { managerInstance } = state;
 
 	useEffect(
-		onMount.bind(null, state, set, theme, setTheme, mdaPackage, loadUrlParameters, config, startupDashboardPath),
+		onMount.bind(null, state, set, theme, setTheme, mdaPackage, loadUrlParameters, config, startupDashboardPath, windowHelpers),
 		[]
 	);
 
@@ -181,7 +187,8 @@ const loadApp = async ({
 	loadUrlParameters = false,
 	config = {},
 	renderFunction,
-	startupDashboardPath
+	startupDashboardPath,
+	windowHelpers
 }) => {
 	const Component = (
 		<OpusApp
@@ -189,6 +196,7 @@ const loadApp = async ({
 			loadUrlParameters={loadUrlParameters}
 			config={config}
 			startupDashboardPath={startupDashboardPath}
+			windowHelpers={windowHelpers}
 		/>
 	);
 

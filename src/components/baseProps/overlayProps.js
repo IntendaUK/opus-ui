@@ -1,5 +1,8 @@
 /* eslint-disable max-len */
 
+//Helpers
+import spliceWhere from '@spliceWhere';
+
 //Props
 const props = {
 	popoverMda: {
@@ -21,7 +24,7 @@ const props = {
 				//Ad-hoc popoverMda entries will normally not have popoverId's, but tooltips DO. Any popoverMda that you wish to be
 				// able to remove as the result of, for example, a flow, will need a popoverId.
 				if (nId !== undefined)
-					oldValue.spliceWhere(({ id }) => id === nId);
+					spliceWhere(oldValue, ({ id }) => id === nId);
 
 				oldValue.push(n);
 			});
@@ -33,7 +36,7 @@ const props = {
 			if (id === undefined)
 				return;
 
-			oldValue.spliceWhere(o => o.id === id);
+			spliceWhere(oldValue, o => o.id === id);
 
 			return oldValue;
 		}
