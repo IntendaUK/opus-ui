@@ -1,5 +1,7 @@
 /* eslint-disable max-lines-per-function, max-lines, complexity */
 
+//System Helpers
+import spliceWhere from '@spliceWhere';
 import { stateManager } from './stateManager';
 
 //List of nodes that are mounted
@@ -82,7 +84,7 @@ const removeNodeFromDomTree = node => {
 	if (treeNode.nodes.length === 0)
 		delete treeNode.children['[[idMatch]]'];
 	else
-		treeNode.nodes.spliceWhere(n => n.id === id);
+		spliceWhere(treeNode.nodes, n => n.id === id);
 };
 
 const findNodeInDomTree = id => {
@@ -117,13 +119,13 @@ export const removeNodeFromDom = ({ id }) => {
 
 	node.ownScopes.forEach(o => {
 		const lookup = scopeOwnerLookup[o];
-		lookup.spliceWhere(l => l === node);
+		spliceWhere(lookup, l => l === node);
 
 		if (lookup.length === 0)
 			delete scopeOwnerLookup[o];
 	});
 
-	node.cachedInParents.forEach(p => p.childNodesWithRelIds.spliceWhere(f => f === node));
+	node.cachedInParents.forEach(p => spliceWhere(p.childNodesWithRelIds, f => f === node));
 
 	node.scopes.forEach(s => {
 		const lookup = inScopeLookup[s];
@@ -131,7 +133,7 @@ export const removeNodeFromDom = ({ id }) => {
 		if (!lookup)
 			return;
 
-		lookup.spliceWhere(l => l === node);
+		spliceWhere(lookup, l => l === node);
 
 		if (lookup.length === 0)
 			delete inScopeLookup[s];

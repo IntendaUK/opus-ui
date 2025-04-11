@@ -9,6 +9,10 @@
 			{
 				"key": "generateGuid",
 				"path": "dist/system/helpers.js"
+			},
+			{
+				"key": "spliceWhere",
+				"path": "dist/system/helpers/spliceWhere.js"
 			}
 		],
 		"dependents": [

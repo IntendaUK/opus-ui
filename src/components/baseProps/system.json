@@ -9,6 +9,10 @@
 			{
 				"key": "mapToSize",
 				"path": "dist/props/cssMaps/mapToSize.js"
+			},
+			{
+				"key": "spliceWhere",
+				"path": "dist/system/helpers/spliceWhere.js"
 			}
 		],
 		"dependents": [
@@ -24,7 +28,12 @@
 			},
 			{
 				"path": "dist/components/baseProps/overlayProps.js",
-				"functions": [],
+				"functions": [
+					{
+						"key": "spliceWhere",
+						"path": "dist/system/helpers/spliceWhere.js"
+					}
+				],
 				"dependents": []
 			},
 			{

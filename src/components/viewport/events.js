@@ -1,9 +1,35 @@
-import { getDeepProperty, resolveRelativePath } from '../../system/helpers';
-
+//System Helpers
+import { getDeepProperty } from '../../system/helpers';
+import spliceWhere from '@spliceWhere';
 import { getMdaHelper } from '../scriptRunner/actions/getMda/getMda';
 
+//Helpers
 import { activateNextTab, activateTab } from './helpers';
 
+//Helpers
+const resolveRelativePath = (path, cwd) => {
+	if (path.indexOf('./') !== 0)
+		return path;
+
+	let result = cwd;
+
+	const splitPath = path.split('/');
+
+	splitPath.forEach(s => {
+		if (s === '.')
+			return;
+		else if (s === '..')
+			result = result.substr(0, result.lastIndexOf('/'));
+		else if (result.length > 0)
+			result += '/' + s;
+		else
+			result += s;
+	});
+
+	return result;
+};
+
+//Events
 const onGetMda = (props, ctrlDown, value, retMda) => {
 	const { id, setState, setWgtState, state: { autoTab, ctrlTab, tabsMda } } = props;
 	let { state: { mda } } = props;
@@ -62,7 +88,7 @@ const onValueCleared = (
 		return;
 
 	if (autoTab || ctrlTab) {
-		mda.spliceWhere(({ value }) => value === oldValue);
+		spliceWhere(mda, ({ value }) => value === oldValue);
 		setState({ mda });
 	} else if (mda.value === oldValue)
 		setState({ deleteKeys: ['mda'] });
@@ -127,7 +153,7 @@ export const onCloseTab = ({ setWgtState, setState, state: { value, mda, tabsMda
 	const innerWgtId = tab.wgts[0].id;
 
 	mda.splice(tabIndex, 1);
-	tabsMda.spliceWhere(t => t === tab);
+	spliceWhere(tabsMda, t => t === tab);
 
 	const newState = {
 		mda,

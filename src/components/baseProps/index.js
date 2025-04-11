@@ -10,6 +10,9 @@
 	That is, margin and border (for example) should be above marginTop and borderTop
 */
 
+//Helpers
+import spliceWhere from '@spliceWhere';
+
 //CSS Map Functions
 import mapToColor from '../../props/cssMaps/mapToColor';
 import mapToSize from '../../props/cssMaps/mapToSize';
@@ -73,7 +76,7 @@ const props = {
 				newValue = [ newValue];
 
 			newValue.forEach(t => {
-				oldValue.spliceWhere(tag => tag === t);
+				spliceWhere(oldValue, tag => tag === t);
 			});
 
 			return oldValue;

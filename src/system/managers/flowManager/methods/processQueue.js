@@ -5,6 +5,9 @@
 		have caused.
 */
 
+//System Helpers
+import spliceWhere from '@spliceWhere';
+
 //Helpers
 import { queuedEvents } from '../stores/storeMisc';
 
@@ -19,7 +22,7 @@ const processQueue = id => {
 
 	emit(id, queued);
 
-	queuedEvents.spliceWhere(q => q === queued);
+	spliceWhere(queuedEvents, q => q === queued);
 };
 
 export default processQueue;

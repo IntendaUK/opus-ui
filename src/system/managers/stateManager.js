@@ -3,6 +3,7 @@ import opusConfig from '../../config';
 
 //System Helpers
 import { getPropertyContainer } from './propertyManager';
+import spliceWhere from '@spliceWhere';
 
 //Helpers
 import sysSetWgtState from './stateManager/setWgtState';
@@ -90,7 +91,7 @@ const getWgtStatesWithTag = tag => {
 const cleanupState = (id, path, traitMappings) => {
 	appState.delete(id);
 
-	componentPathMap.get(path).spliceWhere(f => f === id);
+	spliceWhere(componentPathMap.get(path), f => f === id);
 
 	if (traitMappings) {
 		traitMappings.forEach(traitPath => {

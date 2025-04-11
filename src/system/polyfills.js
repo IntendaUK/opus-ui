@@ -1,44 +1,10 @@
-if (window.DOMTokenList) {
-	window.DOMTokenList.prototype.multiToggle = function () {
-		[...arguments].forEach(a => this.toggle(a));
-	};
-}
-
-// eslint-disable-next-line no-extend-native
-Array.prototype.spliceWhere = function (callback, thisArg) {
-	let T = thisArg;
-	let O = Object(this);
-	let len = O.length >>> 0;
-
-	let k = 0;
-
-	while (k < len) {
-		let kValue;
-
-		if (k in O) {
-			kValue = O[k];
-
-			if (callback.call(T, kValue, k, O)) {
-				O.splice(k, 1);
-				k--;
-			}
-		}
-		k++;
-	}
-
-	return -1;
-};
-
-// eslint-disable-next-line no-extend-native
-Array.prototype.none = function (callback) {
-	return !this.some(callback);
-};
-
-if (/Firefox\/\d+[\d\.]*/.test(navigator.userAgent)
-		&& typeof window.DragEvent === 'function'
-		&& typeof window.addEventListener === 'function') {
+if (
+	/Firefox\/\d+[\d\.]*/.test(navigator.userAgent) &&
+	typeof window.DragEvent === 'function' &&
+	typeof window.addEventListener === 'function'
+) {
 	(function () {
-	// patch for Firefox bug https://bugzilla.mozilla.org/show_bug.cgi?id=505521
+		// Patch for Firefox bug https://bugzilla.mozilla.org/show_bug.cgi?id=505521
 		let cx, cy, px, py, ox, oy, sx, sy, lx, ly;
 		const update = function (e) {
 			cx = e.clientX; cy = e.clientY;
@@ -68,12 +34,15 @@ if (/Firefox\/\d+[\d\.]*/.test(navigator.userAgent)
 		window.addEventListener('dragend', assign, true);
 
 		let me = Object.getOwnPropertyDescriptors(window.MouseEvent.prototype);
-		let ue = Object.getOwnPropertyDescriptors(window.UIEvent.prototype);
+
 		const getter = function (prop, repl) {
 			return function () {
 				return me[prop] && me[prop].get.call(this) || Number(this[repl]) || 0;
 			};
 		};
+
+		let ue = Object.getOwnPropertyDescriptors(window.UIEvent.prototype);
+
 		const layerGetter = function (prop, repl) {
 			return function () {
 				return (

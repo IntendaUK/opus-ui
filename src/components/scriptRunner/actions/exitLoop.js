@@ -1,9 +1,11 @@
+import spliceWhere from '@spliceWhere';
+
 const exitList = [];
 
 export const shouldExitLoop = loopId => {
 	const result = exitList.some(l => l === loopId);
 
-	exitList.spliceWhere(l => l === loopId);
+	spliceWhere(exitList, l => l === loopId);
 
 	return result;
 };

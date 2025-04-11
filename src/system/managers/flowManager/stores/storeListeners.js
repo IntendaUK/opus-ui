@@ -1,6 +1,7 @@
 //System Helpers
 import { clone } from '../../../helpers';
 import { stateManager } from '../../stateManager';
+import spliceWhere from '@spliceWhere';
 
 //Helpers
 import getMappedValue from '../helpers/getMappedValue';
@@ -232,9 +233,9 @@ export const resetListeners = () => {
 };
 
 export const destroyListener = listener => {
-	store.spliceWhere(s => s === listener);
+	spliceWhere(store, s => s === listener);
 };
 
 export const destroyListenersForScope = scope => {
-	store.spliceWhere(s => s.scope === scope);
+	spliceWhere(store, s => s.scope === scope);
 };

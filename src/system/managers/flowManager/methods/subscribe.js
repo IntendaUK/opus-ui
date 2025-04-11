@@ -3,6 +3,9 @@
 		to certain events like: onMount, onUnmount, onKeyDown, etc.
 */
 
+//System Helpers
+import spliceWhere from '@spliceWhere';
+
 //Stores
 import { eventSubscriptions } from '../stores/storeMisc';
 
@@ -23,7 +26,7 @@ const subscribe = (from, ownerId, handler, event) => {
 
 	eventSubscriptions.push(sub);
 
-	const unsub = () => eventSubscriptions.spliceWhere(l => l === sub);
+	const unsub = () => spliceWhere(eventSubscriptions, l => l === sub);
 
 	return unsub;
 };

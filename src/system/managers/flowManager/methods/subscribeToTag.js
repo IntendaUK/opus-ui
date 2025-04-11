@@ -3,6 +3,9 @@
 		not through an id, but rather, through a tag.
 */
 
+//System Helpers
+import spliceWhere from '@spliceWhere';
+
 //Stores
 import { eventSubscriptions } from '../stores/storeMisc';
 
@@ -18,7 +21,7 @@ const subscribeToTag = (fromTag, ownerId, handler, event) => {
 
 	eventSubscriptions.push(sub);
 
-	const unsub = () => eventSubscriptions.spliceWhere(l => l === sub);
+	const unsub = () => spliceWhere(eventSubscriptions, l => l === sub);
 
 	return unsub;
 };
