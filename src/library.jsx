@@ -51,7 +51,7 @@ export default Opus;
 export { default as applyThemesToMdaPackage } from './app/components/helpers/applyThemesToMdaPackage';
 export { buildThemes } from './app/components/themeLoader';
 export { getThemeValue, getThemes } from './system/managers/themeManager';
-export { clone, getDeepProperty, generateGuid, generateClassNames } from './system/helpers';
+export { clone, getDeepProperty, generateGuid, generateClassNames, spliceWhere } from './system/helpers';
 export { register as registerFlow, reset as resetFlowManager } from './system/managers/flowManager/index';
 export { default as mapToColor } from './props/cssMaps/mapToColor';
 export { default as mapToSize } from './props/cssMaps/mapToSize';
