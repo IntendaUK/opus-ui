@@ -8,6 +8,8 @@ export { default as clone } from './helpers/clone';
 export { default as cloneNoOverride } from './helpers/cloneNoOverride';
 export { default as cloneNoOverrideNoCopy } from './helpers/cloneNoOverrideNoCopy';
 
+export { default as spliceWhere } from './helpers/spliceWhere';
+
 //Given an object { a: { b: { c: 10 } } }
 //Can be called using getDeepPropertyArray(obj, ['a', b', 'c']) to access the value of `c`
 export const getDeepPropertyArray = (obj, pathArray) => {
@@ -109,6 +111,4 @@ const setOpusHelpersInWindow = ({
 	window[setAs] = windowHelpers;
 };
 
-export {
-	setOpusHelpersInWindow
-};
+export { setOpusHelpersInWindow };
