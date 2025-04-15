@@ -6,7 +6,7 @@
 */
 
 //System Helpers
-import spliceWhere from '@spliceWhere';
+import spliceWhere from '../../../helpers/spliceWhere';
 
 //Helpers
 import { queuedEvents } from '../stores/storeMisc';

@@ -1,7 +1,7 @@
 /* eslint-disable max-len */
 
 //Helpers
-import spliceWhere from '@spliceWhere';
+import spliceWhere from '../../system/helpers/spliceWhere';
 
 //Props
 const props = {

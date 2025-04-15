@@ -1,8 +1,7 @@
 //System Helpers
-import { clone } from '../../system/helpers';
+import { clone, spliceWhere } from '../../system/helpers';
 import { applyBlueprints } from '../../system/managers/blueprintManager';
 import setupSuiteActions from './helpers/setupSuiteActions';
-import spliceWhere from '@spliceWhere';
 
 //Helpers
 import hookTrigger from './helpers/hookTrigger';

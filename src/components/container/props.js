@@ -7,7 +7,7 @@ import { AppContext } from '../../system/managers/appManager';
 //System Helpers
 import { clone, generateGuid } from '../../system/helpers';
 import { applyTraits } from '../../system/managers/traitManager';
-import spliceWhere from '@spliceWhere';
+import spliceWhere from '../../system/helpers/spliceWhere';
 
 //Shared Props
 import propsShared from './propsShared';
@@ -109,15 +109,13 @@ const props = {
 		) => {
 			if (!newValue) {
 				if (opusConfig.env === 'development') {
-					//eslint-disable-next-line no-console
 					console.error({
 						msg: 'Invalid value passed to [extraWgts]',
 						args: { value: newValue === undefined ? newValue : JSON.stringify(JSON.parse(newValue)) }
 					});
-				} else {
-					/* eslint-disable-next-line no-console */
+				} else
+
 					console.error('Invalid value passed to [extraWgts]');
-				}
 
 				return oldValue;
 			}

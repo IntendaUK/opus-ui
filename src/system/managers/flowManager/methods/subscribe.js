@@ -4,7 +4,7 @@
 */
 
 //System Helpers
-import spliceWhere from '@spliceWhere';
+import spliceWhere from '../../../helpers/spliceWhere';
 
 //Stores
 import { eventSubscriptions } from '../stores/storeMisc';

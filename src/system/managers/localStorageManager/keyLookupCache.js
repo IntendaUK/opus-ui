@@ -1,6 +1,5 @@
 //System Helpers
-import spliceWhere from '@spliceWhere';
-import clone from '@clone';
+import { clone, spliceWhere } from '../../helpers';
 
 let keyLookup;
 

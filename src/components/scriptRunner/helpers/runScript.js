@@ -3,8 +3,7 @@ import opusConfig from '../../../config';
 
 //System Helpers
 import { applyTraitsToArray } from '../../../system/managers/traitManager';
-import { clone } from '../../../system/helpers';
-import spliceWhere from '@spliceWhere';
+import { clone, spliceWhere } from '../../../system/helpers';
 
 //Helpers
 import { processAction, processActionSync } from './processAction';

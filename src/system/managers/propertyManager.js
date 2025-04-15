@@ -1,6 +1,6 @@
 //System Helpers
 import { addItem, getKeys, getItemForKey, removeItem } from './localStorageManager';
-import spliceWhere from '@spliceWhere';
+import spliceWhere from '../helpers/spliceWhere';
 
 //Contains all property objects
 const propertyContainers = new Map();

@@ -1,7 +1,7 @@
 /* eslint-disable max-lines-per-function, max-lines, complexity */
 
 //System Helpers
-import spliceWhere from '@spliceWhere';
+import spliceWhere from '../helpers/spliceWhere';
 import { stateManager } from './stateManager';
 
 //List of nodes that are mounted

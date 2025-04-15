@@ -1,6 +1,5 @@
 //System Helpers
-import { getDeepProperty } from '../../system/helpers';
-import spliceWhere from '@spliceWhere';
+import { getDeepProperty, spliceWhere } from '../../system/helpers';
 import { getMdaHelper } from '../scriptRunner/actions/getMda/getMda';
 
 //Helpers

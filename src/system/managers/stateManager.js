@@ -3,7 +3,7 @@ import opusConfig from '../../config';
 
 //System Helpers
 import { getPropertyContainer } from './propertyManager';
-import spliceWhere from '@spliceWhere';
+import spliceWhere from '../helpers/spliceWhere';
 
 //Helpers
 import sysSetWgtState from './stateManager/setWgtState';

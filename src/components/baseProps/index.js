@@ -11,7 +11,7 @@
 */
 
 //Helpers
-import spliceWhere from '@spliceWhere';
+import spliceWhere from '../../system/helpers/spliceWhere';
 
 //CSS Map Functions
 import mapToColor from '../../props/cssMaps/mapToColor';

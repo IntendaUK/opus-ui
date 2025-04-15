@@ -1,7 +1,6 @@
 //System Helpers
-import { clone } from '../../../helpers';
+import { clone, spliceWhere } from '../../../helpers';
 import { stateManager } from '../../stateManager';
-import spliceWhere from '@spliceWhere';
 
 //Helpers
 import getMappedValue from '../helpers/getMappedValue';

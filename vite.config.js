@@ -91,12 +91,6 @@ export default defineConfig(() => ({
 			}
 		})
 	],
-	resolve: {
-		alias: {
-			'@clone': path.resolve(__dirname, 'src/system/helpers/clone.js'),
-			'@spliceWhere': path.resolve(__dirname, 'src/system/helpers/spliceWhere.js')
-		}
-	},
 	build: {
 		lib: {
 			entry: resolve('src', 'library.jsx'),

@@ -4,8 +4,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 
 //System Helpers
-import clone from '@clone';
-import spliceWhere from '@spliceWhere';
+import { clone, spliceWhere } from '../helpers';
 import { doesComponentTypeExist } from '../managers/componentManager';
 
 //External Helpers

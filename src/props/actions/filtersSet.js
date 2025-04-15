@@ -1,4 +1,4 @@
-import spliceWhere from '@spliceWhere';
+import spliceWhere from '../../system/helpers/spliceWhere';
 
 const filtersSet = (oldValue = [], newValue) => {
 	if (!Array.isArray(newValue))
