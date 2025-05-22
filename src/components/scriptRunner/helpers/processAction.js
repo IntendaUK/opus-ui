@@ -84,7 +84,6 @@ export const processAction = async (config, script, props) => {
 		}
 	} catch (e) {
 		if (opusConfig.env === 'development') {
-			//eslint-disable-next-line no-console
 			console.error({
 				msg: 'Script action crashed',
 				error: e,
@@ -102,10 +101,9 @@ export const processAction = async (config, script, props) => {
 					success: false
 				});
 			}
-		} else {
-			/* eslint-disable-next-line no-console */
+		} else
+
 			console.error('Script action crashed');
-		}
 	}
 
 	if (storeAsVariable) {
@@ -175,7 +173,6 @@ export const processActionSync = (config, script, props) => {
 		}
 	} catch (e) {
 		if (opusConfig.env === 'development') {
-			//eslint-disable-next-line no-console
 			console.error({
 				msg: 'Script action crashed',
 				error: e,
@@ -193,10 +190,9 @@ export const processActionSync = (config, script, props) => {
 					success: false
 				});
 			}
-		} else {
-			/* eslint-disable-next-line no-console */
+		} else
+
 			console.error('Script action crashed');
-		}
 	}
 
 	return result;

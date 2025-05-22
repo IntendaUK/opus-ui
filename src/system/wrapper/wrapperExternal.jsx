@@ -49,7 +49,8 @@ export const wrapScriptHandlerInActions = ({ handler }) => {
 				},
 				getState: stateManager.getWgtState.bind(null, ownerId),
 				getExternalState: stateManager.getWgtState.bind(null),
-				runScript
+				runScript,
+				config: morphedConfig
 			});
 		}
 	}];

@@ -156,7 +156,7 @@ export const registerScripts = async ({ id, scps }) => {
 			if (s.actions) {
 				s.actions = await Promise.all(
 					s.actions.map(async a => {
-						const { srcAction } = a;
+						const { srcAction, ...rest } = a;
 
 						if (!srcAction)
 							return a;
@@ -176,7 +176,10 @@ export const registerScripts = async ({ id, scps }) => {
 							handler: handler.default
 						});
 
-						return wrappedAction;
+						return {
+							...rest,
+							...wrappedAction
+						};
 					})
 				);
 			}
