@@ -41,12 +41,12 @@ export const wrapScriptHandlerInActions = ({ handler }) => {
 				getVariable: getVariableHelper,
 				triggeredFrom,
 				setState: stateManager.setSelfState.bind(null, ownerId),
-				setExternalState: (idTarget, newState) => {
-					if (idTarget.includes('||'))
-						idTarget = getScopedId(idTarget, ownerId);
+                               setExternalState: (idTarget, newState) => {
+                                       if (idTarget.includes('||'))
+                                               idTarget = getScopedId(idTarget, ownerId);
 
-					stateManager.setWgtState(idTarget, newState, ownerId)
-				},
+                                       stateManager.setWgtState(idTarget, newState, { id: ownerId, type: '_opusExternal' })
+                               },
 				getState: stateManager.getWgtState.bind(null, ownerId),
 				getExternalState: stateManager.getWgtState.bind(null),
 				runScript,
@@ -207,12 +207,12 @@ const WrapperExternal = (ComponentToRender, config) => {
 			return null;
 
 		const setState = stateManager.setSelfState.bind(null, id);
-		const setExternalState = (idTarget, newState) => {
-			if (idTarget.includes('||'))
-				idTarget = getScopedId(idTarget, id);
+               const setExternalState = (idTarget, newState) => {
+                       if (idTarget.includes('||'))
+                               idTarget = getScopedId(idTarget, id);
 
-			stateManager.setWgtState(idTarget, newState, id)
-		};
+                       stateManager.setWgtState(idTarget, newState, { id, type: '_opusExternal' })
+               };
 
 		const getExternalState = idTarget => {
 			if (idTarget.includes('||'))
