@@ -58,12 +58,11 @@ export const processAction = async (config, script, props) => {
 		if (morphedConfig.args)
 			morphedConfig.args = morphConfig(morphedConfig.args, script, props, false, true, actionTrackers);
 
-		if (isAsync)
-			await handler(morphedConfig, script, props);
-		else
-			handler(morphedConfig, script, props);
+		const handlerResult = isAsync
+			? await handler(morphedConfig, script, props)
+			: handler(morphedConfig, script, props);
 
-		return;
+		return handlerResult;
 	}
 
 	const fn = actions[type] ?? actions.getExternalAction(type);
@@ -137,12 +136,8 @@ export const processActionSync = (config, script, props) => {
 		return props.state.stopScriptString;
 
 	const { type, storeAsVariable, pushToVariable, handler } = morphedConfig;
-
-	if (handler) {
-		handler(config, script, props);
-
-		return;
-	}
+	if (handler)
+		return handler(config, script, props);
 
 	const fn = actions[type] ?? actions.getExternalAction(type);
 
