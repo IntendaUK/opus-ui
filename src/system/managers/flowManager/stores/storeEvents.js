@@ -76,5 +76,5 @@ export const addEventEntry = (listener, value) => {
 };
 
 export const resetEvents = () => {
-	store.length = [];
+       store.length = 0;
 };
