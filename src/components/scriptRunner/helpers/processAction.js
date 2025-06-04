@@ -51,19 +51,19 @@ export const processAction = async (config, script, props) => {
 	if (config.actionCondition && !shouldRunAction(morphedConfig, script, props))
 		return;
 
-       const { type, storeAsVariable, pushToVariable, handler, isAsync } = morphedConfig;
+	const { type, storeAsVariable, pushToVariable, handler, isAsync } = morphedConfig;
 
-       if (handler) {
-               //We always drill one level into the suite's args
-               if (morphedConfig.args)
-                       morphedConfig.args = morphConfig(morphedConfig.args, script, props, false, true, actionTrackers);
+	if (handler) {
+		//We always drill one level into the suite's args
+		if (morphedConfig.args)
+			morphedConfig.args = morphConfig(morphedConfig.args, script, props, false, true, actionTrackers);
 
-               const handlerResult = isAsync
-                       ? await handler(morphedConfig, script, props)
-                       : handler(morphedConfig, script, props);
+		const handlerResult = isAsync
+			? await handler(morphedConfig, script, props)
+			: handler(morphedConfig, script, props);
 
-               return handlerResult;
-       }
+		return handlerResult;
+	}
 
 	const fn = actions[type] ?? actions.getExternalAction(type);
 
@@ -135,10 +135,9 @@ export const processActionSync = (config, script, props) => {
 	if (config.actionCondition && !shouldRunAction(props, config))
 		return props.state.stopScriptString;
 
-       const { type, storeAsVariable, pushToVariable, handler } = morphedConfig;
-
-       if (handler)
-               return handler(config, script, props);
+	const { type, storeAsVariable, pushToVariable, handler } = morphedConfig;
+	if (handler)
+		return handler(config, script, props);
 
 	const fn = actions[type] ?? actions.getExternalAction(type);
 

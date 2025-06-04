@@ -1,6 +1,6 @@
 {
 	"name": "@intenda/opus-ui",
-        "version": "2.6.2",
+	"version": "2.6.2",
 	"type": "module",
 	"homepage": "https://opus-ui.com",
 	"files": [
