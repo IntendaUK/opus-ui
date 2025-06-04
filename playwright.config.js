@@ -4,7 +4,13 @@ import { defineConfig, devices } from '@playwright/test';
 
 const isCI = !!process.env.CI;
 
-const projects = [{
+const projects = isCI ? [{
+	name: 'chrome',
+	use: {
+		...devices['Desktop Chrome'],
+		channel: 'chrome'
+	}
+}] : [{
 	name: 'chrome',
 	use: {
 		...devices['Desktop Chrome'],
