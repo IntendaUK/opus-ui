@@ -1,4 +1,4 @@
-name: Create Tag
+name: Test, Build, Publish, and Tag
 
 on:
   push:
@@ -6,32 +6,65 @@ on:
       - main
 
 jobs:
-  create-tag:
+  build-publish-tag:
     runs-on: ubuntu-latest
+
     steps:
+      # 1) Check out the full history so we can push tags later
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
-          # Fetch the full history so that git tags can be pushed correctly.
           fetch-depth: 0
 
+      # 2) Set up Node.js (latest LTS) and configure npm to use the official registry
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+          registry-url: 'https://registry.npmjs.org'
+          always-auth: true
+
+      # 3) Read version from package.json into an environment variable
       - name: Get package version
         id: get_version
         run: |
-          # Extract the version from package.json
           VERSION=$(node -p "require('./package.json').version")
           echo "VERSION=$VERSION" >> $GITHUB_ENV
           echo "Detected version: $VERSION"
 
+      # 4) Install dependencies
+      - name: Install dependencies
+        run: npm ci
+
+      # 5) Install Playwright (Chromium only)
+      - name: Install Playwright (Chromium)
+        run: npx playwright install chromium
+
+      # 6) Run Playwright tests
+      - name: Run Playwright tests
+        run: npx playwright test
+
+      # 7) Build project (only runs if tests passed)
+      - name: Build project
+        run: npm run build
+
+      # 8) Publish to npm (will fail the job if publish fails)
+      - name: Publish to npm
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          echo "Publishing version $VERSION to npm..."
+          npm publish
+
+      # 9) Create and push the Git tag only if the publish step succeeded
       - name: Create and push tag if not exists
         env:
           PACKAGE_VERSION: ${{ env.VERSION }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git config user.name "GitHub Action"
           git config user.email "action@github.com"
-          
-          # Check if the tag already exists
+
+          # If tag vX.Y.Z already exists, do nothing; otherwise create & push it
           if git tag --list "v${PACKAGE_VERSION}" | grep -q "v${PACKAGE_VERSION}"; then
             echo "Tag v${PACKAGE_VERSION} already exists. Doing nothing."
           else
