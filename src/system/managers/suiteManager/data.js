@@ -4,8 +4,8 @@ export const get = (ownerId, key, defaultValue) => {
 	if (!data[ownerId])
 		data[ownerId] = { [key]: defaultValue };
 
-	if (!data[ownerId][key])
-		data[ownerId][key] = defaultValue;
+       if (data[ownerId][key] === undefined)
+               data[ownerId][key] = defaultValue;
 
 	const res = data[ownerId][key];
 
