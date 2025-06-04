@@ -13,22 +13,24 @@ const formatDate = () => {
 };
 
 const applyExtraProps = props => {
-	const { cpt } = props;
+        const { cpt } = props;
 
-	if (
-		!cpt ||
-		!cpt.substr ||
+        if (
+                !cpt ||
+                !cpt.substr ||
         cpt.substr(0, 1) !== '{' ||
         cpt.substr(-1, 1) !== '}' ||
         !cpt.includes('{extra.')
-	)
-		return;
+        )
+                return;
 
-	const useFormat = cpt.split('{extra.')[1].replace('}', '');
+        const useFormat = cpt.split('{extra.')[1].replace('}', '');
 
-	const useCpt = { currentDate: formatDate }[useFormat](props);
+        const formatters = { currentDate: formatDate };
+        const formatterFn = formatters[useFormat];
 
-	props.cpt = useCpt;
+        if (typeof formatterFn === 'function')
+                props.cpt = formatterFn(props);
 };
 
 export default applyExtraProps;
