@@ -5,6 +5,7 @@ import { clone } from '../../../system/helpers';
 import { stateManager } from '../../../system/managers/stateManager';
 import { getNodesArrayForDevtools } from '../../../system/managers/scopeManager';
 import { getComponentTypes, getFullPropSpec } from '../../../system/managers/componentManager';
+import buildTestIdLocator from './bindDevtools/buildTestIdLocator';
 
 //Internal
 let opusHighlightOverlay = null;
@@ -206,7 +207,6 @@ const showFlowArrow = ({ from: flowFrom, fromKey, to: flowTo, toKey }) => {
 	document.body.appendChild(svg);
 };
 
-
 const getState = idComponent => {
 	const state = { ...stateManager.getWgtState(idComponent) };
 
@@ -307,6 +307,31 @@ const getGlobalConfig = () => {
 	return { propSpecs };
 };
 
+const buildTestIdLocatorInternal = config => {
+	const res = buildTestIdLocator(config);
+
+	const ta = document.createElement('textarea');
+	ta.value = res;
+	ta.style.position = 'fixed';
+	ta.style.top = '0';
+	ta.style.left = '0';
+	ta.style.width = '1px';
+	ta.style.height = '1px';
+	ta.style.padding = '0';
+	ta.style.border = 'none';
+	ta.style.outline = 'none';
+	ta.style.boxShadow = 'none';
+	ta.style.background = 'transparent';
+	document.body.appendChild(ta);
+	ta.focus();
+	ta.select();
+	document.execCommand('copy');
+	document.body.removeChild(ta);
+
+	// eslint-disable-next-line no-console
+	console.info('🔍 Selector copied to clipboard');
+};
+
 //Initializer
 const bindDevtools = () => {
 	window._OPUS_DEVTOOLS_GLOBAL_HOOK.getGlobalConfig = getGlobalConfig;
@@ -319,6 +344,7 @@ const bindDevtools = () => {
 	window._OPUS_DEVTOOLS_GLOBAL_HOOK.hideComponentSelector = hideComponentSelector;
 	window._OPUS_DEVTOOLS_GLOBAL_HOOK.setComponentState = setComponentState;
 	window._OPUS_DEVTOOLS_GLOBAL_HOOK.getComponentTree = getNodesArrayForDevtools;
+	window._OPUS_DEVTOOLS_GLOBAL_HOOK.buildTestIdLocator = buildTestIdLocatorInternal;
 };
 
 export default bindDevtools;
