@@ -59,8 +59,8 @@ const deletePrpIfMissing = (key, value, blueprint, blueprintPrps, recurseConfig)
 	if (isWildcard(value) && value.split(value[0]).length === 3) {
 		const prp = value.substring(1, value.length - 1);
 
-		let prpName = prp.replace('...', '');
-		prpName = prp.includes('.') ? prp.split('.')[0] : prp;
+		const prpNamePreSplit = prp.replace('...', '');
+		const prpName = prpNamePreSplit.includes('.') ? prpNamePreSplit.split('.')[0] : prpNamePreSplit;
 
 		if (
 			recurseConfig?.ignoreUndefinedPrps === true &&
@@ -68,10 +68,10 @@ const deletePrpIfMissing = (key, value, blueprint, blueprintPrps, recurseConfig)
 		)
 			return false;
 
-		let prpValue = blueprintPrps[prp];
+		let prpValue = blueprintPrps[prpName];
 
-		if (prp.includes('.'))
-			prpValue = getDeepProperty(blueprintPrps, prp);
+		if (prpNamePreSplit.includes('.'))
+			prpValue = getDeepProperty(blueprintPrps, prpNamePreSplit);
 
 		if (prpValue === undefined) {
 			delete blueprint[key];
@@ -126,7 +126,6 @@ const applyValuePrp = (
 	blueprint[key] = finalValue;
 };
 
-/* eslint-disable-next-line max-lines-per-function, complexity */
 recursivelyApplyValuePrps = (
 	blueprint, blueprintPrps, recurseConfig, closestArrayAncestor
 ) => {
