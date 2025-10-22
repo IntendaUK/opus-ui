@@ -48,28 +48,28 @@ export const processAction = async (config, script, props) => {
 		console.log(JSON.parse(JSON.stringify(morphedConfig)));
 	}
 
-	if (config.actionCondition && !shouldRunAction(morphedConfig, script, props))
+	if (morphedConfig.actionCondition && !shouldRunAction(morphedConfig, script, props))
 		return;
 
 	const { type, storeAsVariable, pushToVariable, handler, isAsync } = morphedConfig;
 
-	if (handler) {
-		//We always drill one level into the suite's args
-		if (morphedConfig.args)
-			morphedConfig.args = morphConfig(morphedConfig.args, script, props, false, true, actionTrackers);
-
-		const handlerResult = isAsync
-			? await handler(morphedConfig, script, props)
-			: handler(morphedConfig, script, props);
-
-		return handlerResult;
-	}
-
-	const fn = actions[type] ?? actions.getExternalAction(type);
-
 	let result;
+
 	try {
-		result = await fn(morphedConfig, script, props);
+		if (handler) {
+			//We always drill one level into the suite's args
+			let args = morphedConfig.args;
+			if (args)
+				morphedConfig.args = morphConfig(args, script, props, false, true, actionTrackers);
+
+			result = isAsync
+				? await handler(morphedConfig, script, props)
+				: handler(morphedConfig, script, props);
+		} else {
+			const fn = actions[type] ?? actions.getExternalAction(type);
+
+			result = await fn(morphedConfig, script, props);
+		}
 
 		if (opusConfig.env === 'development' && script.trackAction) {
 			script.trackAction({
@@ -80,6 +80,18 @@ export const processAction = async (config, script, props) => {
 				result,
 				success: true
 			});
+		}
+
+		if (storeAsVariable) {
+			actions.setVariable({
+				name: storeAsVariable,
+				value: result
+			}, script, props);
+		} else if (pushToVariable) {
+			actions.pushVariable({
+				name: pushToVariable,
+				value: result
+			}, script, props);
 		}
 	} catch (e) {
 		if (opusConfig.env === 'development') {
@@ -101,20 +113,7 @@ export const processAction = async (config, script, props) => {
 				});
 			}
 		} else
-
 			console.error('Script action crashed');
-	}
-
-	if (storeAsVariable) {
-		actions.setVariable({
-			name: storeAsVariable,
-			value: result
-		}, script, props);
-	} else if (pushToVariable) {
-		actions.pushVariable({
-			name: pushToVariable,
-			value: result
-		}, script, props);
 	}
 
 	return result;
@@ -132,19 +131,21 @@ export const processActionSync = (config, script, props) => {
 		console.log(JSON.parse(JSON.stringify(morphedConfig)));
 	}
 
-	if (config.actionCondition && !shouldRunAction(props, config))
+	if (morphedConfig.actionCondition && !shouldRunAction(morphedConfig, script, props))
 		return props.state.stopScriptString;
 
 	const { type, storeAsVariable, pushToVariable, handler } = morphedConfig;
-	if (handler)
-		return handler(config, script, props);
-
-	const fn = actions[type] ?? actions.getExternalAction(type);
 
 	let result;
 
 	try {
-		result = fn(morphedConfig, script, props);
+		if (handler)
+			result = handler(morphedConfig, script, props);
+		else {
+			const fn = actions[type] ?? actions.getExternalAction(type);
+
+			result = fn(morphedConfig, script, props);
+		}
 
 		if (opusConfig.env === 'development' && script.trackAction) {
 			script.trackAction({
@@ -186,7 +187,6 @@ export const processActionSync = (config, script, props) => {
 				});
 			}
 		} else
-
 			console.error('Script action crashed');
 	}
 

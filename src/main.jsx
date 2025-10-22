@@ -1,26 +1,46 @@
-//React
 import { createRoot } from 'react-dom/client';
 
-//System
-import Opus, { Component } from './library';
+import Opus, { ContainerSimple, Label, ExternalComponent } from './library';
 
-//Custom Component
-const OpusUI = () => {
-	return (
-		<div>
-			<Component mda={{
-				type: 'label',
-				prps: { caption: 'Opus UI: Hit the perfect pitch between traditional development and low-code' }
-			}} />
-		</div>
-	);
+const CaptionTrait = {
+	prps: {
+		caption: 'spoon'
+	}
 };
+
+const LabelTrait = {
+	type: 'label',
+	prps: {
+		caption: 'banana'
+	}
+}
+
+const Component = ExternalComponent(() => {
+	return (
+		<ContainerSimple>
+			<Label
+				id={'label'}
+				prps={{
+					caption: 'yo'
+				}}
+			/>
+			<Label
+				traits={[{
+					trait: CaptionTrait,
+					traitPrps: {}
+				}]}
+			/>
+			{ExternalComponent()({ traits: [{ trait: LabelTrait, traitPrps: {} }]})}
+		</ContainerSimple>
+	);
+});
+
 
 //Setup
 const root = createRoot(document.getElementById('root'));
 
 root.render(
 	<Opus
-		startupComponent={<OpusUI />}
+		startupComponent={<Component />}
 	/>
 );

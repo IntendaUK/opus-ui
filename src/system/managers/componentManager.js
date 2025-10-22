@@ -18,6 +18,10 @@ import { ScriptRunner } from '../../components/scriptRunner';
 import { SystemModal } from '../../components/systemModal';
 import { Viewport } from '../../components/viewport';
 
+//External Components
+import { ExternalContainerSimple } from '../../components/containerSimple';
+import { ExternalLabel } from '../../components/label';
+
 //PropSpecs
 import propsContainer from '../../components/container/props';
 import propsContainerSimple from '../../components/containerSimple/props';
@@ -44,6 +48,11 @@ const components = {
 	scriptRunner: ScriptRunner,
 	systemModal: SystemModal,
 	viewport: Viewport
+};
+
+const externalComponents = {
+	containerSimple: ExternalContainerSimple,
+	label: ExternalLabel
 };
 
 const propSpecs = {
@@ -105,6 +114,8 @@ export const applyPropSpecDefaults = () => {
 };
 
 export const getComponent = type => components[type];
+
+export const getExternalComponent = type => externalComponents[type];
 
 export const getPropSpec = type => propSpecs[type];
 

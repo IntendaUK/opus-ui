@@ -4,6 +4,10 @@ import React from 'react';
 //External Helpers
 import wrapWidgets from '../wrapWidgets';
 import { clone } from '../../system/helpers';
+import ExternalComponent from '../../system/wrapper/wrapperExternal';
+
+//Props
+import propSpec from './props';
 
 //Styles
 import './styles.css';
@@ -55,3 +59,5 @@ export const ContainerSimple = props => {
 		</div>
 	);
 };
+
+export const ExternalContainerSimple = ExternalComponent(ContainerSimple, { propSpec });

@@ -3,6 +3,10 @@ import React from 'react';
 
 //External Helpers
 import { Popover } from '../shared/popover/index';
+import ExternalComponent from '../../system/wrapper/wrapperExternal';
+
+//Props
+import propSpec from './props';
 
 //Styles
 import './styles.css';
@@ -23,3 +27,5 @@ export const Label = props => {
 		</div>
 	);
 };
+
+export const ExternalLabel = ExternalComponent(Label, { propSpec });

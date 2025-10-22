@@ -4,8 +4,9 @@ import React, { useState, useEffect } from 'react';
 //Opus System
 import { stateManager } from '../managers/stateManager';
 import { setExtraStates } from '../managers/stateManager/setWgtState';
-import { getFullPropSpec } from '../managers/componentManager';
+import { getExternalComponent, getFullPropSpec } from '../managers/componentManager';
 import { addNodeToDom, removeNodeFromDom, getScopedId } from '../managers/scopeManager';
+import { applyTraits } from '../managers/traitManager';
 import { registerScripts } from './helpers';
 import { register, emitEvent, getInitialState, processQueue, destroyScope } from '../managers/flowManager/index';
 import queueChanges from '../managers/flowManager/methods/queueChanges';
@@ -74,6 +75,19 @@ const onUnmount = (id, state) => {
 	removeNodeFromDom({ id });
 };
 
+const applyTraitsHelper = (props, cpnState) => {
+	//We build a fake 'json component' so that we can apply traits normally
+	const fakeComponent = {
+		id: cpnState.id,
+		scope: cpnState.scope,
+		relId: cpnState.relId,
+		traits: props.traits,
+		prps: cpnState
+	};
+
+	applyTraits(fakeComponent);
+};
+
 const onMount = (props, cpnState, setCpnState, forceRemount, propSpec) => {
 	let needSetId = false;
 
@@ -82,6 +96,9 @@ const onMount = (props, cpnState, setCpnState, forceRemount, propSpec) => {
 
 		cpnState.id = generateGuid();
 	}
+
+	if (props.traits)
+		applyTraitsHelper(props, cpnState);
 
 	const fullPropSpec = {};
 	clone(fullPropSpec, getFullPropSpec());
@@ -139,7 +156,7 @@ const onRunFlowChecker = (cpnState, setCpnState, mounted) => {
 				const { handler } = s;
 
 				if (!s.triggers) {
-					s.triggers = [{ event: 'onMount ' }];
+					s.triggers = [{ event: 'onMount' }];
 				}
 
 				s.triggers.forEach(t => {
@@ -177,7 +194,7 @@ const onRunFlowChecker = (cpnState, setCpnState, mounted) => {
 		setCpnState(flowState);
 };
 
-//Componnets
+//Components
 const WrapperExternal = (ComponentToRender, config) => {
 	const forceRemount = config?.forceRemount;
 	const propSpec = config?.propSpec;
@@ -218,7 +235,7 @@ const WrapperExternal = (ComponentToRender, config) => {
 			if (idTarget.includes('||'))
 				idTarget = getScopedId(idTarget, id);
 
-			stateManager.getWgtState(idTarget)
+			return stateManager.getWgtState(idTarget)
 		};
 
 		const registerFlows = flows => {
@@ -236,6 +253,9 @@ const WrapperExternal = (ComponentToRender, config) => {
 					? React.cloneElement(_children, { parentId: id })
 					: _children
 			: null;
+
+		if (!ComponentToRender)
+			ComponentToRender = getExternalComponent(cpnState.type);
 
 		return (
 			<ComponentToRender

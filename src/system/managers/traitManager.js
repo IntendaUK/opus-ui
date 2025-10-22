@@ -1,3 +1,6 @@
+/* eslint-disable complexity */
+/* eslint-disable max-lines-per-function */
+
 //System Helpers
 import opusConfig from '../../config';
 import { cloneNoOverrideNoCopy, getDeepPropertyArray } from '../helpers';
@@ -119,6 +122,9 @@ export const combineTraitAndMda = (mda, trait, traitPath) => {
 	}
 
 	cloneNoOverrideNoCopy(mda, trait);
+
+	if (mda?.prps?.type === '_opusExternal' && trait.type)
+		mda.prps.type = trait.type;
 };
 
 const deleteAuthFieldsFromMda = (mda, auth) => {
@@ -148,19 +154,26 @@ export const applyTraits = mda => {
 					if (!shouldApply)
 						continue;
 				}
-				if (trait.includes('%') || trait.includes('$'))
+
+				const doLoadTrait = typeof(trait) === 'string';
+
+				if (doLoadTrait && (trait.includes('%') || trait.includes('$')))
 					return;
 
-				const clonedTraitMda = getTrait(trait);
+				let useTrait = trait;
+				if (!doLoadTrait && typeof(trait) === 'function')
+					useTrait = useTrait();
 
-				applyTraitProps(clonedTraitMda, traitPrps, trait, mda);
+				const clonedTraitMda = doLoadTrait ? getTrait(useTrait) : useTrait;
+
+				applyTraitProps(clonedTraitMda, traitPrps, useTrait, mda);
 
 				applyTraits(clonedTraitMda);
 
 				if (auth)
 					deleteAuthFieldsFromMda(mda, auth);
 
-				combineTraitAndMda(mda, clonedTraitMda, trait);
+				combineTraitAndMda(mda, clonedTraitMda, useTrait);
 			}
 		} else if (typeof(v) === 'object' && !!v && !v.traits)
 			applyTraits(v);
