@@ -105,10 +105,7 @@ export const onMutateMda = (initialMda, mdaString, setFixedMda) => {
 		}
 	}
 
-	setFixedMda({
-		mda,
-		mdaString
-	});
+	queueMicrotask(() => setFixedMda({ mda, mdaString }));
 };
 
 //Components
