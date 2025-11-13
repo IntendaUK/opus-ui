@@ -23,7 +23,7 @@ import getNextScriptId from '../../components/scriptRunner/helpers/getNextScript
 
 export const wrapScriptHandlerInActions = ({ handler }) => {
 	const res = [{
-		handler: (morphedConfig, script, { state: scriptRunnerState }) => {
+		handler: async (morphedConfig, script, { state: scriptRunnerState }) => {
 			const { id: scriptId, ownerId } = script;
 
 			const getVariableHelper = variableName => {
@@ -37,7 +37,7 @@ export const wrapScriptHandlerInActions = ({ handler }) => {
 
 			const triggeredFrom = getVariableHelper('triggeredFrom');
 
-			handler({
+			const args = {
 				getVariable: getVariableHelper,
 				triggeredFrom,
 				setState: stateManager.setSelfState.bind(null, ownerId),
@@ -51,7 +51,12 @@ export const wrapScriptHandlerInActions = ({ handler }) => {
 				getExternalState: stateManager.getWgtState.bind(null),
 				runScript,
 				config: morphedConfig
-			});
+			};
+
+			if (morphedConfig.isAsync)
+				return await handler(args);
+			else
+				return handler(args);
 		}
 	}];
 
