@@ -84,6 +84,8 @@ export { registerExternalAction, setVariables } from './components/scriptRunner/
 export { applyComparison } from './components/scriptRunner/actions';
 export { addMdaPackage as loadMdaPackage, getMdaPackage, setMdaPackage } from './components/scriptRunner/actions/getMda/getMda';
 export { loadEnsemble, getMdaHelper as getMda, setMdaAtPath, getNamespace } from './components/scriptRunner/actions/getMda/getMda';
+export { getCache, setCache } from './components/scriptRunner/actions/actionCacheActions';
+export { default as performRequest } from './components/scriptRunner/actions/performRequest';
 
 //Shared Propspecs
 export { default as componentBaseProps } from './components/baseProps';
