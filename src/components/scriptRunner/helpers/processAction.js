@@ -65,7 +65,7 @@ export const processAction = async (config, script, props) => {
 		return handlerResult;
 	}
 
-	const fn = actions[type] ?? actions.getExternalAction(type);
+	const fn = actions.getExternalAction(type) ?? actions[type];
 
 	let result;
 	try {
@@ -139,7 +139,7 @@ export const processActionSync = (config, script, props) => {
 	if (handler)
 		return handler(config, script, props);
 
-	const fn = actions[type] ?? actions.getExternalAction(type);
+	const fn = actions.getExternalAction(type) ?? actions[type];
 
 	let result;
 
