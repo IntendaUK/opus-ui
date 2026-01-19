@@ -223,7 +223,7 @@ const WrapperExternal = (ComponentToRender, config) => {
 			if (idTarget.includes('||'))
 				idTarget = getScopedId(idTarget, id);
 
-			stateManager.getWgtState(idTarget)
+			return stateManager.getWgtState(idTarget)
 		};
 
 		const registerFlows = flows => {
