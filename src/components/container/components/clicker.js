@@ -34,7 +34,7 @@ const onClickChanged = ({ id, setState, state }) => {
 		setState({
 			clicked: false,
 			deleteKeys: [ 'clickedArgs' ]
-		})
+		});
 	});
 };
 

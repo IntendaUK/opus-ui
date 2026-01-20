@@ -20,7 +20,7 @@ export const onClick = ({ setState, state: { canClick, clicked, includeClickedAr
 	setState(newState);
 };
 
-export const onContext = ({ id, setWgtState, state: { contextMenu } }, e) => {
+export const onContext = ({ id, setState, setWgtState, state: { contextMenu } }, e) => {
 	if (!contextMenu)
 		return;
 
@@ -28,7 +28,6 @@ export const onContext = ({ id, setWgtState, state: { contextMenu } }, e) => {
 
 	if (mda !== undefined) {
 		const { clientX: x, clientY: y } = e;
-
 
 		setWgtState('CONTEXT1', {
 			display: true,
@@ -39,12 +38,25 @@ export const onContext = ({ id, setWgtState, state: { contextMenu } }, e) => {
 			mda,
 			itemHeight
 		});
+
+		ReactDOM.flushSync(() => {
+			setState({ contextMenuOpened: true });
+		});
 	}
 
 	e.preventDefault();
 
 	if (stopPropagation)
 		e.stopPropagation();
+};
+
+export const onContextMenuOpened = ({ setState, state: { contextMenuOpened } }) => {
+	if (!contextMenuOpened)
+		return;
+
+	ReactDOM.flushSync(() => {
+		setState({ contextMenuOpened: false });
+	});
 };
 
 export const onMouseOver = ({ setState, state: { canHover, hovered } }) => {

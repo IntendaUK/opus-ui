@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 /* eslint-disable max-lines, max-len */
 
 //System
@@ -189,6 +190,11 @@ const props = {
 		type: 'array',
 		desc: 'When set, defines extra properties to set as the "clickedArgs" variable when running the fireScript for a clickable container',
 		spec: ['mousePos']
+	},
+	contextMenuOpened: {
+		type: 'boolean',
+		desc: 'When opening a context menu, this will be set to true, then automatically be set back to false',
+		internal: true
 	}
 };
 

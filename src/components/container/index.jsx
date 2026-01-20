@@ -1,5 +1,5 @@
 //React
-import React from 'react';
+import React, { useEffect } from 'react';
 
 //System
 import { createContext } from '../../system/managers/appManager';
@@ -16,7 +16,7 @@ import './styles.css';
 import Clicker from './components/clicker';
 
 //Events
-import { onClick, onMouseOver, onMouseLeave, onContext } from './events';
+import { onClick, onMouseOver, onMouseLeave, onContext, onContextMenuOpened } from './events';
 
 //Context
 const ContainerContext = createContext('container');
@@ -58,7 +58,9 @@ const getWgts = ({ ChildWgt, children, wgts = [], state }) => {
 
 export const Container = props => {
 	const { id, getHandler, classNames, style, attributes, state } = props;
-	const { canClick, handlerOnScroll } = state;
+	const { canClick, handlerOnScroll, contextMenuOpened } = state;
+
+	useEffect(getHandler(onContextMenuOpened), [contextMenuOpened]);
 
 	const clicker = canClick ? <Clicker /> : null;
 
