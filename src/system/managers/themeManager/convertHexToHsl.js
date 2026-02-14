@@ -1,6 +1,11 @@
 const convertHexToHsl = hex => {
-	// Convert hex to RGB first
-	let r = '0x' + hex[1] + hex[2];
+       // Expand shorthand hex ("#abc") to "#aabbcc" so the RGB conversion
+       // logic works reliably across environments
+       if (hex.length === 4 && hex[0] === '#')
+               hex = `#${hex[1]}${hex[1]}${hex[2]}${hex[2]}${hex[3]}${hex[3]}`;
+
+        // Convert hex to RGB first
+        let r = '0x' + hex[1] + hex[2];
 	let g = '0x' + hex[3] + hex[4];
 	let b = '0x' + hex[5] + hex[6];
 	// Then to HSL
