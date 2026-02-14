@@ -228,7 +228,7 @@ export const resetListenerValuesForScope = scope => {
 };
 
 export const resetListeners = () => {
-	store.length = [];
+       store.length = 0;
 };
 
 export const destroyListener = listener => {
