@@ -40,6 +40,10 @@ const props = {
 	hasCloseOption: {
 		type: 'boolean',
 		desc: 'When true, tabs can be closed from their context menus'
+	},
+	loadFromJsx: {
+		type: 'boolean',
+		desc: 'For use in transpiled apps. When true, .jsx dashboards will be loaded instead of .json ones.'
 	}
 };
 

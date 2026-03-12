@@ -1,3 +1,6 @@
+/* eslint-disable no-inline-comments */
+/* eslint-disable max-lines-per-function */
+
 //System Helpers
 import { getDeepProperty, spliceWhere } from '../../system/helpers';
 import { getMdaHelper } from '../scriptRunner/actions/getMda/getMda';
@@ -93,11 +96,8 @@ const onValueCleared = (
 		setState({ deleteKeys: ['mda'] });
 };
 
-export const onValueChange = (
-	props,
-	ctrlDown
-) => {
-	const { state: { value, path = '' } } = props;
+export const onValueChange = (props, ctrlDown) => {
+	const { setState, state: { value, path = '', loadFromJsx } } = props;
 	if (!value) {
 		onValueCleared(props);
 
@@ -107,11 +107,32 @@ export const onValueChange = (
 	(async () => {
 		let key = value;
 
+		//Resolve relative paths
 		if (value.indexOf('./') === 0) {
 			let folderPath = path.replace('dashboard/', '');
 			folderPath = folderPath.substring(0, folderPath.lastIndexOf('/'));
 
 			key = resolveRelativePath(value, folderPath);
+		}
+
+		if (value.endsWith('.jsx') || loadFromJsx) {
+			try {
+				const importPath = value.endsWith('.jsx') ? value : `${value}.jsx`;
+				const moduleUrl = `/src/dashboard/${importPath}`;
+				const module = await import(/* @vite-ignore */ moduleUrl);
+
+				if (!module || !module.default)
+					throw new Error('JSX module missing default export');
+
+				setState({
+					mda: module.default,
+					mdaIsJsx: true
+				});
+			} catch (err) {
+				console.error('Failed to load JSX dashboard', err);
+			}
+
+			return;
 		}
 
 		const mda = await getMdaHelper({
@@ -121,6 +142,11 @@ export const onValueChange = (
 
 		if (!mda)
 			return;
+
+		setState({
+			mda,
+			mdaIsJsx: false
+		});
 
 		onGetMda(props, ctrlDown, value, mda);
 	})();

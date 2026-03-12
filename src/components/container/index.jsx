@@ -41,10 +41,12 @@ const getWgts = ({ ChildWgt, children, wgts = [], state }) => {
 			useWgts.push(...clone([], extraWgts));
 	}
 
-	const result = wrapWidgets({
+	const widgets = wrapWidgets({
 		ChildWgt,
 		wgts: useWgts
 	});
+
+	const result = [];
 
 	if (children) {
 		if (children.length)
@@ -52,6 +54,8 @@ const getWgts = ({ ChildWgt, children, wgts = [], state }) => {
 		else
 			result.push(children);
 	}
+
+	result.push(...widgets);
 
 	return result;
 };

@@ -1,3 +1,6 @@
+//React
+import React from 'react';
+
 //System
 import { stateManager } from '../stateManager';
 
@@ -16,7 +19,11 @@ const mockProps = {
 
 //Helper
 const isConditionMet = (condition, scopeAnchorId) => {
-	const morphedCondition = morphConfig(condition, { ownerId: scopeAnchorId }, mockProps);
+	const tempCondition = { ...condition };
+	if (React.isValidElement(tempCondition.value))
+		tempCondition.value = true;
+
+	const morphedCondition = morphConfig(tempCondition, { ownerId: scopeAnchorId }, mockProps);
 
 	const { operator, source, key, value, compareValue, comparisons } = morphedCondition;
 

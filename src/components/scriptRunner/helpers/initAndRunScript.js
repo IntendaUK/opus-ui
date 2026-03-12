@@ -1,5 +1,8 @@
+/* eslint-disable max-lines-per-function */
+
 //System
 import { getPropertyContainer } from '../../../system/managers/propertyManager';
+import { wrapScriptHandlerInActions } from '../../../system/wrapper/wrapperExternal';
 
 //System Helpers
 import { clone } from '../../../system/helpers';
@@ -27,13 +30,20 @@ const initAndRunScript = async ({
 
 	let script = originalScript;
 
-	if (scriptActions)
+	if (script.handler) {
+		script.actions = wrapScriptHandlerInActions({
+			script,
+			ownerId: script.ownerId,
+			handler: script.handler
+		});
+	} else if (scriptActions) {
 		script.actions = scriptActions;
 
-	if (isRootScript) {
-		script = clone({}, originalScript);
-		if (scriptActions)
-			script.actions = clone([], scriptActions);
+		if (isRootScript) {
+			script = clone({}, originalScript);
+			if (scriptActions)
+				script.actions = clone([], scriptActions);
+		}
 	}
 
 	script.id = scriptId ?? script.id ?? getNextScriptId();

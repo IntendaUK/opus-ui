@@ -44,17 +44,21 @@ export const TabInner = () => {
 };
 
 export const RegularInner = () => {
-	const { ChildWgt, state: { mda: outerMda } } = useContext(ViewportContext);
+	const { state: { mda, mdaIsJsx } } = useContext(ViewportContext);
 
-	if (!outerMda)
+	if (!mda)
 		return null;
 
+	if (mdaIsJsx) {
+		const Component = mda;
+
+		return <Component />;
+	}
+
+	const { ChildWgt, state: { mda: outerMda } } = useContext(ViewportContext);
 	const { mda: { id, index, idGuid } } = outerMda;
 
-	let key = getKey({
-		id,
-		index
-	});
+	let key = getKey({ id, index });
 
 	if (idGuid) {
 		key = generateGuid();
@@ -69,3 +73,4 @@ export const RegularInner = () => {
 		/>
 	);
 };
+

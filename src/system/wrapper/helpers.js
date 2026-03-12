@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 /* eslint-disable no-inline-comments */
 
 //System
@@ -151,6 +152,13 @@ export const registerScripts = async ({ id, scps }) => {
 					handler: handler.default
 				});
 				delete s.srcActions;
+			} else if (s.handler) {
+				s.actions = wrapScriptHandlerInActions({
+					script: s,
+					ownerId: id,
+					handler: s.handler
+				});
+				delete s.handler;
 			}
 
 			if (s.actions) {

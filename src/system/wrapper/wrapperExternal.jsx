@@ -48,7 +48,12 @@ export const wrapScriptHandlerInActions = ({ handler }) => {
 					stateManager.setWgtState(idTarget, newState, ownerId)
 				},
 				getState: stateManager.getWgtState.bind(null, ownerId),
-				getExternalState: stateManager.getWgtState.bind(null),
+				getExternalState: idSource => {
+					if (idSource.includes('||'))
+						idSource = getScopedId(idSource, ownerId);
+
+					return stateManager.getWgtState(idSource)
+				},
 				runScript,
 				config: morphedConfig
 			};
@@ -191,12 +196,12 @@ const WrapperExternal = (ComponentToRender, config) => {
 		const { children: _children, ...props } = _props;
 
 		const [cpnState, setCpnState] = useState({
-			id: props.id,
-			scope: props.scope,
-			relId: props.relId,
-			flows: props.flows,
-			scripts: props.scripts ?? props.scps,
-			parentId: props.parentId,
+			id: props.id ?? config?.id,
+			scope: props.scope ?? config?.scope,
+			relId: props.relId ?? config?.relId,
+			flows: props.flows ?? config?.flows,
+			scripts: props.scripts ?? props.scps ?? config?.scripts,
+			parentId: props.parentId ?? config?.parentId,
 			...(props.state ?? props.prps ?? {}),
 			type: '_opusExternal',
 			updates: 0
