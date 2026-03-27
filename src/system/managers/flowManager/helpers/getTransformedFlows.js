@@ -79,8 +79,14 @@ const applyFlowDefaults = (flow, ownerId) => {
 	if (mapFunctionString) {
 		delete flow.mapFunctionString;
 
-		/* eslint-disable-next-line no-eval */
-		flow.mapFunction = eval(mapFunctionString);
+		try {
+			/* eslint-disable-next-line no-eval */
+			flow.mapFunction = eval(mapFunctionString);
+		} catch (e) {
+			console.log(e);
+			console.log(mapFunctionString);
+			console.log(flow);
+		}
 	}
 };
 
