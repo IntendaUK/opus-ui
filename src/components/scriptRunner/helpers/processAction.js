@@ -1,5 +1,6 @@
 //System
 import opusConfig from '../../../config';
+import { stateManager } from '../../../system/managers/stateManager';
 
 //System Helpers
 import { applyBlueprints } from '../../../system/managers/blueprintManager';
@@ -52,11 +53,16 @@ export const processAction = async (config, script, props) => {
 		return;
 
 	const { type, storeAsVariable, pushToVariable, handler, isAsync } = morphedConfig;
-
 	if (handler) {
 		//We always drill one level into the suite's args
 		if (morphedConfig.args)
 			morphedConfig.args = morphConfig(morphedConfig.args, script, props, false, true, actionTrackers);
+
+		//In case we don't have it yet (like if registering scripts in react instead of opus json)
+		Object.assign(morphedConfig, {
+			triggeredFrom: script.ownerId,
+			setState: stateManager.setWgtState.bind(null, script.ownerId)
+		});
 
 		const handlerResult = isAsync
 			? await handler(morphedConfig, script, props)

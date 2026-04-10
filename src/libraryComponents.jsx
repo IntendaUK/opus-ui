@@ -87,6 +87,9 @@ export const makeComponentWithChildren = type => {
 		const [ready, setReady] = useState(false);
 		const [result, setResult] = useState(null);
 
+		if (id === 'bankRepeater-18')
+			console.log(_children);
+
 		useEffect(() => {
 			const children = prepareChildren(_children, resolvedId);
 			setResult({ resolvedId, children });

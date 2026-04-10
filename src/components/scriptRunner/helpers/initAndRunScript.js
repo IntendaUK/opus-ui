@@ -36,8 +36,9 @@ const initAndRunScript = async ({
 			ownerId: script.ownerId,
 			handler: script.handler
 		});
-	} else if (scriptActions) {
-		script.actions = scriptActions;
+	} else {
+		if (scriptActions)
+			script.actions = scriptActions;
 
 		if (isRootScript) {
 			script = clone({}, originalScript);
