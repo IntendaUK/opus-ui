@@ -33,10 +33,13 @@ const prepareChildren = (_children, parentId) => {
 	};
 
 	if (Array.isArray(_children)) {
-		const mapped = _children.map((child, i) => {
-			const key = `child_${i}`;
-			return cloneIfCustom(child, key);
-		});
+		//There might be children with conditions that resolve to false so filter those out
+		const mapped = _children
+			.filter(c => !!c)
+			.map((child, i) => {
+				const key = child.props?.id ?? generateGuid();
+				return cloneIfCustom(child, key);
+			});
 
 		// Fragments may return arrays, so flatten once.
 		return flatten(mapped);
@@ -87,11 +90,9 @@ export const makeComponentWithChildren = type => {
 		const [ready, setReady] = useState(false);
 		const [result, setResult] = useState(null);
 
-		if (id === 'bankRepeater-18')
-			console.log(_children);
-
 		useEffect(() => {
 			const children = prepareChildren(_children, resolvedId);
+
 			setResult({ resolvedId, children });
 			setReady(true);
 		}, [_children, resolvedId]);

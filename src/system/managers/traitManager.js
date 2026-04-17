@@ -1,6 +1,8 @@
+/* eslint-disable max-lines-per-function */
+/* eslint-disable complexity */
 //System Helpers
 import opusConfig from '../../config';
-import { cloneNoOverrideNoCopy, getDeepPropertyArray } from '../helpers';
+import { clone, cloneNoOverrideNoCopy, getDeepPropertyArray } from '../helpers';
 import { recurseProps } from '../wrapper/helpers/morphProps';
 import { applyPrpDefaults,
 	findMissingPrps,
@@ -148,10 +150,18 @@ export const applyTraits = mda => {
 					if (!shouldApply)
 						continue;
 				}
-				if (trait.includes('%') || trait.includes('$'))
-					return;
 
-				const clonedTraitMda = getTrait(trait);
+				let clonedTraitMda = trait;
+
+				//Don't try to fetch it if it's an object already
+				// i.e. it might be traits: [ { type: { acceptPrps: {}, traitArray: [] } } ]
+				if (typeof(trait) === 'string') {
+					if (trait.includes('%') || trait.includes('$'))
+						return;
+
+					clonedTraitMda = getTrait(trait);
+				} else
+					clonedTraitMda = clone({}, trait.type);
 
 				applyTraitProps(clonedTraitMda, traitPrps, trait, mda);
 
