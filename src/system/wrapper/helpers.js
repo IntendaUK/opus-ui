@@ -152,12 +152,13 @@ const getSourceHandler = async path => {
 };
 
 const hydrateSourceAction = async ({ action, script, ownerId }) => {
-	const { srcAction, ...rest } = action;
+	const { srcAction, srcActions, ...rest } = action;
+	const sourceAction = srcAction ?? srcActions;
 
-	if (!srcAction)
+	if (!sourceAction)
 		return action;
 
-	const handler = await getSourceHandler(srcAction.path);
+	const handler = await getSourceHandler(sourceAction.path);
 
 	const [ wrappedAction ] = wrapScriptHandlerInActions({
 		script,
@@ -169,6 +170,45 @@ const hydrateSourceAction = async ({ action, script, ownerId }) => {
 		...rest,
 		...wrappedAction
 	};
+};
+
+const hydrateActionTree = async ({ action, script, ownerId }) => {
+	if (!action)
+		return action;
+
+	if (Array.isArray(action)) {
+		return await Promise.all(
+			action.map(entry => hydrateActionTree({
+				action: entry,
+				script,
+				ownerId
+			}))
+		);
+	}
+
+	if (typeof (action) !== 'object')
+		return action;
+
+	const hydratedAction = await hydrateSourceAction({
+		action,
+		script,
+		ownerId
+	});
+
+	await Promise.all(
+		Object.entries(hydratedAction).map(async ([key, value]) => {
+			if (!value || typeof (value) !== 'object')
+				return;
+
+			hydratedAction[key] = await hydrateActionTree({
+				action: value,
+				script,
+				ownerId
+			});
+		})
+	);
+
+	return hydratedAction;
 };
 
 export const hydrateSourceActions = async ({ script, ownerId }) => {
@@ -192,13 +232,11 @@ export const hydrateSourceActions = async ({ script, ownerId }) => {
 	if (!actions)
 		return script;
 
-	const hydratedActions = await Promise.all(
-		actions.map(action => hydrateSourceAction({
-			action,
-			script,
-			ownerId
-		}))
-	);
+	const hydratedActions = await hydrateActionTree({
+		action: actions,
+		script,
+		ownerId
+	});
 
 	if (Array.isArray(script.actions))
 		script.actions = hydratedActions;
@@ -229,6 +267,35 @@ const getScriptsArray = scripts => {
 	return Array.isArray(scripts) ? scripts : [scripts];
 };
 
+const hasSourceActionKey = value => {
+	if (!value)
+		return false;
+
+	const frontier = [value];
+	const seen = new Set();
+
+	while (frontier.length) {
+		const current = frontier.pop();
+		if (!current || typeof (current) !== 'object')
+			continue;
+
+		if (seen.has(current))
+			continue;
+
+		seen.add(current);
+
+		if (
+			Object.hasOwn(current, 'srcAction') ||
+			Object.hasOwn(current, 'srcActions')
+		)
+			return true;
+
+		frontier.push(...Object.values(current));
+	}
+
+	return false;
+};
+
 export const hydrateSourceActionsInMda = async mda => {
 	if (!mda)
 		return;
@@ -250,8 +317,8 @@ export const hydrateSourceActionsInMda = async mda => {
 
 export const hasSourceActionsInRunnablePrps = ({ prps = {} }) => {
 	return (
-		hasSourceActions(prps.fireScript) ||
-		getScriptsArray(prps.dtaScps).some(hasSourceActions)
+		hasSourceActionKey(prps.fireScript) ||
+		hasSourceActionKey(prps.dtaScps)
 	);
 };
 
