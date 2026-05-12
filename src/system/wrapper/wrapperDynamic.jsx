@@ -18,6 +18,9 @@ import WrapperInner from './wrapperInner';
 import WrapperSrc from './wrapperSrc';
 
 //Helpers
+import { hydrateSourceActionsInMda } from './helpers';
+
+//Helpers
 const getErrorCaption = ({ id, type, src }) => {
 	if (src !== undefined)
 		return null;
@@ -69,43 +72,47 @@ const recurseMutateMda = mda => {
 
 //Events
 export const onMutateMda = (initialMda, mdaString, setFixedMda) => {
-	const mda = clone({}, initialMda);
+	(async () => {
+		const mda = clone({}, initialMda);
 
-	if (mda.applyBlueprint === false)
-		delete mda.applyBlueprint;
-	else {
-		if (mda.trait) {
-			if (!mda.traits)
-				mda.traits = [];
+		if (mda.applyBlueprint === false)
+			delete mda.applyBlueprint;
+		else {
+			if (mda.trait) {
+				if (!mda.traits)
+					mda.traits = [];
 
-			mda.traits.push({
-				trait: mda.trait,
-				traitPrps: mda.traitPrps
-			});
+				mda.traits.push({
+					trait: mda.trait,
+					traitPrps: mda.traitPrps
+				});
 
-			delete mda.trait;
-			delete mda.traitPrps;
-		}
+				delete mda.trait;
+				delete mda.traitPrps;
+			}
 
-		while (mda.traits)
-			applyTraits(mda);
+			while (mda.traits)
+				applyTraits(mda);
 
-		if (mda.condition) {
-			const conditionMet = isConditionMet(mda.condition, mda.parentId);
-			if (conditionMet === false)
+			if (mda.condition) {
+				const conditionMet = isConditionMet(mda.condition, mda.parentId);
+				if (conditionMet === false)
+					return;
+			}
+
+			recurseMutateMda(mda);
+			await hydrateSourceActionsInMda(mda);
+
+			const errorCaption = getErrorCaption(mda);
+			if (errorCaption) {
+				applyErrorProps(mda, errorCaption);
+
 				return;
+			}
 		}
 
-		recurseMutateMda(mda);
-		const errorCaption = getErrorCaption(mda);
-		if (errorCaption) {
-			applyErrorProps(mda, errorCaption);
-
-			return;
-		}
-	}
-
-	queueMicrotask(() => setFixedMda({ mda, mdaString }));
+		queueMicrotask(() => setFixedMda({ mda, mdaString }));
+	})();
 };
 
 //Components

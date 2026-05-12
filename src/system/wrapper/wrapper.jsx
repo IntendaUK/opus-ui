@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom';
 
 //System Helpers
 import { getPropSpec } from '../managers/componentManager';
+import { hasSourceActionsInRunnablePrps } from './helpers';
 
 //Components
 import WrapperDynamic from './wrapperDynamic';
@@ -21,7 +22,8 @@ const needsDynamicWrapper = mda => {
 		type === undefined ||
 		id === undefined ||
 		condition !== undefined ||
-		dynamic === true
+		dynamic === true ||
+		hasSourceActionsInRunnablePrps(mda)
 	);
 	if (res)
 		return true;
