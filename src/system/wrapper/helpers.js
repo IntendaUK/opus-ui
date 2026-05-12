@@ -1,4 +1,4 @@
-/* eslint-disable no-inline-comments */
+/* eslint-disable max-lines, no-inline-comments */
 
 //System
 import { emit } from '../managers/eventManager';
@@ -129,60 +129,142 @@ export const getKey = ({ id, index }) => {
 	return key;
 };
 
+const getActionsArray = script => {
+	const { actions } = script ?? {};
+
+	if (!actions)
+		return null;
+
+	return Array.isArray(actions) ? actions : [actions];
+};
+
+const getSourceHandler = async path => {
+	const handlerString = await getMdaHelper({
+		type: 'dashboard',
+		key: path,
+		fileType: 'js'
+	});
+
+	const moduleUrl = `data:text/javascript;charset=utf-8,${encodeURIComponent(handlerString)}`;
+	const handler = await import(/* @vite-ignore */ moduleUrl);
+
+	return handler.default;
+};
+
+const hydrateSourceAction = async ({ action, script, ownerId }) => {
+	const { srcAction, ...rest } = action;
+
+	if (!srcAction)
+		return action;
+
+	const handler = await getSourceHandler(srcAction.path);
+
+	const [ wrappedAction ] = wrapScriptHandlerInActions({
+		script,
+		ownerId,
+		handler
+	});
+
+	return {
+		...rest,
+		...wrappedAction
+	};
+};
+
+export const hydrateSourceActions = async ({ script, ownerId }) => {
+	if (!script)
+		return script;
+
+	const srcActions = script.srcActions ?? script.srcAction;
+	if (srcActions) {
+		const handler = await getSourceHandler(srcActions.path);
+
+		script.actions = wrapScriptHandlerInActions({
+			script,
+			ownerId,
+			handler
+		});
+		delete script.srcActions;
+		delete script.srcAction;
+	}
+
+	const actions = getActionsArray(script);
+	if (!actions)
+		return script;
+
+	const hydratedActions = await Promise.all(
+		actions.map(action => hydrateSourceAction({
+			action,
+			script,
+			ownerId
+		}))
+	);
+
+	if (Array.isArray(script.actions))
+		script.actions = hydratedActions;
+	else
+		script.actions = hydratedActions[0];
+
+	return script;
+};
+
+export const hasSourceActions = script => {
+	if (!script)
+		return false;
+
+	if (script.srcActions || script.srcAction)
+		return true;
+
+	const actions = getActionsArray(script);
+	if (!actions)
+		return false;
+
+	return actions.some(action => action?.srcAction);
+};
+
+const getScriptsArray = scripts => {
+	if (!scripts)
+		return [];
+
+	return Array.isArray(scripts) ? scripts : [scripts];
+};
+
+export const hydrateSourceActionsInMda = async mda => {
+	if (!mda)
+		return;
+
+	const { prps = {}, wgts = [] } = mda;
+
+	await Promise.all([
+		...getScriptsArray(prps.dtaScps).map(script => hydrateSourceActions({
+			script,
+			ownerId: mda.id
+		})),
+		hydrateSourceActions({
+			script: prps.fireScript,
+			ownerId: mda.id
+		}),
+		...wgts.map(wgtMda => hydrateSourceActionsInMda(wgtMda))
+	]);
+};
+
+export const hasSourceActionsInRunnablePrps = ({ prps = {} }) => {
+	return (
+		hasSourceActions(prps.fireScript) ||
+		getScriptsArray(prps.dtaScps).some(hasSourceActions)
+	);
+};
+
 export const registerScripts = async ({ id, scps }) => {
 	if (!scps)
 		return;
 
 	const registerQueue = await Promise.all(
 		scps.map(async s => {
-			if (s.srcActions) {
-				const handlerString = await getMdaHelper({
-					type: 'dashboard',
-					key: s.srcActions.path,
-					fileType: 'js'
-				});
-
-				const moduleUrl = `data:text/javascript;charset=utf-8,${encodeURIComponent(handlerString)}`;
-				const handler = await import(/* @vite-ignore */ moduleUrl);
-
-				s.actions = wrapScriptHandlerInActions({
-					script: s,
-					ownerId: id,
-					handler: handler.default
-				});
-				delete s.srcActions;
-			}
-
-			if (s.actions) {
-				s.actions = await Promise.all(
-					s.actions.map(async a => {
-						const { srcAction, ...rest } = a;
-
-						if (!srcAction)
-							return a;
-
-						const handlerString = await getMdaHelper({
-							type: 'dashboard',
-							key: srcAction.path,
-							fileType: 'js'
-						});
-
-						const moduleUrl = `data:text/javascript;charset=utf-8,${encodeURIComponent(handlerString)}`;
-						const handler = await import(/* @vite-ignore */ moduleUrl);
-
-						const [ wrappedAction ] = wrapScriptHandlerInActions({
-							script: s,
-							ownerId: id,
-							handler: handler.default
-						});
-
-						return {
-							...rest,
-							...wrappedAction
-						};
-					})
-				);
-			}
+			await hydrateSourceActions({
+				script: s,
+				ownerId: id
+			});
 
 			return {
 				id,
