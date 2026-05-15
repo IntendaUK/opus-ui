@@ -2,7 +2,7 @@
 
 //System
 import { getPropertyContainer } from '../../../system/managers/propertyManager';
-import { wrapScriptHandlerInActions } from '../../../system/wrapper/wrapperExternal';
+import { wrapScriptHandlerInActions } from '../../../system/wrapper/wrapScriptHandlerInActions';
 
 //System Helpers
 import { clone } from '../../../system/helpers';

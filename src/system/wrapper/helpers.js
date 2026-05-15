@@ -5,7 +5,7 @@
 import { emit } from '../managers/eventManager';
 import { getPropertyContainer } from '../managers/propertyManager';
 import { stateManager } from '../managers/stateManager';
-import { wrapScriptHandlerInActions } from './wrapperExternal';
+import { wrapScriptHandlerInActions } from './wrapScriptHandlerInActions';
 
 //Components
 import ChildWgt from './childWgt';
