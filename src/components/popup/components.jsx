@@ -72,10 +72,19 @@ const buildFlows = ({ id, state: { fromId, lookupFlows = [], lookupFilters = [] 
 	return result;
 };
 
+const removeUndefinedValues = obj => {
+	if (!obj)
+		return obj;
+
+	return Object.fromEntries(
+		Object.entries(obj).filter(([, value]) => value !== undefined)
+	);
+};
+
 export const Combo = () => {
 	const { id, classNames, style, getHandler, state } = useContext(PopupContext);
 
-	const { lookupStyleOverrides } = state;
+	const lookupStyleOverrides = removeUndefinedValues(state.lookupStyleOverrides);
 
 	const builtStyle = {
 		...style,
