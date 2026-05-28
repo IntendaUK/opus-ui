@@ -53,56 +53,55 @@ export const processAction = async (config, script, props) => {
 
 	const { type, storeAsVariable, pushToVariable, handler, isAsync } = morphedConfig;
 
+	let result;
+
 	if (handler) {
 		//We always drill one level into the suite's args
 		if (morphedConfig.args)
 			morphedConfig.args = morphConfig(morphedConfig.args, script, props, false, true, actionTrackers);
 
-		const handlerResult = isAsync
+		result = isAsync
 			? await handler(morphedConfig, script, props)
 			: handler(morphedConfig, script, props);
+	} else {
+		const fn = actions.getExternalAction(type) ?? actions[type];
 
-		return handlerResult;
-	}
+		try {
+			result = await fn(morphedConfig, script, props);
 
-	const fn = actions.getExternalAction(type) ?? actions[type];
-
-	let result;
-	try {
-		result = await fn(morphedConfig, script, props);
-
-		if (opusConfig.env === 'development' && script.trackAction) {
-			script.trackAction({
-				scope: script.id,
-				config,
-				morphedConfig,
-				actionTrackers,
-				result,
-				success: true
-			});
-		}
-	} catch (e) {
-		if (opusConfig.env === 'development') {
-			console.error({
-				msg: 'Script action crashed',
-				error: e,
-				args: {
-					config: JSON.parse(JSON.stringify(morphedConfig)),
-					scp: JSON.parse(JSON.stringify(script))
-				}
-			});
-
-			if (script.trackAction) {
+			if (opusConfig.env === 'development' && script.trackAction) {
 				script.trackAction({
+					scope: script.id,
 					config,
 					morphedConfig,
+					actionTrackers,
 					result,
-					success: false
+					success: true
 				});
 			}
-		} else
+		} catch (e) {
+			if (opusConfig.env === 'development') {
+				console.error({
+					msg: 'Script action crashed',
+					error: e,
+					args: {
+						config: JSON.parse(JSON.stringify(morphedConfig)),
+						scp: JSON.parse(JSON.stringify(script))
+					}
+				});
 
-			console.error('Script action crashed');
+				if (script.trackAction) {
+					script.trackAction({
+						config,
+						morphedConfig,
+						result,
+						success: false
+					});
+				}
+			} else
+
+				console.error('Script action crashed');
+		}
 	}
 
 	if (storeAsVariable) {
