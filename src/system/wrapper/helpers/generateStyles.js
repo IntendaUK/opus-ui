@@ -73,6 +73,12 @@ const generateCustomCssVars = (state, styleObjects) => {
 const styleEntryCache = new WeakMap();
 
 const getStyleEntries = propSpec => {
+	//propSpec can be a non-object on some paths (e.g. buildState called with a boolean
+	// in the propSpec slot). Object.entries tolerated this by returning []; mirror that
+	// here since a WeakMap key must be an object.
+	if (typeof(propSpec) !== 'object' || propSpec === null)
+		return [];
+
 	let entries = styleEntryCache.get(propSpec);
 	if (entries)
 		return entries;
