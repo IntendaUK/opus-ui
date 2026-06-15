@@ -116,6 +116,11 @@ const getVariableOrState = (token, script, props, key, parentObj) => {
 	return stateValue;
 };
 
+//Hoisted so they are compiled once rather than re-created on every fixScopeIds call
+// (and on every iteration of the do/while loop below).
+const scopedIdParenRegex = /\|\|[^(())>]*\|\|/g;
+const scopedIdBraceRegex = /\|\|[^{{}}>]*\|\|/g;
+
 export const fixScopeIds = (value, script, key, actionTrackers) => {
 	let result = value;
 	let newValue = value;
@@ -123,7 +128,7 @@ export const fixScopeIds = (value, script, key, actionTrackers) => {
 	do {
 		result = newValue;
 
-		newValue = newValue.replace(/\|\|[^(())>]*\|\|/g, match => {
+		newValue = newValue.replace(scopedIdParenRegex, match => {
 			const scopedId = getScopedId(match, script.ownerId);
 
 			if (actionTrackers) {
@@ -137,7 +142,7 @@ export const fixScopeIds = (value, script, key, actionTrackers) => {
 			return scopedId;
 		});
 
-		newValue = newValue.replace(/\|\|[^{{}}>]*\|\|/g, match => {
+		newValue = newValue.replace(scopedIdBraceRegex, match => {
 			const scopedId = getScopedId(match, script.ownerId);
 
 			if (actionTrackers) {
