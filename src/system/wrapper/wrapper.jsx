@@ -1,10 +1,14 @@
 //React
-import React, { useState } from 'react';
+import React, { useState, useRef, useMemo } from 'react';
 import ReactDOM from 'react-dom';
 
 //System Helpers
 import { getPropSpec } from '../managers/componentManager';
+import { clone } from '../helpers';
 import { hasSourceActionsInRunnablePrps } from './helpers';
+
+//Helpers
+import mdaChanged from './helpers/mdaChanged';
 
 //Components
 import WrapperDynamic from './wrapperDynamic';
@@ -40,6 +44,24 @@ const Wrapper = props => {
 	const [wrapperKey, setWrapperKey] = useState(0);
 	const [doUnmount, setDoUnmount] = useState(false);
 
+	//Change detection. Instead of serializing the whole subtree to a string on every
+	// render (the old JSON.stringify approach), we deep-compare the live mda against a
+	// retained snapshot with early exit. The snapshot means in-place key mutations are
+	// still caught; the version counter only changes when the content actually changed
+	// and replaces the string token used by the memo/effect comparisons downstream.
+	const mdaSnapshot = useRef(undefined);
+	const mdaVersionRef = useRef(0);
+
+	if (mdaChanged(mda, mdaSnapshot.current)) {
+		mdaSnapshot.current = clone({}, mda);
+		mdaVersionRef.current++;
+	}
+	const mdaVersion = mdaVersionRef.current;
+
+	//needsDynamicWrapper is structural, so it only needs to be recomputed when the
+	// content actually changes (i.e. when the version bumps).
+	const isDynamic = useMemo(() => needsDynamicWrapper(mda), [mdaVersion]);
+
 	const forceRemount = newMda => {
 		if (newMda) {
 			Object.keys(mda).forEach(k => delete mda[k]);
@@ -58,8 +80,6 @@ const Wrapper = props => {
 	if (doUnmount || mda.split)
 		return null;
 
-	const mdaString = JSON.stringify(mda);
-
 	if (mda.src) {
 		return (
 			<WrapperSrc
@@ -70,11 +90,10 @@ const Wrapper = props => {
 		);
 	}
 
-	const isDynamic = needsDynamicWrapper(mda);
 	if (isDynamic) {
 		return (
 			<WrapperDynamic
-				mdaString={mdaString}
+				mdaVersion={mdaVersion}
 				mda={mda}
 				children={children}
 				forceRemount={forceRemount}
@@ -89,7 +108,7 @@ const Wrapper = props => {
 	return (
 		<WrapperInner
 			key={mda.id}
-			mdaString={mdaString}
+			mdaVersion={mdaVersion}
 			mda={mda}
 			children={children}
 			forceRemount={forceRemount}

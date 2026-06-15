@@ -33,7 +33,7 @@ const onRunFlowChecker = (id, propSpec, setState, state) => {
 
 
 /* eslint-disable-next-line max-lines-per-function */
-const WrapperInner = ({ mda, children, mdaString, forceRemount }) => {
+const WrapperInner = ({ mda, children, mdaVersion, forceRemount }) => {
 	const [componentProps, setWrapperState] = useState();
 	const [cpnState, setCpnState] = useState({ updates: 0 });
 
@@ -56,7 +56,7 @@ const WrapperInner = ({ mda, children, mdaString, forceRemount }) => {
 
 	//Hook that checks if any auth properties changed and updates them accordingly
 	const cbNewProps = onNewProps.bind(null, componentProps?.setState, cpnState, mda, propSpec);
-	useEffect(cbNewProps, [mdaString]);
+	useEffect(cbNewProps, [mdaVersion]);
 
 	useEffect(onRunFlowChecker.bind(null, id, propSpec, componentProps?.setState, cpnState), [componentProps?.setState]);
 

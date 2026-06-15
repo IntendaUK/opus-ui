@@ -71,7 +71,7 @@ const recurseMutateMda = mda => {
 };
 
 //Events
-export const onMutateMda = (initialMda, mdaString, setFixedMda) => {
+export const onMutateMda = (initialMda, mdaVersion, setFixedMda) => {
 	(async () => {
 		const mda = clone({}, initialMda);
 
@@ -111,25 +111,25 @@ export const onMutateMda = (initialMda, mdaString, setFixedMda) => {
 			}
 		}
 
-		queueMicrotask(() => setFixedMda({ mda, mdaString }));
+		queueMicrotask(() => setFixedMda({ mda, mdaVersion }));
 	})();
 };
 
 //Components
 const WrapperDynamic = React.memo(
-	({ mda, children, mdaString, forceRemount }) => {
+	({ mda, children, mdaVersion, forceRemount }) => {
 		const [fixedMda, setFixedMda] = useState(null);
 
 		const onFixMda = useCallback(
-			onMutateMda.bind(null, mda, mdaString, setFixedMda),
-			[mdaString]
+			onMutateMda.bind(null, mda, mdaVersion, setFixedMda),
+			[mdaVersion]
 		);
-		useEffect(onFixMda, [mdaString]);
+		useEffect(onFixMda, [mdaVersion]);
 
 		if (!fixedMda)
 			return null;
 
-		const { mda: useMda, mdaString: useMdaString } = fixedMda;
+		const { mda: useMda, mdaVersion: useMdaVersion } = fixedMda;
 
 		if (useMda.src) {
 			return (
@@ -144,15 +144,15 @@ const WrapperDynamic = React.memo(
 		return (
 			<WrapperInner
 				key={useMda.id}
-				mdaString={useMdaString}
+				mdaVersion={useMdaVersion}
 				mda={useMda}
 				children={children}
 				forceRemount={forceRemount}
 			/>
 		);
 	},
-	({ mdaString: mdaStringA }, { mdaString: mdaStringB }) => {
-		return mdaStringA === mdaStringB;
+	({ mdaVersion: mdaVersionA }, { mdaVersion: mdaVersionB }) => {
+		return mdaVersionA === mdaVersionB;
 	}
 );
 
