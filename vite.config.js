@@ -5,7 +5,7 @@ import { promises as fs } from 'fs';
 import path from 'path';
 
 import react from '@vitejs/plugin-react';
-import { defineConfig, transformWithEsbuild } from 'vite';
+import { defineConfig, transformWithOxc } from 'vite';
 import * as packageJson from './package.json';
 import libCss from 'vite-plugin-libcss';
 
@@ -76,9 +76,9 @@ export default defineConfig(() => ({
 			async transform (code, id) {
 				if (!id.match(/src\/.*\.js$/)) return null;
 
-				return transformWithEsbuild(code, id, {
-					loader: 'jsx',
-					jsx: 'automatic'
+				return transformWithOxc(code, id, {
+					lang: 'jsx',
+					jsx: { runtime: 'automatic' }
 				});
 			}
 		},
@@ -103,6 +103,7 @@ export default defineConfig(() => ({
 				'react',
 				'react-dom',
 				'react-dom/client',
+				'react/jsx-runtime',
 				...Object.keys(packageJson.peerDependencies)
 			],
 			output: {
