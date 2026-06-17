@@ -68,15 +68,34 @@ const generateCustomCssVars = (state, styleObjects) => {
 	});
 };
 
+//The set of props that emit css (cssVar/cssAttr) is fixed per propSpec, so we compute
+// it once and reuse it instead of scanning the whole propSpec on every style change.
+const styleEntryCache = new WeakMap();
+
+const getStyleEntries = propSpec => {
+	//propSpec can be a non-object on some paths (e.g. buildState called with a boolean
+	// in the propSpec slot). Object.entries tolerated this by returning []; mirror that
+	// here since a WeakMap key must be an object.
+	if (typeof(propSpec) !== 'object' || propSpec === null)
+		return [];
+
+	let entries = styleEntryCache.get(propSpec);
+	if (entries)
+		return entries;
+
+	entries = Object.entries(propSpec).filter(([, spec]) => spec.cssVar || spec.cssAttr);
+	styleEntryCache.set(propSpec, entries);
+
+	return entries;
+};
+
 const generateStyles = (state, propSpec = {}) => {
 	const { type } = state;
 
 	const styleObjects = {};
 
-	Object.entries(propSpec).forEach(([prop, spec]) => {
+	getStyleEntries(propSpec).forEach(([prop, spec]) => {
 		const { cssVar, cssAttr, cssVarGroup = 'style', cssAttrGroup = 'style' } = spec;
-		if (!cssVar && !cssAttr)
-			return;
 
 		const { [prop]: propVal } = state;
 		if (propVal === undefined)

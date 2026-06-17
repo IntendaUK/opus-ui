@@ -157,6 +157,12 @@ export const alertListenerOfChanges = (listener, changedState, fullState) => {
 	if (mappedValue === undefined)
 		return false;
 
+	//Cheap reference/primitive check first - a strict-equal here always implies the
+	// deep (stringified) comparison below would also be equal, so this only short-circuits
+	// the common case without changing behaviour.
+	if (currentValue === mappedValue)
+		return false;
+
 	if (JSON.stringify(currentValue) === JSON.stringify(mappedValue))
 		return false;
 
