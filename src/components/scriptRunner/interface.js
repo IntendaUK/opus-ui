@@ -2,6 +2,8 @@
 import { clone, spliceWhere } from '../../system/helpers';
 import { applyBlueprints } from '../../system/managers/blueprintManager';
 import setupSuiteActions from './helpers/setupSuiteActions';
+import { resolveThemeAccessor } from '../../system/managers/themeManager';
+import { getMdaHelper } from '../scriptRunner/actions/getMda/getMda';
 
 //Helpers
 import hookTrigger from './helpers/hookTrigger';
@@ -93,11 +95,27 @@ export const runScript = originalScript => {
 	if (script.concurrency !== undefined && script.concurrency.pool === undefined)
 		script.concurrency.pool = script.id;
 
-	const { actions, blueprint } = script;
+	const { actions, blueprint, traits } = script;
 
 	if (blueprint)
 		runBlueprintScript(props, script);
-	else
+	else if (traits) {
+		traits.forEach(({ trait }) => {
+			const mdaTrait = getMdaHelper({
+				type: 'blueprint',
+				key: trait
+			});
+
+			const stringTrait = JSON.stringify(mdaTrait);
+			const stringAppliedThemes = resolveThemeAccessor(stringTrait);
+
+			const mdaFinal = JSON.parse(stringAppliedThemes);
+
+			Object.assign(script, mdaFinal);
+		});
+
+		runScriptBase(props, script, script.actions, true);
+	} else
 		runScriptBase(props, script, actions, true);
 };
 

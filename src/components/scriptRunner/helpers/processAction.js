@@ -3,6 +3,7 @@ import opusConfig from '../../../config';
 
 //System Helpers
 import { applyBlueprints } from '../../../system/managers/blueprintManager';
+import { isWrappedScriptHandler, wrapScriptHandlerInActions } from '../../../system/wrapper/wrapScriptHandlerInActions';
 
 //Helpers
 import morphConfig from './morphConfig';
@@ -60,9 +61,13 @@ export const processAction = async (config, script, props) => {
 		if (morphedConfig.args)
 			morphedConfig.args = morphConfig(morphedConfig.args, script, props, false, true, actionTrackers);
 
+		const handlerToRun = isWrappedScriptHandler(handler)
+			? handler
+			: wrapScriptHandlerInActions({ handler })[0].handler;
+
 		result = isAsync
-			? await handler(morphedConfig, script, props)
-			: handler(morphedConfig, script, props);
+			? await handlerToRun(morphedConfig, script, props)
+			: handlerToRun(morphedConfig, script, props);
 	} else {
 		const fn = actions.getExternalAction(type) ?? actions[type];
 

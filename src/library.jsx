@@ -9,6 +9,9 @@ import React from 'react';
 import { Wrapper } from './system/wrapper/wrapper';
 import { AppLib } from './appLib';
 
+//Components
+export * from './libraryComponents';
+
 //System Helpers
 import applyThemesToMdaPackage from './app/components/helpers/applyThemesToMdaPackage';
 import { init as initComponentManager } from './system/managers/componentManager';
@@ -69,8 +72,10 @@ export { registerExternalDataLocations } from './library/externalDataLocations';
 export { default as registerSuite } from './system/managers/suiteManager/register';
 export { default as wrapWidgets } from './components/wrapWidgets';
 export { reloadComponentsFromPath } from './system/managers/reloadManager';
+export { default as isConditionMet } from './system/managers/traitManager/isConditionMet';
 
 //Script Actions
+export { default as getSyncScriptResult } from './library/getSyncScriptResult';
 export { default as queryUrl } from './components/scriptRunner/actions/queryUrl';
 export { default as configActions } from './components/scriptRunner/config/configActions';
 export { default as getPath } from './components/scriptRunner/actions/pathFinding/getPath';

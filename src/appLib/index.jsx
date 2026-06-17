@@ -28,7 +28,6 @@ const onMount = (state, setState, theme, setTheme, appProps) => {
 		//Make required helper methods available through window._.spliceWhere, etc.
 		setOpusHelpersInWindow(appProps.windowHelpers);
 	}
-
 	if (appProps.options)
 		overrideConfig(appProps.options);
 

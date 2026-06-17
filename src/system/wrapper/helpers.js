@@ -1,10 +1,10 @@
-/* eslint-disable max-lines, no-inline-comments */
+/* eslint-disable max-lines, max-lines-per-function, no-inline-comments */
 
 //System
 import { emit } from '../managers/eventManager';
 import { getPropertyContainer } from '../managers/propertyManager';
 import { stateManager } from '../managers/stateManager';
-import { wrapScriptHandlerInActions } from './wrapperExternal';
+import { wrapScriptHandlerInActions } from './wrapScriptHandlerInActions';
 
 //Components
 import ChildWgt from './childWgt';
@@ -328,6 +328,17 @@ export const registerScripts = async ({ id, scps }) => {
 
 	const registerQueue = await Promise.all(
 		scps.map(async s => {
+			//Wrap a raw JS handler (registered from js rather than json) into actions.
+			// srcActions/srcAction take precedence and are hydrated below.
+			if (s.handler && !s.srcActions && !s.srcAction) {
+				s.actions = wrapScriptHandlerInActions({
+					script: s,
+					ownerId: id,
+					handler: s.handler
+				});
+				delete s.handler;
+			}
+
 			await hydrateSourceActions({
 				script: s,
 				ownerId: id

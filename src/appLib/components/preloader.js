@@ -6,6 +6,7 @@ import { init as initEventManager } from '../../system/managers/eventManager';
 import { createContext } from '../../system/managers/appManager';
 import * as componentManager from '../../system/managers/componentManager';
 import { generateKeyLookup } from '../../system/managers/localStorageManager/keyLookupCache';
+import { setMdaPackage } from '../../components/scriptRunner/actions/getMda/getMda';
 import opusConfig from '../../config';
 
 //Helpers
@@ -21,6 +22,7 @@ const AppInnerContext = createContext('appInnerContext');
 //Events
 const onMount = (props, appProps) => {
 	const {
+		mdaPackage,
 		themesConfig: themesConfigOverride,
 		registerComponentTypes,
 		externalComponentTypes
@@ -45,6 +47,8 @@ const onMount = (props, appProps) => {
 		registerExternalTypes(externalComponentTypes);
 
 	loadThemes(themesConfig);
+
+	setMdaPackage(mdaPackage);
 
 	generateKeyLookup();
 	initEventManager();

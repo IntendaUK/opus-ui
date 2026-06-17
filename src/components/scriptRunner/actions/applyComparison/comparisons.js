@@ -1,94 +1,170 @@
+const isNil = v => v === null || v === undefined;
+
+const toStr = v => {
+	if (isNil(v))
+		return '';
+
+	return String(v);
+};
+
+const toLower = v => toStr(v).toLowerCase();
+
+const toNum = v => {
+	const n = parseFloat(v);
+
+	return Number.isNaN(n) ? undefined : n;
+};
+
 export const isEqual = (a, b) => {
-	if (a === undefined || b === undefined || a === null || b === null)
+	if (isNil(a) || isNil(b))
 		return a === b;
 
-	//This is hacky. We should rather be more specific when we check types
-	if (a.toLowerCase && b.toLowerCase)
-		return a.toLowerCase() === b.toLowerCase();
-
-	return a === b;
+	return toLower(a) === toLower(b);
 };
 
 export const isEqualCase = (a, b) => a === b;
 
 export const isNotEqual = (a, b) => {
-	if (a === undefined || b === undefined)
+	if (isNil(a) || isNil(b))
 		return a !== b;
 
-	if (typeof(a) !== typeof(b))
-		return true;
-
-	if (a && a.toLowerCase && b && b.toLowerCase)
-		return a.toLowerCase() !== b.toLowerCase();
-
-	return a !== b;
+	return toLower(a) !== toLower(b);
 };
 
-export const isFalsy = a => {
-	return (a === null || a === undefined || a === '' || a === 0 || a === false);
+export const isFalsy = a => (
+	a === null || a === undefined || a === '' || a === 0 || a === false
+);
+
+export const isNotFalsy = a => !isFalsy(a);
+
+export const isTruthy = a => !isFalsy(a);
+
+export const isNotTruthy = a => isFalsy(a);
+
+export const isGreaterThan = (a, b) => {
+	const na = toNum(a);
+	const nb = toNum(b);
+
+	if (na === undefined || nb === undefined)
+		return false;
+
+	return na > nb;
 };
 
-export const isNotFalsy = a => {
-	return (a !== null && a !== undefined && a !== '' && a !== 0 && a !== false);
+export const isGreaterEqualThan = (a, b) => {
+	const na = toNum(a);
+	const nb = toNum(b);
+
+	if (na === undefined || nb === undefined)
+		return false;
+
+	return na >= nb;
 };
 
-export const isTruthy = a => {
-	return (a !== null && a !== undefined && a !== '' && a !== 0 && a !== false);
+export const isLessThan = (a, b) => {
+	const na = toNum(a);
+	const nb = toNum(b);
+
+	if (na === undefined || nb === undefined)
+		return false;
+
+	return na < nb;
 };
 
-export const isNotTruthy = a => {
-	return (a === null || a === undefined || a === '' || a === 0 || a === false);
+export const isLessEqualThan = (a, b) => {
+	const na = toNum(a);
+	const nb = toNum(b);
+
+	if (na === undefined || nb === undefined)
+		return false;
+
+	return na <= nb;
 };
 
-export const isGreaterThan = (a, b) => a > b;
+const parseRange = b => {
+	if (isNil(b))
+		return [];
 
-export const isGreaterEqualThan = (a, b) => a >= b;
-
-export const isLessThan = (a, b) => a < b;
-
-export const isLessEqualThan = (a, b) => a <= b;
+	return String(b).split('-').map(v => toNum(v));
+};
 
 export const isBetween = (a, b) => {
-	const [b1, b2] = b.split('-').map(rangeValue => parseFloat(rangeValue));
-	const parsedInput = parseFloat(a);
+	const [b1, b2] = parseRange(b);
+	const val = toNum(a);
 
-	return b1 < parsedInput && b2 > parsedInput;
+	if (val === undefined || b1 === undefined || b2 === undefined)
+		return false;
+
+	return b1 < val && b2 > val;
 };
 
 export const isBetweenInclusive = (a, b) => {
-	const [b1, b2] = b.split('-').map(rangeValue => parseFloat(rangeValue));
-	const parsedInput = parseFloat(a);
+	const [b1, b2] = parseRange(b);
+	const val = toNum(a);
 
-	return b1 <= parsedInput && b2 >= parsedInput;
+	if (val === undefined || b1 === undefined || b2 === undefined)
+		return false;
+
+	return b1 <= val && b2 >= val;
 };
 
-export const doesContain = (a, b) => a.toLowerCase().includes(b.toLowerCase());
+export const doesContain = (a, b) => {
+	if (isNil(a) || isNil(b))
+		return false;
+
+	return toLower(a).includes(toLower(b));
+};
 
 export const doesNotContain = (a, b) => !doesContain(a, b);
 
-export const containedIn = (a, b) => b.toLowerCase().includes(a.toLowerCase());
+export const containedIn = (a, b) => {
+	if (isNil(a) || isNil(b))
+		return false;
+
+	return toLower(b).includes(toLower(a));
+};
 
 export const notContainedIn = (a, b) => !containedIn(a, b);
 
-export const doesContainCase = (a, b) => a.includes(b);
+export const doesContainCase = (a, b) => {
+	if (isNil(a) || isNil(b))
+		return false;
+
+	return toStr(a).includes(toStr(b));
+};
 
 export const doesNotContainCase = (a, b) => !doesContainCase(a, b);
 
-export const containedInCase = (a, b) => b.includes(a);
+export const containedInCase = (a, b) => {
+	if (isNil(a) || isNil(b))
+		return false;
+
+	return toStr(b).includes(toStr(a));
+};
 
 export const notContainedInCase = (a, b) => !containedInCase(a, b);
 
 export const isValidDateString = a => {
-	const dateObject = new Date(a);
-	const result = !isNaN(dateObject.getTime());
+	if (isNil(a))
+		return false;
 
-	return result;
+	const date = new Date(a);
+
+	return !Number.isNaN(date.getTime());
 };
 
-export const isNotValidDateString = a => {
-	return !isValidDateString(a);
+export const isNotValidDateString = a => !isValidDateString(a);
+
+export const isValidAgainstRegex = (a, r) => {
+	if (isNil(a) || isNil(r))
+		return false;
+
+	try {
+		return new RegExp(r).test(String(a));
+	} catch {
+		return false;
+	}
 };
 
-export const isValidAgainstRegex = (a, r) => new RegExp(r).test(a);
-
-export const isNotValidAgainstRegex = (a, r) => !isValidAgainstRegex(a, r);
+export const isNotValidAgainstRegex = (a, r) =>
+	!isValidAgainstRegex(a, r);

@@ -14,54 +14,14 @@ import { runScript } from '../../components/scriptRunner/interface';
 import { disposeScripts } from '../../components/scriptRunner/interface';
 import { removeStyleTag } from './helpers/styleTags.js';
 import { Wrapper } from './wrapper';
+import { wrapScriptHandlerInActions } from './wrapScriptHandlerInActions';
 import { clone } from '../helpers';
 
 //Opus Helpers
 import { generateGuid } from '../helpers';
-import { getVariable } from '../../components/scriptRunner/actions/variableActions';
 import getNextScriptId from '../../components/scriptRunner/helpers/getNextScriptId';
 
-export const wrapScriptHandlerInActions = ({ handler }) => {
-	const res = [{
-		handler: async (morphedConfig, script, { state: scriptRunnerState }) => {
-			const { id: scriptId, ownerId } = script;
-
-			const getVariableHelper = variableName => {
-				const res = getVariable({
-					scope: scriptId,
-					name: variableName
-				}, script, { state: scriptRunnerState });
-
-				return res;
-			};
-
-			const triggeredFrom = getVariableHelper('triggeredFrom');
-
-			const args = {
-				getVariable: getVariableHelper,
-				triggeredFrom,
-				setState: stateManager.setSelfState.bind(null, ownerId),
-				setExternalState: (idTarget, newState) => {
-					if (idTarget.includes('||'))
-						idTarget = getScopedId(idTarget, ownerId);
-
-					stateManager.setWgtState(idTarget, newState, ownerId)
-				},
-				getState: stateManager.getWgtState.bind(null, ownerId),
-				getExternalState: stateManager.getWgtState.bind(null),
-				runScript,
-				config: morphedConfig
-			};
-
-			if (morphedConfig.isAsync)
-				return await handler(args);
-			else
-				return handler(args);
-		}
-	}];
-
-	return res;
-};
+export { wrapScriptHandlerInActions };
 
 //Events
 const onUnmount = (id, state) => {
@@ -191,12 +151,12 @@ const WrapperExternal = (ComponentToRender, config) => {
 		const { children: _children, ...props } = _props;
 
 		const [cpnState, setCpnState] = useState({
-			id: props.id,
-			scope: props.scope,
-			relId: props.relId,
-			flows: props.flows,
-			scripts: props.scripts ?? props.scps,
-			parentId: props.parentId,
+			id: props.id ?? config?.id,
+			scope: props.scope ?? config?.scope,
+			relId: props.relId ?? config?.relId,
+			flows: props.flows ?? config?.flows,
+			scripts: props.scripts ?? props.scps ?? config?.scripts,
+			parentId: props.parentId ?? config?.parentId,
 			...(props.state ?? props.prps ?? {}),
 			type: '_opusExternal',
 			updates: 0
