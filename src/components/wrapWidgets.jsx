@@ -62,12 +62,69 @@ const applyTraits = ({ sysPrps = {}, prps = {}, traits = [] }) => {
 	return res;
 };
 
+//A transpiled Opus component (tagged with isTranspiledComponent) can be referenced as a
+// component-trait inside a dynamically-injected widget — e.g. a widget pushed into extraWgts by a
+// script/handler. The transpiler emits such a reference as the imported component function rather
+// than a trait-path string, so we render it directly as React instead of resolving JSON metadata.
+const findComponentTraitIndex = traits => {
+	if (!Array.isArray(traits))
+		return -1;
+
+	return traits.findIndex(t => {
+		const candidate = t && (t.trait ?? t);
+
+		return typeof(candidate) === 'function' && candidate.isTranspiledComponent;
+	});
+};
+
 const wrapWidgets = ({ ChildWgt, wgts = [] }) => {
 	const result = wgts.map((w, i) => {
 		if (!w.prps)
 			w.prps = {};
 
 		w.prps.indexInParent = i;
+
+		if (typeof(w.type) !== 'function') {
+			const componentTraitIndex = findComponentTraitIndex(w.traits);
+
+			if (componentTraitIndex > -1) {
+				const componentTrait = w.traits[componentTraitIndex];
+				const Type = componentTrait.trait ?? componentTrait;
+
+				//Any remaining traits stay as functional traits (the { type, traitPrps } shape the
+				// local applyTraits expects). String traits are left as-is for ChildWgt resolution.
+				const otherTraits = w.traits
+					.filter((_, idx) => idx !== componentTraitIndex)
+					.map(t => {
+						const candidate = t && (t.trait ?? t);
+
+						if (typeof(candidate) === 'function')
+							return { type: candidate, traitPrps: t?.traitPrps };
+
+						return t;
+					});
+
+				const { type, traits, prps, traitPrps, ...sysRest } = w;
+
+				const finalProps = {
+					...applyTraits({
+						sysPrps: {
+							id: w.id,
+							scope: w.scope,
+							relId: w.relId
+						},
+						prps: prps ?? {},
+						traits: otherTraits
+					}),
+					...sysRest,
+					traitPrps: componentTrait.traitPrps ?? {}
+				};
+
+				return (
+					<Type key={finalProps.id ?? w.id} {...finalProps} />
+				);
+			}
+		}
 
 		if (typeof(w.type) === 'function') {
 			const { type: Type, ...rest } = w;
