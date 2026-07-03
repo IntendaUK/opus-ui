@@ -7,6 +7,7 @@ import { runScript } from '../../components/scriptRunner/interface';
 import { getVariable, setVariable } from '../../components/scriptRunner/actions/variableActions';
 import createFlowAction from '../../components/scriptRunner/actions/createFlow';
 import morphConfig, { getMorphedValue } from '../../components/scriptRunner/helpers/morphConfig';
+import { resolveThemeAccessor } from '../managers/themeManager';
 
 const wrappedScriptHandlerKey = Symbol.for('opus-ui.wrappedScriptHandler');
 
@@ -50,6 +51,9 @@ export const wrapScriptHandlerInActions = ({ handler }) => {
 			//State-interface-class helpers for converted vanilla scripts:
 			getIdsWithTag: tag => stateManager.getWgtIdsWithTag(tag),
 			createFlow: config => createFlowAction(config, script, props),
+			//Live theme lookup — returns the RAW value (objects intact), unlike the
+			// package-time text splice which can only represent scalars.
+			theme: themePath => resolveThemeAccessor(`{theme.${themePath}}`),
 			//Evaluates one accessor string ({{state.x.y}}, ((sX.variable.z)), {{eval.…}},
 			// ||scope.relId|| …) with the exact declarative-script semantics, at call time.
 			morph: value => {
