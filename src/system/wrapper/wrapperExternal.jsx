@@ -14,7 +14,7 @@ import { runScript } from '../../components/scriptRunner/interface';
 import { disposeScripts } from '../../components/scriptRunner/interface';
 import { removeStyleTag } from './helpers/styleTags.js';
 import { Wrapper } from './wrapper';
-import { wrapScriptHandlerInActions } from './wrapScriptHandlerInActions';
+import { isWrappedScriptHandler, wrapScriptHandlerInActions } from './wrapScriptHandlerInActions';
 import { clone } from '../helpers';
 
 //Opus Helpers
@@ -118,11 +118,15 @@ const onRunFlowChecker = (cpnState, setCpnState, mounted) => {
 				if (!s.id)
 					s.id = getNextScriptId();
 
-				s.actions = wrapScriptHandlerInActions({
-					script: s,
-					ownerId: id,
-					handler
-				});
+				//Already-wrapped handlers (pre-hydrated elsewhere) are used as-is —
+				// re-wrapping breaks the (morphedConfig, script, props) call contract.
+				s.actions = isWrappedScriptHandler(handler)
+					? [{ handler }]
+					: wrapScriptHandlerInActions({
+						script: s,
+						ownerId: id,
+						handler
+					});
 
 				delete s.handler;
 			});

@@ -5,7 +5,7 @@ import { emit } from '../managers/eventManager';
 import { getPropertyContainer } from '../managers/propertyManager';
 import { stateManager } from '../managers/stateManager';
 import { getScopedId } from '../managers/scopeManager';
-import { wrapScriptHandlerInActions } from './wrapScriptHandlerInActions';
+import { isWrappedScriptHandler, wrapScriptHandlerInActions } from './wrapScriptHandlerInActions';
 
 //Components
 import ChildWgt from './childWgt';
@@ -345,12 +345,18 @@ export const registerScripts = async ({ id, scps }) => {
 		scps.map(async s => {
 			//Wrap a raw JS handler (registered from js rather than json) into actions.
 			// srcActions/srcAction take precedence and are hydrated below.
+			// An already-wrapped handler (a scp definition that travelled through
+			// hydrateActionTree inside another script's payload) is used as-is —
+			// re-wrapping would invoke it with the args object instead of
+			// (morphedConfig, script, props).
 			if (s.handler && !s.srcActions && !s.srcAction) {
-				s.actions = wrapScriptHandlerInActions({
-					script: s,
-					ownerId: id,
-					handler: s.handler
-				});
+				s.actions = isWrappedScriptHandler(s.handler)
+					? [{ handler: s.handler }]
+					: wrapScriptHandlerInActions({
+						script: s,
+						ownerId: id,
+						handler: s.handler
+					});
 				delete s.handler;
 			}
 

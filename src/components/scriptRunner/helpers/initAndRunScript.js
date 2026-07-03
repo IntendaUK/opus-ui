@@ -2,7 +2,7 @@
 
 //System
 import { getPropertyContainer } from '../../../system/managers/propertyManager';
-import { wrapScriptHandlerInActions } from '../../../system/wrapper/wrapScriptHandlerInActions';
+import { isWrappedScriptHandler, wrapScriptHandlerInActions } from '../../../system/wrapper/wrapScriptHandlerInActions';
 
 //System Helpers
 import { clone } from '../../../system/helpers';
@@ -31,11 +31,15 @@ const initAndRunScript = async ({
 	let script = originalScript;
 
 	if (script.handler) {
-		script.actions = wrapScriptHandlerInActions({
-			script,
-			ownerId: script.ownerId,
-			handler: script.handler
-		});
+		//Already-wrapped handlers are used as-is — re-wrapping breaks the
+		// (morphedConfig, script, props) call contract.
+		script.actions = isWrappedScriptHandler(script.handler)
+			? [{ handler: script.handler }]
+			: wrapScriptHandlerInActions({
+				script,
+				ownerId: script.ownerId,
+				handler: script.handler
+			});
 	} else {
 		if (scriptActions)
 			script.actions = scriptActions;
