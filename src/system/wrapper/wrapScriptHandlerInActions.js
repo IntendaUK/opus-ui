@@ -5,6 +5,7 @@ import { getScopedId } from '../managers/scopeManager';
 //Helpers
 import { runScript } from '../../components/scriptRunner/interface';
 import { getVariable, setVariable } from '../../components/scriptRunner/actions/variableActions';
+import createFlowAction from '../../components/scriptRunner/actions/createFlow';
 import morphConfig, { getMorphedValue } from '../../components/scriptRunner/helpers/morphConfig';
 
 const wrappedScriptHandlerKey = Symbol.for('opus-ui.wrappedScriptHandler');
@@ -46,6 +47,9 @@ export const wrapScriptHandlerInActions = ({ handler }) => {
 			ownerId,
 			scriptId,
 			resolveId: token => token.includes('||') ? getScopedId(token, ownerId) : token,
+			//State-interface-class helpers for converted vanilla scripts:
+			getIdsWithTag: tag => stateManager.getWgtIdsWithTag(tag),
+			createFlow: config => createFlowAction(config, script, props),
 			//Evaluates one accessor string ({{state.x.y}}, ((sX.variable.z)), {{eval.…}},
 			// ||scope.relId|| …) with the exact declarative-script semantics, at call time.
 			morph: value => {
