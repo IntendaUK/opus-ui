@@ -55,15 +55,30 @@ const cloneRecursive = function (o, newO) {
 };
 
 const clone = function (o) {
+	let result = o;
+
 	try {
 		const aLen = arguments.length;
-		for (let i = 1; i < aLen; i++)
-			cloneRecursive(arguments[i], o);
+		for (let i = 1; i < aLen; i++) {
+			const source = arguments[i];
+
+			//A function source (e.g. a component/trait the transpiler resolved to a direct module
+			// import) can't be merged into the object/array target `o`. cloneRecursive returns it
+			// as-is, but that return used to be discarded — so clone({}, fn) produced an empty {}
+			// and silently dropped the function. Keep the function itself in the output instead.
+			if (typeof source === 'function') {
+				result = source;
+
+				continue;
+			}
+
+			cloneRecursive(source, o);
+		}
 	} catch (e) {
 		throw e;
 	}
 
-	return o;
+	return result;
 };
 
 export default clone;
