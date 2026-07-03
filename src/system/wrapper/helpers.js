@@ -341,36 +341,39 @@ export const registerScripts = async ({ id, scps }) => {
 	if (!scps)
 		return;
 
-	const registerQueue = await Promise.all(
-		scps.map(async s => {
-			//Wrap a raw JS handler (registered from js rather than json) into actions.
-			// srcActions/srcAction take precedence and are hydrated below.
-			// An already-wrapped handler (a scp definition that travelled through
-			// hydrateActionTree inside another script's payload) is used as-is —
-			// re-wrapping would invoke it with the args object instead of
-			// (morphedConfig, script, props).
-			if (s.handler && !s.srcActions && !s.srcAction) {
-				s.actions = isWrappedScriptHandler(s.handler)
-					? [{ handler: s.handler }]
-					: wrapScriptHandlerInActions({
-						script: s,
-						ownerId: id,
-						handler: s.handler
-					});
-				delete s.handler;
-			}
+	const registerQueue = scps.map(s => {
+		//Wrap a raw JS handler (registered from js rather than json) into actions.
+		// srcActions/srcAction take precedence and are hydrated below.
+		// An already-wrapped handler (a scp definition that travelled through
+		// hydrateActionTree inside another script's payload) is used as-is —
+		// re-wrapping would invoke it with the args object instead of
+		// (morphedConfig, script, props).
+		if (s.handler && !s.srcActions && !s.srcAction) {
+			s.actions = isWrappedScriptHandler(s.handler)
+				? [{ handler: s.handler }]
+				: wrapScriptHandlerInActions({
+					script: s,
+					ownerId: id,
+					handler: s.handler
+				});
+			delete s.handler;
+		}
 
-			await hydrateSourceActions({
-				script: s,
-				ownerId: id
-			});
+		//Triggers must hook the moment the component registers — matching the
+		// declarative app's timing, so no state transition fired during module
+		// loading is ever missed. Hydration (the async data-URL import) runs in
+		// parallel; initAndRunScript awaits the promise before the script's
+		// first execution (a no-op afterwards).
+		const hydration = hasSourceActionKey(s)
+			? hydrateSourceActions({ script: s, ownerId: id })
+			: null;
 
-			return {
-				id,
-				script: s
-			};
-		})
-	);
+		return {
+			id,
+			script: s,
+			hydration
+		};
+	});
 
 	await registerScriptsBase(registerQueue);
 };

@@ -30,6 +30,11 @@ const initAndRunScript = async ({
 
 	let script = originalScript;
 
+	//Converted scripts hydrate in parallel with trigger registration — make sure
+	// the handler module has landed before running (no-op after the first run).
+	if (script.__hydration)
+		await script.__hydration;
+
 	if (script.handler) {
 		//Already-wrapped handlers are used as-is — re-wrapping breaks the
 		// (morphedConfig, script, props) call contract.
