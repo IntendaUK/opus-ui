@@ -33,7 +33,7 @@ export const runScript = async (props, script, actions, isRootScript) => {
 
 	if (script.suite) {
 		setupSuiteActions({
-			ownerid: script.ownerId,
+			ownerId: script.ownerId,
 			script
 		});
 
@@ -120,7 +120,7 @@ export const runScriptSync = (props, script, actions) => {
 
 	if (script.suite) {
 		setupSuiteActions({
-			ownerid: script.ownerId,
+			ownerId: script.ownerId,
 			script
 		});
 

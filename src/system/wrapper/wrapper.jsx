@@ -134,12 +134,28 @@ const PureWrapper = React.memo(props => <StandardWrapper {...props} />);
 const Wrapper = props => {
 	const { mda } = props;
 
-	//A static component's only "dynamic" trait is a missing id (everything else that would
-	// force the dynamic wrapper is absent by definition). Give it a generated id so it takes
-	// the lighter WrapperInner path and skips WrapperDynamic's clone / trait / blueprint /
-	// source-action machinery entirely.
-	if (mda.static && !mda.id)
-		mda.id = generateGuid();
+	//A static component skips WrapperDynamic entirely - including the whole-subtree pass
+	// (recurseMutateMda) that gives every node an id. So we id it here: its only "dynamic"
+	// trait is a missing id, and giving it one keeps it on the lighter WrapperInner path,
+	// skipping WrapperDynamic's clone / trait / blueprint / source-action machinery.
+	//
+	// We also id its direct children, because this component renders them (containers key each
+	// child by its id via wrapWidgets) before those children mount and could id themselves -
+	// without an id they'd be keyed as `undefined`. Each static child repeats this for its own
+	// children when it dispatches, so the whole static region stays one level ahead of render.
+	// Ids are generated here, per render-instance, so a reused trait's static internals get
+	// distinct ids in every instantiation (the build-time tree can't, as it is shared).
+	if (mda.static) {
+		if (!mda.id)
+			mda.id = generateGuid();
+
+		if (Array.isArray(mda.wgts)) {
+			for (const w of mda.wgts) {
+				if (w && typeof(w) === 'object' && !w.id)
+					w.id = generateGuid();
+			}
+		}
+	}
 
 	if (mda.pure)
 		return <PureWrapper {...props} />;

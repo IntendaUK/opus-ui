@@ -85,9 +85,8 @@ export const registerScripts = async scripts => {
 
 export const runScript = originalScript => {
 	if (Array.isArray(originalScript)) {
-		originalScript.forEach(o => runScript(o));
-
-		return;
+		//Returns a promise so JS source actions can await sequential completion.
+		return Promise.all(originalScript.map(o => runScript(o)));
 	}
 
 	const script = clone({}, originalScript);
@@ -98,7 +97,7 @@ export const runScript = originalScript => {
 	const { actions, blueprint, traits } = script;
 
 	if (blueprint)
-		runBlueprintScript(props, script);
+		return runBlueprintScript(props, script);
 	else if (traits) {
 		traits.forEach(({ trait }) => {
 			const mdaTrait = getMdaHelper({
@@ -114,9 +113,9 @@ export const runScript = originalScript => {
 			Object.assign(script, mdaFinal);
 		});
 
-		runScriptBase(props, script, script.actions, true);
+		return runScriptBase(props, script, script.actions, true);
 	} else
-		runScriptBase(props, script, actions, true);
+		return runScriptBase(props, script, actions, true);
 };
 
 export const configure = _props => {

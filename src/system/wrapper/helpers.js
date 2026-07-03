@@ -4,6 +4,7 @@
 import { emit } from '../managers/eventManager';
 import { getPropertyContainer } from '../managers/propertyManager';
 import { stateManager } from '../managers/stateManager';
+import { getScopedId } from '../managers/scopeManager';
 import { wrapScriptHandlerInActions } from './wrapScriptHandlerInActions';
 
 //Components
@@ -58,8 +59,22 @@ export const buildProps = (wgts, setState, id) => {
 	const props = getPropertyContainer(id);
 	props.id = id;
 	props.setState = setState;
-	props.setWgtState = stateManager.setWgtState;
-	props.getWgtState = stateManager.getWgtState;
+	//setWgtState/getWgtState resolve ||scope.relId|| tokens automatically, rooted
+	// at THIS component (closest enclosing scope owner) — the same semantics as
+	// declarative script targets. Raw stateManager methods expect resolved ids and
+	// would silently no-op on tokens.
+	props.setWgtState = (idTarget, newState, source) => {
+		if (typeof (idTarget) === 'string' && idTarget.includes('||'))
+			idTarget = getScopedId(idTarget, id);
+
+		return stateManager.setWgtState(idTarget, newState, source);
+	};
+	props.getWgtState = idSource => {
+		if (typeof (idSource) === 'string' && idSource.includes('||'))
+			idSource = getScopedId(idSource, id);
+
+		return stateManager.getWgtState(idSource);
+	};
 	props.emit = emit.bind(null, id);
 	props.getHandler = (fn, ...rest) => fn.bind(null, props, ...rest);
 	props.ChildWgt = ChildWgt.bind(null, id);
