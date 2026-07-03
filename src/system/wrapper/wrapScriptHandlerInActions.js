@@ -1,6 +1,6 @@
 //System
 import { stateManager } from '../managers/stateManager';
-import { getScopedId } from '../managers/scopeManager';
+import { getScopedId, getAllScopedIds } from '../managers/scopeManager';
 
 //Helpers
 import { runScript } from '../../components/scriptRunner/interface';
@@ -69,6 +69,9 @@ export const wrapScriptHandlerInActions = ({ handler, script: wrapScript, ownerI
 			ownerId,
 			scriptId,
 			resolveId: token => token.includes('||') ? getScopedId(token, ownerId) : token,
+			//resolveScopedId action semantics: ALL matching ids as an array
+			// (consumers drill .0), anchored at anchorId ?? ownerId.
+			resolveIds: (token, anchorId) => getAllScopedIds(token, anchorId ?? ownerId),
 			//State-interface-class helpers for converted vanilla scripts:
 			getIdsWithTag: tag => stateManager.getWgtIdsWithTag(tag),
 			createFlow: config => createFlowAction(config, script, props),
