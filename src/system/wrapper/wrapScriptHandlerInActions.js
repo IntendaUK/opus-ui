@@ -13,8 +13,29 @@ const wrappedScriptHandlerKey = Symbol.for('opus-ui.wrappedScriptHandler');
 
 export const isWrappedScriptHandler = handler => handler?.[wrappedScriptHandlerKey] === true;
 
-export const wrapScriptHandlerInActions = ({ handler }) => {
+export const wrapScriptHandlerInActions = ({ handler, script: wrapScript, ownerId: wrapOwnerId }) => {
+	//[opus-diag] TEMPORARY logging — remove once the double-wrap source is found.
+	if (isWrappedScriptHandler(handler)) {
+		console.error('[opus-diag] wrapScriptHandlerInActions received an ALREADY-WRAPPED handler (double wrap)', {
+			scriptId: wrapScript?.id,
+			ownerId: wrapOwnerId ?? wrapScript?.ownerId,
+			creationStack: new Error().stack
+		});
+	}
+
 	const wrappedHandler = (morphedConfig, script, props) => {
+		//[opus-diag] TEMPORARY logging — remove once the bad invocation is found.
+		if (!props || !script) {
+			console.error('[opus-diag] wrapped script handler invoked with missing script/props', {
+				scriptMissing: script === undefined,
+				propsMissing: props === undefined,
+				scriptId: script?.id,
+				ownerId: script?.ownerId,
+				firstArgKeys: morphedConfig && typeof morphedConfig === 'object' ? Object.keys(morphedConfig) : morphedConfig,
+				invocationStack: new Error().stack
+			});
+		}
+
 		const { state: scriptRunnerState } = props;
 		const { id: scriptId, ownerId } = script;
 		const handlerConfig = Object.prototype.hasOwnProperty.call(morphedConfig, 'config') && morphedConfig.config !== undefined
