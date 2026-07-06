@@ -40,9 +40,30 @@ export const removeDisposer = (id, disposer) => {
 };
 
 export const registerScripts = async scripts => {
-	for (let { id, script: originalScript } of scripts) {
+	for (let { id, script: originalScript, hydration } of scripts) {
 		const script = clone({}, originalScript);
 		script.ownerId = id;
+
+		if (hydration) {
+			/*
+				Source actions hydrate in PARALLEL with trigger registration (the
+				wrapper kicks the import off and passes the promise here) so triggers
+				hook at declarative timing. The clone above snapshotted the script
+				BEFORE hydration mutated the original, so when the import lands we
+				copy the hydrated actions across. Non-enumerable: clone() must never
+				try to deep-copy the promise. initAndRunScript awaits this before the
+				script's first run.
+			*/
+			Object.defineProperty(script, '__hydration', {
+				configurable: true,
+				value: hydration.then(() => {
+					script.actions = originalScript.actions;
+					delete script.srcActions;
+					delete script.srcAction;
+					delete script.__hydration;
+				})
+			});
+		}
 
 		if (script.concurrency !== undefined && script.concurrency.pool === undefined)
 			script.concurrency.pool = script.id;
@@ -85,9 +106,8 @@ export const registerScripts = async scripts => {
 
 export const runScript = originalScript => {
 	if (Array.isArray(originalScript)) {
-		originalScript.forEach(o => runScript(o));
-
-		return;
+		//Returns a promise so JS source actions can await sequential completion.
+		return Promise.all(originalScript.map(o => runScript(o)));
 	}
 
 	const script = clone({}, originalScript);
@@ -98,7 +118,7 @@ export const runScript = originalScript => {
 	const { actions, blueprint, traits } = script;
 
 	if (blueprint)
-		runBlueprintScript(props, script);
+		return runBlueprintScript(props, script);
 	else if (traits) {
 		traits.forEach(({ trait }) => {
 			const mdaTrait = getMdaHelper({
@@ -114,9 +134,9 @@ export const runScript = originalScript => {
 			Object.assign(script, mdaFinal);
 		});
 
-		runScriptBase(props, script, script.actions, true);
+		return runScriptBase(props, script, script.actions, true);
 	} else
-		runScriptBase(props, script, actions, true);
+		return runScriptBase(props, script, actions, true);
 };
 
 export const configure = _props => {

@@ -4,7 +4,8 @@
 import { emit } from '../managers/eventManager';
 import { getPropertyContainer } from '../managers/propertyManager';
 import { stateManager } from '../managers/stateManager';
-import { wrapScriptHandlerInActions } from './wrapScriptHandlerInActions';
+import { getScopedId } from '../managers/scopeManager';
+import { isWrappedScriptHandler, wrapScriptHandlerInActions } from './wrapScriptHandlerInActions';
 
 //Components
 import ChildWgt from './childWgt';
@@ -58,8 +59,22 @@ export const buildProps = (wgts, setState, id) => {
 	const props = getPropertyContainer(id);
 	props.id = id;
 	props.setState = setState;
-	props.setWgtState = stateManager.setWgtState;
-	props.getWgtState = stateManager.getWgtState;
+	//setWgtState/getWgtState resolve ||scope.relId|| tokens automatically, rooted
+	// at THIS component (closest enclosing scope owner) — the same semantics as
+	// declarative script targets. Raw stateManager methods expect resolved ids and
+	// would silently no-op on tokens.
+	props.setWgtState = (idTarget, newState, source) => {
+		if (typeof (idTarget) === 'string' && idTarget.includes('||'))
+			idTarget = getScopedId(idTarget, id);
+
+		return stateManager.setWgtState(idTarget, newState, source);
+	};
+	props.getWgtState = idSource => {
+		if (typeof (idSource) === 'string' && idSource.includes('||'))
+			idSource = getScopedId(idSource, id);
+
+		return stateManager.getWgtState(idSource);
+	};
 	props.emit = emit.bind(null, id);
 	props.getHandler = (fn, ...rest) => fn.bind(null, props, ...rest);
 	props.ChildWgt = ChildWgt.bind(null, id);
@@ -326,30 +341,39 @@ export const registerScripts = async ({ id, scps }) => {
 	if (!scps)
 		return;
 
-	const registerQueue = await Promise.all(
-		scps.map(async s => {
-			//Wrap a raw JS handler (registered from js rather than json) into actions.
-			// srcActions/srcAction take precedence and are hydrated below.
-			if (s.handler && !s.srcActions && !s.srcAction) {
-				s.actions = wrapScriptHandlerInActions({
+	const registerQueue = scps.map(s => {
+		//Wrap a raw JS handler (registered from js rather than json) into actions.
+		// srcActions/srcAction take precedence and are hydrated below.
+		// An already-wrapped handler (a scp definition that travelled through
+		// hydrateActionTree inside another script's payload) is used as-is —
+		// re-wrapping would invoke it with the args object instead of
+		// (morphedConfig, script, props).
+		if (s.handler && !s.srcActions && !s.srcAction) {
+			s.actions = isWrappedScriptHandler(s.handler)
+				? [{ handler: s.handler }]
+				: wrapScriptHandlerInActions({
 					script: s,
 					ownerId: id,
 					handler: s.handler
 				});
-				delete s.handler;
-			}
+			delete s.handler;
+		}
 
-			await hydrateSourceActions({
-				script: s,
-				ownerId: id
-			});
+		//Triggers must hook the moment the component registers — matching the
+		// declarative app's timing, so no state transition fired during module
+		// loading is ever missed. Hydration (the async data-URL import) runs in
+		// parallel; initAndRunScript awaits the promise before the script's
+		// first execution (a no-op afterwards).
+		const hydration = hasSourceActionKey(s)
+			? hydrateSourceActions({ script: s, ownerId: id })
+			: null;
 
-			return {
-				id,
-				script: s
-			};
-		})
-	);
+		return {
+			id,
+			script: s,
+			hydration
+		};
+	});
 
 	await registerScriptsBase(registerQueue);
 };
