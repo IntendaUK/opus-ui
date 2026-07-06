@@ -56,12 +56,30 @@ const PopoverEntry = ({ mda, popoverRef }) => {
 		zIndex: popoverZIndex
 	};
 
+	//Popover metadata (e.g. tooltipMda) is rendered here. In a transpiled app its `type` is the
+	// component *function* (e.g. ContainerSimple) rather than a registry string; Wrapper only resolves
+	// string types, so render a function type directly — the component itself builds a string-typed
+	// Wrapper internally. String types keep going through Wrapper as before.
+	const Content = mda.type;
+	const content = (typeof Content === 'function')
+		? (
+			<Content
+				id={mda.id}
+				scope={mda.scope}
+				relId={mda.relId}
+				parentId={mda.parentId}
+				prps={mda.prps}
+				wgts={mda.wgts}
+			/>
+		)
+		: <Wrapper mda={mda} />;
+
 	const el = (
 		<div
 			ref={refs.setFloating}
 			style={style}
 		>
-			<Wrapper mda={mda} />
+			{content}
 		</div>
 	);
 

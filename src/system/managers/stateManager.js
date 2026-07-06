@@ -121,6 +121,7 @@ const setAll = newState => {
 
 const setWgtState = (id, newState, source) => {
 	const currentState = appState.get(id);
+
 	if (!currentState)
 		return null;
 

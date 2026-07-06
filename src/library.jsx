@@ -54,7 +54,7 @@ export default Opus;
 export { default as applyThemesToMdaPackage } from './app/components/helpers/applyThemesToMdaPackage';
 export { buildThemes } from './app/components/themeLoader';
 export { getThemeValue, getThemes } from './system/managers/themeManager';
-export { clone, getDeepProperty, generateGuid, generateClassNames, spliceWhere } from './system/helpers';
+export { clone, cloneNoOverrideNoCopy, getDeepProperty, generateGuid, generateClassNames, spliceWhere } from './system/helpers';
 export { register as registerFlow, reset as resetFlowManager } from './system/managers/flowManager/index';
 export { default as mapToColor } from './props/cssMaps/mapToColor';
 export { default as mapToSize } from './props/cssMaps/mapToSize';
@@ -71,6 +71,7 @@ export { registerComponentTypes } from './library/externalComponentTypes';
 export { registerExternalDataLocations } from './library/externalDataLocations';
 export { default as registerSuite } from './system/managers/suiteManager/register';
 export { default as wrapWidgets } from './components/wrapWidgets';
+export { default as renderWgts } from './components/renderWgts';
 export { reloadComponentsFromPath } from './system/managers/reloadManager';
 export { default as isConditionMet } from './system/managers/traitManager/isConditionMet';
 

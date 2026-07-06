@@ -66,15 +66,28 @@ const cloneRecursiveNoOverride = function (o, newO) {
 };
 
 const cloneNoOverride = function (o) {
+	let result = o;
+
 	try {
 		const aLen = arguments.length;
-		for (let i = 1; i < aLen; i++)
-			cloneRecursiveNoOverride(arguments[i], o);
+		for (let i = 1; i < aLen; i++) {
+			const source = arguments[i];
+
+			//A function source can't be merged into the object/array target `o`; keep the function
+			// itself in the output rather than discarding it and returning an empty {} (see clone.js).
+			if (typeof source === 'function') {
+				result = source;
+
+				continue;
+			}
+
+			cloneRecursiveNoOverride(source, o);
+		}
 	} catch (e) {
 		throw e;
 	}
 
-	return o;
+	return result;
 };
 
 export default cloneNoOverride;

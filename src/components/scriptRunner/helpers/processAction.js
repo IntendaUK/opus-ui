@@ -61,6 +61,12 @@ export const processAction = async (config, script, props) => {
 		if (morphedConfig.args)
 			morphedConfig.args = morphConfig(morphedConfig.args, script, props, false, true, actionTrackers);
 
+		//Handlers receive their parameters under config, which the top-level morph descends into with
+		// drilling off (the key is not '^'-prefixed). Re-morph it with drilling on so bare wildcards
+		// like ((state.app.token)) inside config resolve, mirroring the args handling above.
+		if (morphedConfig.config)
+			morphedConfig.config = morphConfig(morphedConfig.config, script, props, false, true, actionTrackers);
+
 		const handlerToRun = isWrappedScriptHandler(handler)
 			? handler
 			: wrapScriptHandlerInActions({ handler })[0].handler;

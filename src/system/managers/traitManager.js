@@ -11,6 +11,7 @@ import { applyPrpDefaults,
 
 //Helpers
 import getTrait from './traitManager/getTrait';
+import getTranspiledTraitFn from './traitManager/getTranspiledTraitFn';
 import isConditionMet from './traitManager/isConditionMet';
 
 //Helpers
@@ -85,7 +86,10 @@ export const combineTraitAndMda = (mda, trait, traitPath) => {
 		if (!mda.prps.traitMappings)
 			mda.prps.traitMappings = [];
 
-		if (!mda.prps.traitMappings.includes(`dashboard/${traitPath}.json`))
+		//traitMappings tracks the JSON trait files a component uses (for dev hot-reload). Only a
+		// path-string trait has such a file; a directly-imported trait module (function/object the
+		// transpiler inlined) has none, so skip it rather than push a bogus `dashboard/[object Object].json`.
+		if (typeof(traitPath) === 'string' && !mda.prps.traitMappings.includes(`dashboard/${traitPath}.json`))
 			mda.prps.traitMappings.push(`dashboard/${traitPath}.json`);
 
 		delete trait?.prps?.path;
@@ -151,6 +155,29 @@ export const applyTraits = mda => {
 						continue;
 				}
 
+				//A trait the transpiler resolved to a direct module import is a FUNCTION, not a path
+				// string to look up in app.json. The transpiler emits it as either { trait: fn } or
+				// { type: fn }. A FUNCTIONAL trait is called with its trait props and the returned
+				// config merged in (mirroring wrapWidgets/applyNodeTraits), so it applies without any
+				// JSON resolution. A COMPONENT trait (tagged isTranspiledComponent) is not mergeable
+				// trait MDA — it is rendered directly when its widget is wrapped, so skip it here.
+				const transpiledTraitFn = getTranspiledTraitFn(t);
+
+				if (transpiledTraitFn) {
+					if (!transpiledTraitFn.isTranspiledComponent) {
+						const functionalTraitMda = transpiledTraitFn(traitPrps) || {};
+
+						applyTraits(functionalTraitMda);
+
+						if (auth)
+							deleteAuthFieldsFromMda(mda, auth);
+
+						combineTraitAndMda(mda, functionalTraitMda, transpiledTraitFn.name || 'transpiledTrait');
+					}
+
+					continue;
+				}
+
 				let clonedTraitMda = trait;
 
 				//Don't try to fetch it if it's an object already
@@ -160,6 +187,23 @@ export const applyTraits = mda => {
 						return;
 
 					clonedTraitMda = getTrait(trait);
+				} else if (typeof(trait) === 'object' && !!trait && Array.isArray(trait.traitArray)) {
+					//A directly-imported SPREAD trait referenced as a BARE array element — i.e. the
+					// transpiler rewrote `traits: ["@…/spreadTrait"]` into `traits: [<module>]`, where
+					// <module> is the { acceptPrps, traitArray } object (no surrounding `trait:` key, so
+					// `trait` defaulted to the element itself). getTranspiledTraitFn returns null for it
+					// (it is neither a function nor { trait/type: fn }), so without this it would fall
+					// through to clone({}, trait.type) — losing the traitArray entirely. Clone it directly
+					// so combineTraitAndMda copies the traitArray onto mda and the surrounding
+					// applyTraitsToArray can splice those actions in (same flow as the { trait: <module> }
+					// shape below).
+					clonedTraitMda = clone({}, trait);
+				} else if (t.trait && typeof(t.trait) === 'object') {
+					//A directly-imported trait module referenced as { trait: <module> } — e.g. a spread
+					// trait { acceptPrps, traitArray } the transpiler rewrote from a path string into an
+					// import. Apply the imported object directly instead of resolving it from app.json;
+					// the same applyTraitProps + applyTraitsToArray (traitArray splice) flow then runs.
+					clonedTraitMda = clone({}, t.trait);
 				} else
 					clonedTraitMda = clone({}, trait.type);
 

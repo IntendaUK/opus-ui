@@ -104,7 +104,7 @@ const onRunFlowChecker = (cpnState, setCpnState, mounted) => {
 				const { handler } = s;
 
 				if (!s.triggers) {
-					s.triggers = [{ event: 'onMount ' }];
+					s.triggers = [{ event: 'onMount' }];
 				}
 
 				s.triggers.forEach(t => {

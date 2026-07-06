@@ -24,7 +24,28 @@ export const getFunction = name => {
 };
 
 export const getFunctionResult = ({ name, args }) => {
-	let scp = functions[name].fn;
+	const fn = functions[name].fn;
+
+	//A transpiled function is emitted as a real function that closes over its own imports (e.g. trait
+	// modules), rather than an eval'd string. Call it directly with the args object so those imports
+	// resolve from the function's own scope — no string substitution / eval, no app.json lookup.
+	if (typeof(fn) === 'function') {
+		try {
+			return fn(args);
+		} catch (e) {
+			if (opusConfig.env === 'development') {
+				//eslint-disable-next-line no-console
+				console.error({ msg: 'Function crashed', error: e, args: { module: name, args } });
+			} else {
+				/* eslint-disable-next-line no-console */
+				console.error('Function crashed');
+			}
+
+			return;
+		}
+	}
+
+	let scp = fn;
 
 	Object.entries(args).forEach(([k, v], i) => {
 		scp = scp

@@ -84,10 +84,17 @@ export const onInputMdaChange = ({ setState, state: { inputMda, ctrlTab, autoTab
 };
 
 const onValueCleared = (
-	{ setState, state: { mda = [], autoTab, ctrlTab, oldValue } }
+	{ setState, state: { mda = [], autoTab, ctrlTab, oldValue, mdaIsJsx } }
 ) => {
 	if (!oldValue)
 		return;
+
+	//A JSX dashboard is stored as a single component, not a tab array; clear it wholesale.
+	if (mdaIsJsx) {
+		setState({ deleteKeys: ['mda'], mdaIsJsx: false });
+
+		return;
+	}
 
 	if (autoTab || ctrlTab) {
 		spliceWhere(mda, ({ value }) => value === oldValue);
@@ -119,7 +126,21 @@ export const onValueChange = (props, ctrlDown) => {
 			try {
 				const importPath = value.endsWith('.jsx') ? value : `${value}.jsx`;
 				const moduleUrl = `/src/dashboard/${importPath}`;
-				const module = await import(/* @vite-ignore */ moduleUrl);
+
+				//The consuming app exposes its JSX dashboards as a build-time glob map
+				//(path -> lazy import) on globalThis. This is required for a bundled/production
+				//build, where the raw /src/*.jsx files are not served and a runtime dynamic
+				//import of moduleUrl would 404. The glob lives in the app (not here) because
+				//import.meta.glob resolves against the project root that compiles it, and this
+				//library is consumed as a prebuilt bundle. Fall back to the direct dynamic
+				//import for the dev server / apps that do not register a map.
+				const registry = (typeof globalThis !== 'undefined' && globalThis.__opusJsxModules) || null;
+				const loader = registry
+					&& (registry[moduleUrl] || registry[moduleUrl.replace(/\/\.\//g, '/')]);
+
+				const module = loader
+					? await loader()
+					: await import(/* @vite-ignore */ moduleUrl);
 
 				if (!module || !module.default)
 					throw new Error('JSX module missing default export');
@@ -152,7 +173,11 @@ export const onValueChange = (props, ctrlDown) => {
 	})();
 };
 
-export const onMdaChanged = ({ setState, setWgtState, state: { mda = [] } }) => {
+export const onMdaChanged = ({ setState, setWgtState, state: { mda = [], mdaIsJsx } }) => {
+	//JSX dashboards are a single component rendered directly, not a metadata tab array.
+	if (mdaIsJsx)
+		return;
+
 	const tabsMda = mda.map(({ mda: m }, i) => {
 		const res = {
 			id: m.id + '_tab',
