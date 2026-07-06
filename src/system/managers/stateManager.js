@@ -10,7 +10,6 @@ import sysSetWgtState from './stateManager/setWgtState';
 
 //Internals
 const appState = new Map();
-window.appState = appState;
 
 //A list of component id's and the file path from where it was built
 const componentPathMap = new Map();
