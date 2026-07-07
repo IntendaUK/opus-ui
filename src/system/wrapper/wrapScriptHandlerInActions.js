@@ -5,6 +5,7 @@ import { getScopedId, getAllScopedIds } from '../managers/scopeManager';
 //Helpers
 import { runScript } from '../../components/scriptRunner/interface';
 import { getVariable, setVariable } from '../../components/scriptRunner/actions/variableActions';
+import { getFunctionResult } from '../../components/scriptRunner/functions/functionManager';
 import createFlowAction from '../../components/scriptRunner/actions/createFlow';
 import morphConfig, { getMorphedValue } from '../../components/scriptRunner/helpers/morphConfig';
 import { resolveThemeAccessor } from '../managers/themeManager';
@@ -53,18 +54,21 @@ export const wrapScriptHandlerInActions = ({ handler, script: wrapScript, ownerI
 			? morphedConfig.config
 			: morphedConfig;
 
-		const getVariableHelper = variableName => {
+		//Optional scope: foreign-scope variable ops (setVariable with an explicit
+		// scope config) write/read another script's store entries — same engine
+		// semantics as the declarative actions.
+		const getVariableHelper = (variableName, scope) => {
 			const res = getVariable({
-				scope: scriptId,
+				scope: scope ?? scriptId,
 				name: variableName
 			}, script, { state: scriptRunnerState });
 
 			return res;
 		};
 
-		const setVariableHelper = (variableName, value) => {
+		const setVariableHelper = (variableName, value, scope) => {
 			setVariable({
-				scope: scriptId,
+				scope: scope ?? scriptId,
 				name: variableName,
 				value
 			}, script, { state: scriptRunnerState });
@@ -89,6 +93,9 @@ export const wrapScriptHandlerInActions = ({ handler, script: wrapScript, ownerI
 			//Live theme lookup — returns the RAW value (objects intact), unlike the
 			// package-time text splice which can only represent scalars.
 			theme: themePath => resolveThemeAccessor(`{theme.${themePath}}`),
+			//Theme-function invocation ({{fn.name}} accessors): args arrive already
+			// morphed by the generated code, mirroring morphConfig's fn branch.
+			fn: (name, args) => getFunctionResult({ name, args }),
 			//Evaluates one accessor string ({{state.x.y}}, ((sX.variable.z)), {{eval.…}},
 			// ||scope.relId|| …) with the exact declarative-script semantics, at call time.
 			morph: value => {
