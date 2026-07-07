@@ -13,6 +13,17 @@ const wrappedScriptHandlerKey = Symbol.for('opus-ui.wrappedScriptHandler');
 
 export const isWrappedScriptHandler = handler => handler?.[wrappedScriptHandlerKey] === true;
 
+//Marks a handler as already conforming to the (morphedConfig, script, props) call signature so
+// processAction invokes it directly instead of routing it through the vanilla-script adapter.
+// Used by suites, whose bound handlers keep the legacy positional (params, a, { args }, c) contract.
+export const markAsWrappedScriptHandler = handler => {
+	Object.defineProperty(handler, wrappedScriptHandlerKey, {
+		value: true
+	});
+
+	return handler;
+};
+
 export const wrapScriptHandlerInActions = ({ handler, script: wrapScript, ownerId: wrapOwnerId }) => {
 	//[opus-diag] TEMPORARY logging — remove once the double-wrap source is found.
 	if (isWrappedScriptHandler(handler)) {

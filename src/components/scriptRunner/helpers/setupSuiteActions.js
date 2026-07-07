@@ -5,6 +5,7 @@ import { stateManager } from '../../../system/managers/stateManager';
 import { getScopedId } from '../../../system/managers/scopeManager';
 import { get as getSuite } from '../../../system/managers/suiteManager/store';
 import { get as getSuiteData, set as setSuiteData } from '../../../system/managers/suiteManager/data';
+import { markAsWrappedScriptHandler } from '../../../system/wrapper/wrapScriptHandlerInActions';
 
 //Helper
 const setupSuiteActions = ({ ownerId, script }) => {
@@ -38,6 +39,11 @@ const setupSuiteActions = ({ ownerId, script }) => {
 		getData: getSuiteData.bind(null, ownerId),
 		setData: setSuiteData.bind(null, ownerId)
 	});
+
+	//Suites use the legacy positional handler signature (params via bind, then morphedConfig, script,
+	// props). Mark the bound handler so processAction calls it directly rather than re-wrapping it in
+	// the single-object vanilla-script convention, which would drop the { args }/ctx positional params.
+	markAsWrappedScriptHandler(boundHandler);
 
 	script.actions = [{
 		handler: boundHandler,
