@@ -38,7 +38,7 @@ const onFixPopperPosition = (container, id, update) => {
 //This is the last component in the 'chain'. It finally renders the actual popoverMda and
 // uses the popoverRef for positioning purposes (through the popper library)
 const PopoverEntry = ({ mda, popoverRef }) => {
-	const { position, popoverContainer = 'POPOVERS', popoverZIndex = 1 } = mda;
+	const { position, popoverContainer = 'POPOVERS', popoverZIndex = 1, pointerEvents } = mda;
 
 	const renderInEl = document.getElementById(popoverContainer);
 
@@ -55,6 +55,12 @@ const PopoverEntry = ({ mda, popoverRef }) => {
 		...floatingStyles,
 		zIndex: popoverZIndex
 	};
+
+	//When the mda opts in (tooltips do, via buildTooltip), the rendered popover must not be a
+	// hit-test target, so a popover that overlaps the cursor can't steal the pointer from its
+	// owner and cause a hover flicker loop in Chrome (PF-6911). Interactive popovers omit this.
+	if (pointerEvents)
+		style.pointerEvents = pointerEvents;
 
 	const el = (
 		<div
