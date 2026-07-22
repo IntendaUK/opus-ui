@@ -78,11 +78,9 @@ const findComponentTraitIndex = traits => {
 };
 
 const wrapWidgets = ({ ChildWgt, wgts = [] }) => {
-	const result = wgts.map((w, i) => {
+	const result = wgts.map(w => {
 		if (!w.prps)
 			w.prps = {};
-
-		w.prps.indexInParent = i;
 
 		if (typeof(w.type) !== 'function') {
 			const componentTraitIndex = findComponentTraitIndex(w.traits);
