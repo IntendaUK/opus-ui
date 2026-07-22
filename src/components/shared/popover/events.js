@@ -19,7 +19,13 @@ const buildTooltip = ({ id, state }, newState) => {
 		position: tooltipPosition,
 		blueprint: tooltipBlueprint,
 		blueprintPrps: { tooltip },
-		popoverZIndex: tooltipZIndex
+		popoverZIndex: tooltipZIndex,
+		//Tooltips are purely informational: the rendered popover must never be a hit-test target.
+		// Otherwise a tooltip that lands under the cursor (e.g. a left-positioned tooltip when the
+		// pointer is on the owner's left edge) steals the pointer from the owner, firing mouseleave
+		// -> the tooltip hides -> mouseover -> it re-shows: a hover flicker loop in Chrome (PF-6911).
+		// pointer-events:none lets the pointer fall through to the owner. Interactive popovers omit it.
+		pointerEvents: 'none'
 	};
 
 	if (tooltipMda)
