@@ -3,6 +3,10 @@
 	"version": "3.1.6",
 	"type": "module",
 	"homepage": "https://opus-ui.com",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/IntendaUK/opus-ui"
+	},
 	"files": [
 		"dist",
 		"lspconfig.json"
