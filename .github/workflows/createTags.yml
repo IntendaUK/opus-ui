@@ -5,6 +5,10 @@ on:
     branches:
       - main
 
+permissions:
+  contents: write
+  id-token: write
+
 jobs:
   build-publish-tag:
     runs-on: ubuntu-latest
@@ -12,17 +16,17 @@ jobs:
     steps:
       # 1) Check out the full history so we can push tags later
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
-      # 2) Set up Node.js (latest LTS) and configure npm to use the official registry
+      # 2) Set up Node.js and configure npm to use the official registry
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: 'lts/*'
+          node-version: '24'
           registry-url: 'https://registry.npmjs.org'
-          always-auth: true
+          package-manager-cache: false
 
       # 3) Read version from package.json into an environment variable
       - name: Get package version
@@ -50,8 +54,6 @@ jobs:
 
       # 8) Publish to npm (will fail the job if publish fails)
       - name: Publish to npm
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           echo "Publishing version $VERSION to npm..."
           npm publish
