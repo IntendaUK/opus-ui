@@ -1,4 +1,4 @@
-name: Test, Build, Publish, and Tag
+name: Test, Build, Publish, Tag, and Dispatch
 
 on:
   push:
@@ -12,6 +12,8 @@ permissions:
 jobs:
   build-publish-tag:
     runs-on: ubuntu-latest
+    outputs:
+      package-version: ${{ steps.get_version.outputs.version }}
 
     steps:
       # 1) Check out the full history so we can push tags later
@@ -34,6 +36,7 @@ jobs:
         run: |
           VERSION=$(node -p "require('./package.json').version")
           echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "Detected version: $VERSION"
 
       # 4) Install dependencies
@@ -85,3 +88,26 @@ jobs:
             git tag -a "v${PACKAGE_VERSION}" -m "v${PACKAGE_VERSION}"
             git push origin "v${PACKAGE_VERSION}"
           fi
+
+  dispatch-remote:
+    needs: build-publish-tag
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        repo:
+          - IntendaUK/opus-ui-components
+
+    steps:
+      - name: Dispatch CI to ${{ matrix.repo }}
+        uses: peter-evans/repository-dispatch@v4
+        with:
+          token: ${{ secrets.PAT_REMOTE_DISPATCH }}
+          repository: ${{ matrix.repo }}
+          event-type: opus-ui-tagged
+          client-payload: |
+            {
+              "ref": "${{ github.ref }}",
+              "sha": "${{ github.sha }}",
+              "target_branch": "main",
+              "version": "${{ needs.build-publish-tag.outputs.package-version }}"
+            }
