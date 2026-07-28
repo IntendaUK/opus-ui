@@ -52,11 +52,22 @@ jobs:
       - name: Build project
         run: npm run build
 
-      # 8) Publish to npm (will fail the job if publish fails)
-      - name: Publish to npm
+      # 8) Publish only when this exact version is not already on npm
+      - name: Publish to npm if version is new
         run: |
-          echo "Publishing version $VERSION to npm with the opus-2 tag..."
-          npm publish --tag opus-2
+          PACKAGE_NAME=$(node -p "require('./package.json').name")
+          PACKAGE_SPEC="${PACKAGE_NAME}@${VERSION}"
+
+          if npm view "$PACKAGE_SPEC" version --json >/dev/null 2>&1; then
+            echo "$PACKAGE_SPEC is already published. Skipping npm publish."
+          elif npm publish --tag opus-2; then
+            echo "Published $PACKAGE_SPEC with the opus-2 tag."
+          elif npm view "$PACKAGE_SPEC" version --json >/dev/null 2>&1; then
+            echo "$PACKAGE_SPEC was published by another workflow. Continuing."
+          else
+            echo "Failed to publish $PACKAGE_SPEC."
+            exit 1
+          fi
 
       # 9) Create and push the Git tag only if the publish step succeeded
       - name: Create and push tag if not exists
