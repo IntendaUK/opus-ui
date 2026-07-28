@@ -2,7 +2,7 @@
 /* eslint-disable max-lines-per-function */
 
 //System Helpers
-import { getDeepProperty, spliceWhere } from '../../system/helpers';
+import { clone, getDeepProperty, spliceWhere } from '../../system/helpers';
 import { getMdaHelper } from '../scriptRunner/actions/getMda/getMda';
 
 //Helpers
@@ -32,10 +32,11 @@ const resolveRelativePath = (path, cwd) => {
 };
 
 //Events
-const onGetMda = (props, ctrlDown, value, retMda) => {
+const onGetMda = (props, ctrlDown, value, loadedMda) => {
 	const { id, setState, setWgtState, state: { autoTab, ctrlTab, tabsMda } } = props;
 	let { state: { mda } } = props;
 
+	const retMda = clone({}, loadedMda);
 	retMda.parentId = id;
 
 	if (autoTab || ctrlTab) {
@@ -218,4 +219,3 @@ export const onCloseTab = ({ setWgtState, setState, state: { value, mda, tabsMda
 
 	setState(newState);
 };
-
