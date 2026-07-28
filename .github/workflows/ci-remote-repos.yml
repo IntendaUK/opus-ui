@@ -26,5 +26,6 @@ jobs:
           client-payload: |
             {
               "ref": "${{ github.ref }}",
-              "sha": "${{ github.sha }}"
+              "sha": "${{ github.sha }}",
+              "target_branch": "opus-2"
             }
