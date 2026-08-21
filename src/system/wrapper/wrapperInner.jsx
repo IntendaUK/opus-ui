@@ -14,6 +14,9 @@ import { registerScripts } from './helpers';
 import { lateBindTriggers } from '../../components/scriptRunner/helpers/lateBoundTriggers';
 import { fixScopeIds } from '../../components/scriptRunner/helpers/morphConfig';
 
+//Custom hooks
+import usePortalContainer from '../customHooks/usePortalContainer';
+
 //Components
 
 const onRunFlowChecker = (id, propSpec, setState, state) => {
@@ -42,6 +45,16 @@ const WrapperInner = ({ mda, children, mdaVersion, forceRemount }) => {
 
 	const propSpec = useMemo(() => getFullPropSpec(type), [type]);
 	const Component = useMemo(() => getComponent(type), [type]);
+	const portalContainerId = useMemo(() => {
+		if (!container)
+			return null;
+
+		if (container.includes('||'))
+			return fixScopeIds(container, { ownerId: mda.parentId });
+
+		return container;
+	}, [container, mda.parentId, mdaVersion]);
+	const portalContainer = usePortalContainer(portalContainerId);
 
 	//Mount hook in charge of doing all the initial setup
 	const cbMount = onMount.bind(null, mda, setWrapperState, propSpec, cpnState, setCpnState, forceRemount);
@@ -80,13 +93,10 @@ const WrapperInner = ({ mda, children, mdaVersion, forceRemount }) => {
 	);
 
 	if (container) {
-		let useId = container;
-		if (useId.includes('||'))
-			useId = fixScopeIds(useId, { ownerId: mda.parentId });
+		if (!portalContainer)
+			return null;
 
-		const elContainer = document.getElementById(useId);
-
-		return ReactDOM.createPortal(result, elContainer);
+		return ReactDOM.createPortal(result, portalContainer);
 	}
 
 	return result;

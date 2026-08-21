@@ -4,6 +4,7 @@ import { useContext, useEffect } from 'react';
 //Config
 import { createContext } from '../../system/managers/appManager';
 import { getMdaHelper } from '../../components/scriptRunner/actions/getMda/getMda';
+import decodeDashboardUri from '../../system/helpers/decodeDashboardUri';
 
 //Context
 const AppInnerContext = createContext('appInnerContext');
@@ -13,7 +14,7 @@ const getDashboardMda = async (dashboard, dashboardUri) => {
 	let result = null;
 
 	if (dashboardUri)
-		result = JSON.parse(atob(dashboardUri));
+		result = decodeDashboardUri(dashboardUri);
 	else {
 		result = await getMdaHelper({
 			type: 'dashboard',
@@ -38,9 +39,9 @@ const onLoadDashboard = ({ setState, dashboard, dashboardUri, urlParsed }) => {
 
 //Components
 const DashboardLoader = () => {
-	const { getHandler, dashboard, urlParsed } = useContext(AppInnerContext);
+	const { getHandler, dashboard, dashboardUri, urlParsed } = useContext(AppInnerContext);
 
-	useEffect(getHandler(onLoadDashboard), [dashboard, urlParsed]);
+	useEffect(getHandler(onLoadDashboard), [dashboard, dashboardUri, urlParsed]);
 
 	return null;
 };
