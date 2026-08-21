@@ -5,6 +5,9 @@ import ReactDOM from 'react-dom';
 //System
 import { Wrapper } from '../../../system/wrapper/wrapper';
 
+//Custom hooks
+import usePortalContainer from '../../../system/customHooks/usePortalContainer';
+
 //Plugins
 import { useFloating } from '@floating-ui/react';
 
@@ -17,7 +20,7 @@ import { useFloating } from '@floating-ui/react';
 // result, this unfortunate hack is needed. In the future, we might be able to bubble up 'onMount'
 // events and deduce when a component is done rendering (because all its children are rendered).
 const onFixPopperPosition = (container, id, update) => {
-	if (!update)
+	if (!container || !update)
 		return;
 
 	(async () => {
@@ -40,7 +43,7 @@ const onFixPopperPosition = (container, id, update) => {
 const PopoverEntry = ({ mda, popoverRef }) => {
 	const { position, popoverContainer = 'POPOVERS', popoverZIndex = 1, pointerEvents } = mda;
 
-	const renderInEl = document.getElementById(popoverContainer);
+	const renderInEl = usePortalContainer(popoverContainer);
 
 	const { refs, floatingStyles, update } = useFloating({
 		elements: {
@@ -49,7 +52,7 @@ const PopoverEntry = ({ mda, popoverRef }) => {
 		placement: position
 	});
 
-	useEffect(onFixPopperPosition.bind(null, renderInEl, mda.id, update), [update]);
+	useEffect(onFixPopperPosition.bind(null, renderInEl, mda.id, update), [renderInEl, update]);
 
 	const style = {
 		...floatingStyles,
@@ -88,6 +91,8 @@ const PopoverEntry = ({ mda, popoverRef }) => {
 			{content}
 		</div>
 	);
+	if (!renderInEl)
+		return null;
 
 	const res = ReactDOM.createPortal(el, renderInEl);
 
