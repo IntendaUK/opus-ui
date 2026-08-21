@@ -2,6 +2,16 @@
 
 [Read our getting started guide here](https://opus-ui.com/docs?articleId=1-1-introduction)
 
+## Loading targeted dashboards from the URL
+
+Applications that call `loadApp` with `loadUrlParameters: true` can replace their configured startup dashboard for focused development and browser testing:
+
+- `?dashboard=path/to/dashboard` loads a dashboard from the packaged metadata.
+- `?dashboardUri=<base64url>` loads an arbitrary dashboard metadata object encoded as UTF-8 JSON and then base64 or base64url. `dashboardUri` takes precedence when both parameters are present.
+- `?states=component.key=value` applies initial state flows alongside either dashboard option.
+
+Portal targets referenced by a focused dashboard do not have to be present in the application shell. Opus UI creates missing targets under `document.body`, logs a warning identifying each generated target, reuses them while needed, and removes them after their final portal unmounts.
+
 # Why use Opus UI
 
 Opus empowers developers in many ways. To truly understand how it does this, we need to understand which facets of development it aims to simplify:

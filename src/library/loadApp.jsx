@@ -19,6 +19,7 @@ import { getExternalComponentTypes } from './externalComponentTypes';
 import { overrideConfig, default as opusConfig } from '../config';
 import bindDevtools from '../appLib/components/helpers/bindDevtools';
 import { setOpusHelpersInWindow } from '../system/helpers';
+import decodeDashboardUri from '../system/helpers/decodeDashboardUri';
 
 //Context
 const AppInnerContext = createContext('appInnerContext');
@@ -105,12 +106,14 @@ const onMount = (
 
 	if (startupDashboardPath)
 		startup = startupDashboardPath;
+	let dashboardUri;
 
 	if (shouldLoadUrlParameters) {
 		const urlParams = Object.fromEntries(new URLSearchParams(window.location.search));
 
 		theme = urlParams.theme ?? theme;
 		startup = urlParams.dashboard ?? startup;
+		dashboardUri = urlParams.dashboardUri;
 
 		const flowObjects = buildFlowObjects(urlParams.states);
 
@@ -136,10 +139,12 @@ const onMount = (
 	if (opusConfig.env === 'development' && window._OPUS_DEVTOOLS_GLOBAL_HOOK)
 		bindDevtools();
 
-	const startupDashboard = getMdaHelper({
-		type: 'dashboard',
-		key: startup
-	});
+	const startupDashboard = dashboardUri
+		? decodeDashboardUri(dashboardUri)
+		: getMdaHelper({
+			type: 'dashboard',
+			key: startup
+		});
 
 	set({
 		managerInstance,

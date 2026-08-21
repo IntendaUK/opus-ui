@@ -7,6 +7,35 @@ test.beforeEach(async ({ page }) => {
 	await page.goto('http://localhost:3000/test.html');
 });
 
+test('loads a targeted dashboardUri and creates its missing portal container', async ({ page }) => {
+	const warnings = [];
+	page.on('console', msg => {
+		if (msg.type() === 'warning' && msg.text().startsWith('[Opus UI] Portal container'))
+			warnings.push(msg.text());
+	});
+
+	const dashboardMda = {
+		id: 'dashboardUriTarget',
+		type: 'input',
+		container: 'DASHBOARD_URI_PORTAL',
+		prps: { placeholder: 'Targeted résumé ✓' }
+	};
+	const dashboardUri = Buffer.from(JSON.stringify(dashboardMda), 'utf8').toString('base64url');
+
+	await page.goto(`http://localhost:3000/test.html?dashboardUri=${dashboardUri}`);
+
+	const portal = page.locator('#DASHBOARD_URI_PORTAL');
+	const input = page.locator('#dashboardUriTarget');
+
+	await expect(portal).toHaveAttribute('data-opus-ui-generated-portal', '');
+	await expect(input).toBeVisible();
+	await expect(input).toHaveAttribute('placeholder', 'Targeted résumé ✓');
+	expect(warnings).toEqual([
+		'[Opus UI] Portal container "DASHBOARD_URI_PORTAL" was not found. ' +
+		'A fallback container was created under document.body.'
+	]);
+});
+
 test('creates, reuses, warns about, and cleans up missing portal containers', async ({ page }) => {
 	const warnings = [];
 	page.on('console', msg => {
