@@ -1,0 +1,47 @@
+{
+	"type": "containerSimple",
+	"prps": {
+		"singlePage": true,
+		"padding": true,
+		"gap": "12px"
+	},
+	"wgts": [
+		{
+			"id": "lateBoundSourceActionButton",
+			"type": "container",
+			"prps": {
+				"canClick": true,
+				"fireScriptOptions": {
+					"primary": {
+						"id": "lateBoundSourceActionScript",
+						"actions": [
+							{
+								"srcAction": "./actions/executeLateBoundSourceAction"
+							}
+						]
+					}
+				},
+				"scps": [
+					{
+						"srcActions": "./actions/assignLateBoundSourceAction"
+					}
+				]
+			},
+			"wgts": [
+				{
+					"type": "label",
+					"prps": {
+						"caption": "Run late-bound source action"
+					}
+				}
+			]
+		},
+		{
+			"id": "lateBoundSourceActionResult",
+			"type": "label",
+			"prps": {
+				"caption": "Pending"
+			}
+		}
+	]
+}

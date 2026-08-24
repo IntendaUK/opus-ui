@@ -1,5 +1,6 @@
 //System
 import { getPropertyContainer } from '../../../system/managers/propertyManager';
+import { hasSourceActions, hydrateSourceActions } from '../../../system/wrapper/helpers';
 
 //System Helpers
 import { clone } from '../../../system/helpers';
@@ -34,6 +35,13 @@ const initAndRunScript = async ({
 		script = clone({}, originalScript);
 		if (scriptActions)
 			script.actions = clone([], scriptActions);
+
+		if (hasSourceActions(script)) {
+			await hydrateSourceActions({
+				script,
+				ownerId: script.ownerId
+			});
+		}
 	}
 
 	script.id = scriptId ?? script.id ?? getNextScriptId();

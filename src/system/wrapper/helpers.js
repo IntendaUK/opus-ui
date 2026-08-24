@@ -246,20 +246,6 @@ export const hydrateSourceActions = async ({ script, ownerId }) => {
 	return script;
 };
 
-export const hasSourceActions = script => {
-	if (!script)
-		return false;
-
-	if (script.srcActions || script.srcAction)
-		return true;
-
-	const actions = getActionsArray(script);
-	if (!actions)
-		return false;
-
-	return actions.some(action => action?.srcAction);
-};
-
 const getScriptsArray = scripts => {
 	if (!scripts)
 		return [];
@@ -295,6 +281,8 @@ const hasSourceActionKey = value => {
 
 	return false;
 };
+
+export const hasSourceActions = script => hasSourceActionKey(script);
 
 export const hydrateSourceActionsInMda = async mda => {
 	if (!mda)
