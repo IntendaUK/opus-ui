@@ -2,7 +2,7 @@
 
 //System
 import { getPropertyContainer } from '../../../system/managers/propertyManager';
-import { hasSourceActions, hydrateSourceActions } from '../../../system/wrapper/helpers';
+import { hasSourceActions, hydrateSourceActions } from '../../../system/wrapper/sourceActionHelpers';
 import { isWrappedScriptHandler, wrapScriptHandlerInActions } from '../../../system/wrapper/wrapScriptHandlerInActions';
 
 //System Helpers
