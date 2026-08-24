@@ -4,6 +4,7 @@ import { applyBlueprints } from '../../system/managers/blueprintManager';
 import setupSuiteActions from './helpers/setupSuiteActions';
 import { resolveThemeAccessor } from '../../system/managers/themeManager';
 import { getMdaHelper } from '../scriptRunner/actions/getMda/getMda';
+import { hasSourceActions, hydrateSourceActions } from '../../system/wrapper/sourceActionHelpers';
 
 //Helpers
 import hookTrigger from './helpers/hookTrigger';
@@ -104,7 +105,7 @@ export const registerScripts = async scripts => {
 	}
 };
 
-export const runScript = originalScript => {
+export const runScript = async originalScript => {
 	if (Array.isArray(originalScript)) {
 		//Returns a promise so JS source actions can await sequential completion.
 		return Promise.all(originalScript.map(o => runScript(o)));
@@ -115,11 +116,12 @@ export const runScript = originalScript => {
 	if (script.concurrency !== undefined && script.concurrency.pool === undefined)
 		script.concurrency.pool = script.id;
 
-	const { actions, blueprint, traits } = script;
+	const { blueprint, traits } = script;
 
 	if (blueprint)
 		return runBlueprintScript(props, script);
-	else if (traits) {
+
+	if (traits) {
 		traits.forEach(({ trait }) => {
 			const mdaTrait = getMdaHelper({
 				type: 'blueprint',
@@ -133,10 +135,16 @@ export const runScript = originalScript => {
 
 			Object.assign(script, mdaFinal);
 		});
+	}
 
-		return runScriptBase(props, script, script.actions, true);
-	} else
-		return runScriptBase(props, script, actions, true);
+	if (hasSourceActions(script)) {
+		await hydrateSourceActions({
+			script,
+			ownerId: script.ownerId
+		});
+	}
+
+	return runScriptBase(props, script, script.actions, true);
 };
 
 export const configure = _props => {
