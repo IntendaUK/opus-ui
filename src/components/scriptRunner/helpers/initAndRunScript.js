@@ -2,6 +2,7 @@
 
 //System
 import { getPropertyContainer } from '../../../system/managers/propertyManager';
+import { hasSourceActions, hydrateSourceActions } from '../../../system/wrapper/helpers';
 import { isWrappedScriptHandler, wrapScriptHandlerInActions } from '../../../system/wrapper/wrapScriptHandlerInActions';
 
 //System Helpers
@@ -54,6 +55,13 @@ const initAndRunScript = async ({
 			if (scriptActions)
 				script.actions = clone([], scriptActions);
 		}
+	}
+
+	if (isRootScript && hasSourceActions(script)) {
+		await hydrateSourceActions({
+			script,
+			ownerId: script.ownerId
+		});
 	}
 
 	script.id = scriptId ?? script.id ?? getNextScriptId();
